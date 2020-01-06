@@ -10,16 +10,18 @@ class Room {
         this.settings = { fps: 60 };
         const boxSize = 80;
         const groundWidth = 800;
-        var boxA = Bodies.rectangle(400, 200, boxSize, boxSize, { label: 'boxA' });
-        boxA.width = boxSize;
-        boxA.height = boxSize;
-        var boxB = Bodies.rectangle(450, 50, boxSize, boxSize, { label: 'boxB' });
-        boxB.width = boxSize;
-        boxB.height = boxSize;
+
+        this.bodies = [];
+        this.robots = [];
+
+        let bot = new Robot('e2:a3:90:f2:33:3e');
+        this.robots.push(bot);
+        this.bodies.push(bot.body);
+
         var ground = Bodies.rectangle(400, 610, groundWidth, boxSize, { isStatic: true, label: 'ground' });
         ground.width = groundWidth;
         ground.height = boxSize;
-        this.bodies = [boxA, boxB, ground];
+        this.bodies.push(ground);
 
         World.add(this.engine.world, this.bodies);
 
