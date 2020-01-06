@@ -19,9 +19,10 @@ class Robot {
         this.settings = _.defaults(settings, defaultSettings);
 
         // Create physics object
-        this.body = Bodies.rectangle(400, 200, settings.width, settings.height, { label: mac });
+        this.body = Bodies.rectangle(400, 200, settings.width, settings.height, { label: mac, friction: 0.9, frictionAir: 0.5 });
         this.body.width = settings.width;
         this.body.height = settings.height;
+        this.setSpeed = { left: 0, right: 0 };
 
         // Connect to RoboScape server to get commands
         this.socket = dgram.createSocket('udp4');
@@ -29,6 +30,9 @@ class Robot {
 
         // Start heartbeat
         this.heartbeatInterval = setInterval(this.sendToServer.bind(this, 'I'), 1000);
+
+        // Start driving
+        this.driveInterval = setInterval(this.drive.bind(this), 1000 / 60);
 
         console.log(`Robot with MAC ${this.mac} created`);
     }
@@ -56,18 +60,23 @@ class Robot {
     msgHandler(msg) {
         // Set speed command
         if (String.fromCharCode(msg[0]) == 'S') {
-            let v1 = msg.readInt16LE(1) / 2000;
-            let v2 = msg.readInt16LE(3) / 2000;
-
-            let vleft = Matter.Vector.create(1, 0);
-            vleft = Matter.Vector.rotate(vleft, this.body.angle);
-            let vup = Matter.Vector.create(0, 1);
-            vup = Matter.Vector.rotate(vup, this.body.angle);
-
-            // Apply force
-            Matter.Body.applyForce(this.body, Matter.Vector.add(this.body.position, vleft), Matter.Vector.mult(vup, v1));
-            Matter.Body.applyForce(this.body, Matter.Vector.sub(this.body.position, vleft), Matter.Vector.mult(vup, v2));
+            let v1 = msg.readInt16LE(1) / 5000;
+            let v2 = msg.readInt16LE(3) / 5000;
+            this.setSpeed = { left: v1, right: v2 };
         }
+    }
+
+    drive() {
+        let v1 = this.setSpeed.left;
+        let v2 = this.setSpeed.right;
+        let vleft = Matter.Vector.create(1, 0);
+        vleft = Matter.Vector.rotate(vleft, this.body.angle);
+        let vup = Matter.Vector.create(0, 1);
+        vup = Matter.Vector.rotate(vup, this.body.angle);
+
+        // Apply force
+        Matter.Body.applyForce(this.body, Matter.Vector.add(this.body.position, vleft), Matter.Vector.mult(vup, v1));
+        Matter.Body.applyForce(this.body, Matter.Vector.sub(this.body.position, vleft), Matter.Vector.mult(vup, v2));
     }
 }
 

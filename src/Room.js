@@ -8,6 +8,7 @@ class Room {
     constructor() {
         this.engine = Engine.create();
         this.engine.world.gravity.y = 0;
+        this.engine.enableSleeping = true;
         this.settings = { fps: 60 };
         const boxSize = 80;
         const groundWidth = 800;
@@ -54,10 +55,12 @@ class Room {
     /**
      * Returns an array of the objects in the scene
      */
-    getBodies() {
-        return this.bodies.map(body => {
-            return { label: body.label, pos: body.position, vel: body.velocity, angle: body.angle, anglevel: body.angularVelocity, width: body.width, height: body.height };
-        });
+    getBodies(onlySleeping = true) {
+        return this.bodies
+            .filter(body => !onlySleeping || !body.isSleeping)
+            .map(body => {
+                return { label: body.label, pos: body.position, vel: body.velocity, angle: body.angle, anglevel: body.angularVelocity, width: body.width, height: body.height };
+            });
     }
 }
 

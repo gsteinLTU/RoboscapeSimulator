@@ -17,11 +17,16 @@ function socketMain(io) {
         const testRoom = new Room();
 
         // Begin sending updates
+        socket.emit('update', testRoom.getBodies(false));
         let updateInterval = setInterval(() => {
-            socket.emit(
-                'update',
-                _.keyBy(testRoom.getBodies(), body => body.label)
-            );
+            let updateBodies = testRoom.getBodies(true);
+
+            if (updateBodies.length > 0) {
+                socket.emit(
+                    'update',
+                    _.keyBy(updateBodies, body => body.label)
+                );
+            }
         }, 1000 / settings.updateRate);
 
         // Clean up on disconnect
