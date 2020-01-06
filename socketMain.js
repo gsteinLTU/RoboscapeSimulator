@@ -1,4 +1,3 @@
-const SocketIO = require('socket.io');
 const _ = require('lodash');
 
 const Room = require('./src/Room');
