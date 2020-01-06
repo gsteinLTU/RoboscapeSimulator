@@ -1,5 +1,6 @@
 const Matter = require('matter-js');
 const Bodies = Matter.Bodies;
+const _ = require('lodash');
 const dgram = require('dgram');
 
 const { generateRandomMAC } = require('../util');
@@ -15,7 +16,7 @@ class Robot {
         // Generate random new MAC address to use if none provided
         this.mac = mac || generateRandomMAC(mac);
 
-        this.settings = { ...defaultSettings, ...settings };
+        this.settings = _.defaults(settings, defaultSettings);
 
         // Create physics object
         this.body = Bodies.rectangle(400, 200, settings.width, settings.height, { label: mac });
@@ -55,7 +56,17 @@ class Robot {
     msgHandler(msg) {
         // Set speed command
         if (String.fromCharCode(msg[0]) == 'S') {
+            let v1 = msg.readInt16LE(1) / 2000;
+            let v2 = msg.readInt16LE(3) / 2000;
+
+            let vleft = Matter.Vector.create(1, 0);
+            vleft = Matter.Vector.rotate(vleft, this.body.angle);
+            let vup = Matter.Vector.create(0, 1);
+            vup = Matter.Vector.rotate(vup, this.body.angle);
+
             // Apply force
+            Matter.Body.applyForce(this.body, Matter.Vector.add(this.body.position, vleft), Matter.Vector.mult(vup, v1));
+            Matter.Body.applyForce(this.body, Matter.Vector.sub(this.body.position, vleft), Matter.Vector.mult(vup, v2));
         }
     }
 }
