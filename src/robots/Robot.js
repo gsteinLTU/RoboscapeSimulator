@@ -27,7 +27,7 @@ class Robot {
         };
 
         // Create physics object
-        this.body = Bodies.rectangle(position.x, position.y, settings.width, settings.height, { label: this.mac, friction: 0.9, frictionAir: 0.5 });
+        this.body = Bodies.rectangle(position.x, position.y, settings.width, settings.height, { label: this.mac, friction: 0.6, frictionAir: 0.45, frictionStatic: 0 });
         this.body.width = settings.width;
         this.body.height = settings.height;
         this.setSpeed = { left: 0, right: 0 };
@@ -70,8 +70,16 @@ class Robot {
         if (String.fromCharCode(msg[0]) == 'S') {
             let v1 = msg.readInt16LE(1);
             let v2 = msg.readInt16LE(3);
+            let boost = (2 * Math.abs(v1 - v2)) / (Math.abs(v1) + Math.abs(v2)) + 1;
 
-            this.setSpeed = { left: (Math.sign(v1) * Math.pow(Math.abs(v1), 0.6)) / 10000, right: (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6)) / 10000 };
+            if (Math.abs(v1) + Math.abs(v2) === 0) {
+                boost = 1;
+            }
+
+            this.setSpeed = {
+                left: (boost * (Math.sign(v1) * Math.pow(Math.abs(v1), 0.6))) / 10000,
+                right: (boost * (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6))) / 10000
+            };
         }
     }
 
