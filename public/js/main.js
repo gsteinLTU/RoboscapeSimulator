@@ -5,7 +5,7 @@ let context = canvas.getContext('2d');
 canvas.width = wWidth;
 canvas.height = wHeight;
 
-let socket = io.connect('http://localhost:8000');
+let socket = io.connect();
 let bodies = {};
 let nextBodies = {};
 let lastUpdateTime = Date.now();
