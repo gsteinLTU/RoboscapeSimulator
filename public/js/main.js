@@ -12,6 +12,14 @@ socket.on('update', data => {
     bodies = { ...bodies, ...data };
 });
 
+socket.on('fullUpdate', data => {
+    bodies = data;
+});
+
+function reset() {
+    socket.emit('reset', true);
+}
+
 function draw() {
     context.setTransform(1, 0, 0, 1, 0, 0);
 

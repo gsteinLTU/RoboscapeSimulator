@@ -10,15 +10,18 @@ const settings = {
  * @param {SocketIO.Server} io
  */
 function socketMain(io) {
+    // Create a virtual environment for this session
+    var testRoom = new Room();
+
     io.on('connect', socket => {
         console.log(`Socket ${socket.id} connected`);
+        socket.join('testroom');
 
-        // Create a virtual environment for this session
-        const testRoom = new Room();
+        let robot = testRoom.addRobot();
 
         // Begin sending updates
         socket.emit(
-            'update',
+            'fullUpdate',
             _.keyBy(testRoom.getBodies(false), body => body.label)
         );
         let updateInterval = setInterval(() => {
@@ -31,6 +34,15 @@ function socketMain(io) {
                 );
             }
         }, 1000 / settings.updateRate);
+
+        // Temporary feature to reset example environment
+        socket.on('reset', confirm => {
+            testRoom = new Room();
+            io.to('testroom').emit(
+                'fullUpdate',
+                _.keyBy(testRoom.getBodies(false), body => body.label)
+            );
+        });
 
         // Clean up on disconnect
         socket.on('disconnect', () => {

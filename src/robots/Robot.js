@@ -9,17 +9,25 @@ const defaultSettings = {
     server: '52.73.65.98',
     port: 1973,
     width: 20,
-    height: 40
+    height: 40,
+    minX: 100,
+    maxX: 700,
+    minY: 100,
+    maxY: 700
 };
 class Robot {
-    constructor(mac = null, settings = {}) {
+    constructor(mac = null, position = null, settings = {}) {
         // Generate random new MAC address to use if none provided
         this.mac = mac || generateRandomMAC(mac);
-
         this.settings = _.defaults(settings, defaultSettings);
 
+        position = position || {
+            x: Math.random() * (settings.maxX - settings.minX) + settings.minX,
+            y: Math.random() * (settings.maxY - settings.minY) + settings.minY
+        };
+
         // Create physics object
-        this.body = Bodies.rectangle(400, 200, settings.width, settings.height, { label: mac, friction: 0.9, frictionAir: 0.5 });
+        this.body = Bodies.rectangle(position.x, position.y, settings.width, settings.height, { label: this.mac, friction: 0.9, frictionAir: 0.5 });
         this.body.width = settings.width;
         this.body.height = settings.height;
         this.setSpeed = { left: 0, right: 0 };
@@ -60,12 +68,16 @@ class Robot {
     msgHandler(msg) {
         // Set speed command
         if (String.fromCharCode(msg[0]) == 'S') {
-            let v1 = msg.readInt16LE(1) / 5000;
-            let v2 = msg.readInt16LE(3) / 5000;
-            this.setSpeed = { left: v1, right: v2 };
+            let v1 = msg.readInt16LE(1);
+            let v2 = msg.readInt16LE(3);
+
+            this.setSpeed = { left: (Math.sign(v1) * Math.pow(Math.abs(v1), 0.6)) / 10000, right: (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6)) / 10000 };
         }
     }
 
+    /**
+     * Applies force of wheels to robot
+     */
     drive() {
         let v1 = this.setSpeed.left;
         let v2 = this.setSpeed.right;

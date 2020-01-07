@@ -15,10 +15,6 @@ class Room {
         this.bodies = [];
         this.robots = [];
 
-        let bot = new Robot('e2:a3:90:f2:33:3e');
-        this.robots.push(bot);
-        this.bodies.push(bot.body);
-
         var ground = Bodies.rectangle(groundWidth / 2 + boxSize, groundWidth, groundWidth, boxSize, { isStatic: true, label: 'ground' });
         ground.width = groundWidth;
         ground.height = boxSize;
@@ -36,7 +32,7 @@ class Room {
         ground4.height = groundWidth;
         this.bodies.push(ground4);
 
-        var box = Bodies.rectangle(groundWidth / 2 - boxSize / 2, groundWidth / 2 - boxSize / 2, boxSize, boxSize, { label: 'box' });
+        var box = Bodies.rectangle(groundWidth / 2 - boxSize / 2, groundWidth / 2 - boxSize / 2, boxSize, boxSize, { label: 'box', frictionAir: 0.7 });
         box.width = boxSize;
         box.height = boxSize;
         this.bodies.push(box);
@@ -60,6 +56,19 @@ class Room {
             .map(body => {
                 return { label: body.label, pos: body.position, vel: body.velocity, angle: body.angle, anglevel: body.angularVelocity, width: body.width, height: body.height };
             });
+    }
+
+    /**
+     * Add a robot to the room
+     * @param {String} mac
+     * @param {Matter.Vector} position
+     */
+    addRobot(mac = null, position = null) {
+        let bot = new Robot(mac, position);
+        this.robots.push(bot);
+        this.bodies.push(bot.body);
+        World.add(this.engine.world, [bot.body]);
+        return bot;
     }
 }
 
