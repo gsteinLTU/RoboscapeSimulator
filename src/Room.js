@@ -16,6 +16,7 @@ class Room {
         this.bodies = [];
         this.robots = [];
 
+        // Create bounds
         var ground = Bodies.rectangle(groundWidth / 2 + boxSize, groundWidth, groundWidth, boxSize, { isStatic: true, label: 'ground' });
         ground.width = groundWidth;
         ground.height = boxSize;
@@ -33,6 +34,7 @@ class Room {
         ground4.height = groundWidth;
         this.bodies.push(ground4);
 
+        // Demo box
         var box = Bodies.rectangle(groundWidth / 2 - boxSize / 2, groundWidth / 2 - boxSize / 2, boxSize, boxSize, { label: 'box', frictionAir: 0.7 });
         box.width = boxSize;
         box.height = boxSize;
@@ -40,6 +42,7 @@ class Room {
 
         World.add(this.engine.world, this.bodies);
 
+        // Begin update loop
         this.updateInterval = setInterval(
             function() {
                 Engine.update(this.engine, 1000 / this.settings.fps);

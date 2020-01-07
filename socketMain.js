@@ -3,7 +3,8 @@ const _ = require('lodash');
 const Room = require('./src/Room');
 
 const settings = {
-    updateRate: 60
+    updateRate: 60,
+    maxRobots: 5
 };
 
 /**
@@ -17,7 +18,12 @@ function socketMain(io) {
         console.log(`Socket ${socket.id} connected`);
         socket.join('testroom');
 
-        let robot = testRoom.addRobot();
+        // Create robot if not too many
+        let robot = null;
+
+        if (testRoom.robots.length < settings.maxRobots) {
+            robot = testRoom.addRobot();
+        }
 
         // Begin sending updates
         socket.emit(
