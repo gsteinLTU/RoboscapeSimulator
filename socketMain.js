@@ -37,11 +37,13 @@ function socketMain(io) {
 
         // Temporary feature to reset example environment
         socket.on('reset', confirm => {
-            testRoom = new Room();
-            io.to('testroom').emit(
-                'fullUpdate',
-                _.keyBy(testRoom.getBodies(false), body => body.label)
-            );
+            if (confirm) {
+                testRoom = new Room();
+                io.to('testroom').emit(
+                    'fullUpdate',
+                    _.keyBy(testRoom.getBodies(false), body => body.label)
+                );
+            }
         });
 
         // Clean up on disconnect

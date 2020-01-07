@@ -8,6 +8,7 @@ class Room {
     constructor() {
         this.engine = Engine.create();
         this.engine.world.gravity.y = 0;
+        this.engine.enableSleeping = true;
         this.settings = { fps: 60 };
         const boxSize = 80;
         const groundWidth = 800;
