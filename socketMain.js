@@ -3,7 +3,7 @@ const _ = require('lodash');
 const Room = require('./src/Room');
 
 const settings = {
-    updateRate: 60,
+    updateRate: 30,
     maxRobots: 5
 };
 
