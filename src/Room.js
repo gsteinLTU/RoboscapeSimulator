@@ -66,6 +66,7 @@ class Room {
      * Add a robot to the room
      * @param {String} mac
      * @param {Matter.Vector} position
+     * @returns {Robot} Robot created
      */
     addRobot(mac = null, position = null) {
         let bot = new Robot(mac, position);

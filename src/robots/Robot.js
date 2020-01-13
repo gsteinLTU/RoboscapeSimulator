@@ -52,7 +52,7 @@ class Robot {
     sendToServer(msg) {
         let msgBuff = Buffer.alloc(10 + msg.length);
         let macParts = this.mac.split(':');
-        for (let i in macParts) {
+        for (let i = 0; i < macParts.length; i++) {
             msgBuff.writeUInt8(Number.parseInt(macParts[i], 16), i);
         }
         msgBuff.writeUInt32BE(process.uptime(), 6);
@@ -80,6 +80,8 @@ class Robot {
                 left: (boost * (Math.sign(v1) * Math.pow(Math.abs(v1), 0.6))) / 10000,
                 right: (boost * (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6))) / 10000
             };
+
+            this.sendToServer(msg);
         }
     }
 

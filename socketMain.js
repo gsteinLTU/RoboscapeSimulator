@@ -52,6 +52,11 @@ function socketMain(io) {
             }
         });
 
+        // Temporary feature to demonstrate input from VR
+        socket.on('controllerInput', data => {
+            robot.sendToServer('F0');
+        });
+
         // Clean up on disconnect
         socket.on('disconnect', () => {
             clearInterval(updateInterval);
