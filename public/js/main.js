@@ -53,7 +53,7 @@ function draw() {
         context.translate(x, y);
         context.rotate(angle);
         context.fillRect(-body.width / 2, -body.height / 2, body.width, body.height);
-        context.rotate(-body.angle);
+        context.rotate(-angle);
         context.translate(-x, -y);
     }
 
