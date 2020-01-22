@@ -15,15 +15,11 @@ jobs:
       - name: npm test
         run: npm test
       - name: docker build
-        uses: actions/docker/cli@master
-        with:
-          args: build -t gstein17/roboscape-simulator .
+        run: docker build -t gstein17/roboscape-simulator .
       - name: docker login
-        uses: actions/docker/login@master
+        run: docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       - name: docker push
-        uses: actions/docker/cli@master
-        with:
-          args: push gstein17/roboscape-simulator
+        run: docker push gstein17/roboscape-simulator
