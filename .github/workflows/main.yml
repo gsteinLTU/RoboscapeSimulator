@@ -1,23 +1,19 @@
 on: push
-name: npm build, lint, test and publish
+name: npm build, test and publish
 jobs:
   build-and-publish:
     name: build and publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - name: Setup Node.js for use with actions
+        uses: actions/setup-node@v1.1.0
+        with:
+          version: 12.x
       - name: npm install
-        uses: actions/npm@master
-        with:
-          args: install
+        run: npm install --no-save
       - name: npm test
-        uses: actions/npm@master
-        with:
-          args: run test
-      - name: npm lint
-        uses: actions/npm@master
-        with:
-          args: run lint
+        run: npm test
       - name: docker build
         uses: actions/docker/cli@master
         with:
