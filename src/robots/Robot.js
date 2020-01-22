@@ -81,7 +81,7 @@ class Robot {
                 right: (boost * (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6))) / 10000
             };
 
-            this.sendToServer(msg);
+            //this.sendToServer(msg);
         }
     }
 
