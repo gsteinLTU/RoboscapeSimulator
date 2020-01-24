@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+
 let wHeight = $(window).height();
 let wWidth = $(window).width();
 let canvas = document.querySelector('#mainCanvas');
@@ -11,6 +14,7 @@ let nextBodies = {};
 let lastUpdateTime = Date.now();
 let nextUpdateTime = Date.now();
 
+// Handle incremental updates
 socket.on('update', data => {
     bodies = { ...nextBodies };
     nextBodies = { ...bodies, ...data };
@@ -18,6 +22,7 @@ socket.on('update', data => {
     nextUpdateTime = Date.now();
 });
 
+// Handle full updates
 socket.on('fullUpdate', data => {
     bodies = data;
     nextBodies = data;
@@ -30,12 +35,8 @@ function reset() {
 }
 
 function draw() {
+    // Reset canvas
     context.setTransform(1, 0, 0, 1, 0, 0);
-
-    // let camX = -player.locX + canvas.width / 2;
-    // let camY = -player.locY + canvas.height / 2;
-    // context.translate(camX, camY);
-
     context.clearRect(-wWidth, -wHeight, wWidth * 2, wHeight * 2);
 
     let frameTime = Date.now();
@@ -43,13 +44,16 @@ function draw() {
     for (let label of Object.keys(bodies)) {
         let body = bodies[label];
         context.fillStyle = '#222222';
-        //context.fillStyle = orb.color;
 
         let { x, y } = body.pos;
         let angle = body.angle;
+
+        // Extrapolate/Interpolate position and rotation
         x += ((nextBodies[label].pos.x - x) * (frameTime - lastUpdateTime)) / Math.max(1, nextUpdateTime - lastUpdateTime);
         y += ((nextBodies[label].pos.y - y) * (frameTime - lastUpdateTime)) / Math.max(1, nextUpdateTime - lastUpdateTime);
         angle += ((nextBodies[label].angle - angle) * (frameTime - lastUpdateTime)) / Math.max(1, nextUpdateTime - lastUpdateTime);
+
+        // Draw rect for body
         context.translate(x, y);
         context.rotate(angle);
         context.fillRect(-body.width / 2, -body.height / 2, body.width, body.height);
@@ -60,11 +64,13 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
-window.addEventListener('resize', e => {
+// Window resize handler
+window.addEventListener('resize', () => {
     wHeight = $(window).height();
     wWidth = $(window).width();
     canvas.width = wWidth;
     canvas.height = wHeight;
 });
 
+// Start running immediately
 draw();
