@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const debug = require('debug')('roboscape-sim:socketMain');
 
 const Room = require('./src/Room');
 
@@ -34,14 +35,7 @@ function socketMain(io) {
 
     let updateInterval = setInterval(() => {
         // Check for dead bots
-        let deadRobots = testRoom.robots.filter(robot => {
-            return testRoom.settings.robotKeepAliveTime > 0 && Date.now() - robot.lastCommandTime > testRoom.settings.robotKeepAliveTime;
-        });
-
-        if (deadRobots.length > 0) {
-            console.log('Dead robots: ', deadRobots);
-            testRoom.robots = _.without(testRoom.robots, ...deadRobots);
-            testRoom.bodies = _.without(testRoom.bodies, ...deadRobots.map(robot => robot.body));
+        if (testRoom.removeDeadRobots() !== false) {
             sendFullUpdate(io.to('testroom'));
         } else {
             sendUpdate(io.to('testroom'));
@@ -49,7 +43,7 @@ function socketMain(io) {
     }, 1000 / settings.updateRate);
 
     io.on('connect', socket => {
-        console.log(`Socket ${socket.id} connected`);
+        debug(`Socket ${socket.id} connected`);
         socket.join('testroom');
 
         // Create robot if not too many

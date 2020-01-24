@@ -1,36 +1,39 @@
 {
-  "name": "roboscapesimulator",
-  "version": "0.0.1",
-  "description": "Simple online simulation of robots for demonstration/education purposes",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gsteinLTU/RoboscapeSimulator.git"
-  },
-  "author": "Gordon Stein",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/gsteinLTU/RoboscapeSimulator/issues"
-  },
-  "homepage": "https://github.com/gsteinLTU/RoboscapeSimulator#readme",
-  "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.19.1",
-    "eslint-plugin-node": "^11.0.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
-    "jest": "^24.9.0"
-  },
-  "dependencies": {
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "helmet": "^3.21.2",
-    "lodash": "^4.17.15",
-    "matter-js": "^0.14.2",
-    "socket.io": "^2.3.0"
-  }
+    "name": "roboscapesimulator",
+    "version": "0.0.1",
+    "description": "Simple online simulation of robots for demonstration/education purposes",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest",
+        "start": "node index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gsteinLTU/RoboscapeSimulator.git"
+    },
+    "author": "Gordon Stein",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/gsteinLTU/RoboscapeSimulator/issues"
+    },
+    "homepage": "https://github.com/gsteinLTU/RoboscapeSimulator#readme",
+    "devDependencies": {
+        "eslint": "^6.8.0",
+        "eslint-config-standard": "^14.1.0",
+        "eslint-plugin-import": "^2.19.1",
+        "eslint-plugin-node": "^11.0.0",
+        "eslint-plugin-promise": "^4.2.1",
+        "eslint-plugin-standard": "^4.0.1",
+        "jest": "^24.9.0"
+    },
+    "dependencies": {
+        "debug": "^4.1.1",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "helmet": "^3.21.2",
+        "lodash": "^4.17.15",
+        "matter-js": "^0.14.2",
+        "shortid": "^2.2.15",
+        "socket.io": "^2.3.0"
+    }
 }

@@ -3,17 +3,25 @@ const Engine = Matter.Engine,
     World = Matter.World,
     Bodies = Matter.Bodies;
 const _ = require('lodash');
+const shortid = require('shortid');
 
 const Robot = require('./robots/Robot');
 
 const defaultSettings = {
-    robotKeepAliveTime: 1000 * 60 * 1,
+    robotKeepAliveTime: 1000 * 60 * 10,
     fps: 60
 };
 
 class Room {
     constructor(settings = {}) {
-        debug.log(`Creating room ${this.roomID}`);
+        this.roomID = shortid.generate();
+
+        while (Room.existingIDs.indexOf(this.roomID) !== -1) {
+            this.roomID = shortid.generate();
+        }
+
+        this.debug = require('debug')(`roboscape-sim:Room-${this.roomID}`);
+        this.debug('Creating room');
 
         this.settings = _.defaults(settings, defaultSettings);
 
@@ -83,7 +91,26 @@ class Room {
         this.robots.push(bot);
         this.bodies.push(bot.body);
         World.add(this.engine.world, [bot.body]);
+        this.debug(`Robot ${bot.mac} added to room`);
         return bot;
+    }
+
+    /**
+     * Removes robots that have not received a command recently
+     */
+    removeDeadRobots() {
+        let deadRobots = this.robots.filter(robot => {
+            return this.settings.robotKeepAliveTime > 0 && Date.now() - robot.lastCommandTime > this.settings.robotKeepAliveTime;
+        });
+
+        if (deadRobots.length > 0) {
+            this.debug(
+                'Dead robots: ',
+                deadRobots.map(robot => robot.mac)
+            );
+            this.robots = _.without(this.robots, ...deadRobots);
+            this.bodies = _.without(this.bodies, ...deadRobots.map(robot => robot.body));
+        }
     }
 }
 

@@ -21,6 +21,8 @@ class Robot {
         this.mac = mac || generateRandomMAC(mac);
         this.settings = _.defaults(settings, defaultSettings);
 
+        this.debug = require('debug')(`roboscape-sim:Robot-${this.mac}`);
+
         position = position || {
             x: Math.random() * (settings.maxX - settings.minX) + settings.minX,
             y: Math.random() * (settings.maxY - settings.minY) + settings.minY
@@ -45,7 +47,7 @@ class Robot {
         // Keep track of last use
         this.lastCommandTime = Date.now();
 
-        console.log(`Robot with MAC ${this.mac} created`);
+        this.debug(`Robot with MAC ${this.mac} created`);
     }
 
     /**
@@ -87,7 +89,8 @@ class Robot {
             //this.sendToServer(msg);
         }
 
-        console.log(msg);
+        this.debug(msg);
+
         // Keep robot from timing out if in use
         this.lastCommandTime = Date.now();
     }
