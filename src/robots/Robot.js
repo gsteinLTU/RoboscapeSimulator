@@ -110,6 +110,16 @@ class Robot {
         Matter.Body.applyForce(this.body, Matter.Vector.add(this.body.position, vleft), Matter.Vector.mult(vup, v1));
         Matter.Body.applyForce(this.body, Matter.Vector.sub(this.body.position, vleft), Matter.Vector.mult(vup, v2));
     }
+
+    /**
+     * Shut down this robot
+     */
+    close() {
+        this.debug('Stopping robot...');
+        clearInterval(this.driveInterval);
+        clearInterval(this.heartbeatInterval);
+        this.socket.close();
+    }
 }
 
 module.exports = Robot;

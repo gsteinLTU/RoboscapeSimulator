@@ -65,11 +65,6 @@ function socketMain(io) {
                 sendFullUpdate(io.to(testRoom.roomID));
             }
         });
-
-        // Clean up on disconnect
-        socket.on('disconnect', () => {
-            clearInterval(updateInterval);
-        });
     });
 }
 

@@ -97,6 +97,7 @@ class Room {
 
     /**
      * Removes robots that have not received a command recently
+     * @returns {Boolean} Whether robots were removed
      */
     removeDeadRobots() {
         let deadRobots = this.robots.filter(robot => {
@@ -110,7 +111,17 @@ class Room {
             );
             this.robots = _.without(this.robots, ...deadRobots);
             this.bodies = _.without(this.bodies, ...deadRobots.map(robot => robot.body));
+
+            // Cleanup
+            deadRobots.forEach(robot => {
+                robot.close();
+                World.remove(this.engine.world, robot.body);
+            });
+
+            return true;
         }
+
+        return false;
     }
 }
 
