@@ -42,6 +42,9 @@ class Robot {
         // Start driving
         this.driveInterval = setInterval(this.drive.bind(this), 1000 / 60);
 
+        // Keep track of last use
+        this.lastCommandTime = Date.now();
+
         console.log(`Robot with MAC ${this.mac} created`);
     }
 
@@ -83,6 +86,10 @@ class Robot {
 
             //this.sendToServer(msg);
         }
+
+        console.log(msg);
+        // Keep robot from timing out if in use
+        this.lastCommandTime = Date.now();
     }
 
     /**

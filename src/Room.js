@@ -2,14 +2,24 @@ const Matter = require('matter-js');
 const Engine = Matter.Engine,
     World = Matter.World,
     Bodies = Matter.Bodies;
+const _ = require('lodash');
+
 const Robot = require('./robots/Robot');
 
+const defaultSettings = {
+    robotKeepAliveTime: 1000 * 60 * 1,
+    fps: 60
+};
+
 class Room {
-    constructor() {
+    constructor(settings = {}) {
+        debug.log(`Creating room ${this.roomID}`);
+
+        this.settings = _.defaults(settings, defaultSettings);
+
         this.engine = Engine.create();
         this.engine.world.gravity.y = 0;
 
-        this.settings = { fps: 60 };
         const boxSize = 80;
         const groundWidth = 800;
 
@@ -76,5 +86,7 @@ class Room {
         return bot;
     }
 }
+
+Room.existingIDs = [];
 
 module.exports = Room;

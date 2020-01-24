@@ -14,6 +14,40 @@ function socketMain(io) {
     // Create a virtual environment for this session
     var testRoom = new Room();
 
+    function sendFullUpdate(socket) {
+        socket.emit(
+            'fullUpdate',
+            _.keyBy(testRoom.getBodies(false), body => body.label)
+        );
+    }
+
+    function sendUpdate(socket) {
+        let updateBodies = testRoom.getBodies(true);
+
+        if (updateBodies.length > 0) {
+            socket.emit(
+                'update',
+                _.keyBy(updateBodies, body => body.label)
+            );
+        }
+    }
+
+    let updateInterval = setInterval(() => {
+        // Check for dead bots
+        let deadRobots = testRoom.robots.filter(robot => {
+            return testRoom.settings.robotKeepAliveTime > 0 && Date.now() - robot.lastCommandTime > testRoom.settings.robotKeepAliveTime;
+        });
+
+        if (deadRobots.length > 0) {
+            console.log('Dead robots: ', deadRobots);
+            testRoom.robots = _.without(testRoom.robots, ...deadRobots);
+            testRoom.bodies = _.without(testRoom.bodies, ...deadRobots.map(robot => robot.body));
+            sendFullUpdate(io.to('testroom'));
+        } else {
+            sendUpdate(io.to('testroom'));
+        }
+    }, 1000 / settings.updateRate);
+
     io.on('connect', socket => {
         console.log(`Socket ${socket.id} connected`);
         socket.join('testroom');
@@ -22,33 +56,19 @@ function socketMain(io) {
         let robot = null;
 
         if (testRoom.robots.length < settings.maxRobots) {
+            // Add new robot and tell everyone about it
             robot = testRoom.addRobot();
+            sendFullUpdate(io.to('testroom'));
+        } else {
+            // Begin sending updates
+            sendFullUpdate(socket);
         }
-
-        // Begin sending updates
-        socket.emit(
-            'fullUpdate',
-            _.keyBy(testRoom.getBodies(false), body => body.label)
-        );
-        let updateInterval = setInterval(() => {
-            let updateBodies = testRoom.getBodies(true);
-
-            if (updateBodies.length > 0) {
-                socket.emit(
-                    'update',
-                    _.keyBy(updateBodies, body => body.label)
-                );
-            }
-        }, 1000 / settings.updateRate);
 
         // Temporary feature to reset example environment
         socket.on('reset', confirm => {
             if (confirm) {
                 testRoom = new Room();
-                io.to('testroom').emit(
-                    'fullUpdate',
-                    _.keyBy(testRoom.getBodies(false), body => body.label)
-                );
+                sendFullUpdate(io.to('testroom'));
             }
         });
 
