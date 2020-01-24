@@ -87,12 +87,12 @@ class Robot {
             };
 
             //this.sendToServer(msg);
+
+            // Keep robot from timing out if in use
+            this.lastCommandTime = Date.now();
         }
 
         this.debug(msg);
-
-        // Keep robot from timing out if in use
-        this.lastCommandTime = Date.now();
     }
 
     /**
