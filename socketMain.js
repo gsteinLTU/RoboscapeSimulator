@@ -36,15 +36,15 @@ function socketMain(io) {
     let updateInterval = setInterval(() => {
         // Check for dead bots
         if (testRoom.removeDeadRobots() !== false) {
-            sendFullUpdate(io.to('testroom'));
+            sendFullUpdate(io.to(testRoom.roomID));
         } else {
-            sendUpdate(io.to('testroom'));
+            sendUpdate(io.to(testRoom.roomID));
         }
     }, 1000 / settings.updateRate);
 
     io.on('connect', socket => {
         debug(`Socket ${socket.id} connected`);
-        socket.join('testroom');
+        socket.join(testRoom.roomID);
 
         // Create robot if not too many
         let robot = null;
@@ -52,7 +52,7 @@ function socketMain(io) {
         if (testRoom.robots.length < settings.maxRobots) {
             // Add new robot and tell everyone about it
             robot = testRoom.addRobot();
-            sendFullUpdate(io.to('testroom'));
+            sendFullUpdate(io.to(testRoom.roomID));
         } else {
             // Begin sending updates
             sendFullUpdate(socket);
@@ -62,13 +62,8 @@ function socketMain(io) {
         socket.on('reset', confirm => {
             if (confirm) {
                 testRoom = new Room();
-                sendFullUpdate(io.to('testroom'));
+                sendFullUpdate(io.to(testRoom.roomID));
             }
-        });
-
-        // Temporary feature to demonstrate input from VR
-        socket.on('controllerInput', data => {
-            robot.sendToServer('F0');
         });
 
         // Clean up on disconnect
