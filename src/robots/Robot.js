@@ -6,7 +6,7 @@ const dgram = require('dgram');
 const { generateRandomMAC } = require('../util');
 
 const defaultSettings = {
-    server: '52.73.65.98',
+    server: process.env.SERVER || '52.73.65.98',
     port: 1973,
     width: 20,
     height: 40,
