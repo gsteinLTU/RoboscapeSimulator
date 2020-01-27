@@ -14,11 +14,15 @@ const defaultSettings = {
 
 class Room {
     constructor(settings = {}) {
+        // Get unique ID for this Room
         this.roomID = shortid.generate();
 
         while (Room.existingIDs.indexOf(this.roomID) !== -1) {
             this.roomID = shortid.generate();
         }
+
+        this.bodies = [];
+        this.robots = [];
 
         this.debug = require('debug')(`roboscape-sim:Room-${this.roomID}`);
         this.debug('Creating room');
@@ -28,13 +32,25 @@ class Room {
         this.engine = Engine.create();
         this.engine.world.gravity.y = 0;
 
+        // Load environment objects
+        this.setupEnvironment();
+
+        // Begin update loop
+        this.updateInterval = setInterval(
+            function() {
+                Engine.update(this.engine, 1000 / this.settings.fps);
+            }.bind(this),
+            1000 / this.settings.fps
+        );
+    }
+
+    /**
+     * Add initial objects to room
+     */
+    setupEnvironment() {
         const boxSize = 80;
         const groundWidth = 800;
 
-        this.bodies = [];
-        this.robots = [];
-
-        // Create bounds
         var ground = Bodies.rectangle(groundWidth / 2 + boxSize, groundWidth, groundWidth, boxSize, { isStatic: true, label: 'ground' });
         ground.width = groundWidth;
         ground.height = boxSize;
@@ -57,16 +73,11 @@ class Room {
         box.width = boxSize;
         box.height = boxSize;
         this.bodies.push(box);
-
-        World.add(this.engine.world, this.bodies);
-
-        // Begin update loop
-        this.updateInterval = setInterval(
-            function() {
-                Engine.update(this.engine, 1000 / this.settings.fps);
-            }.bind(this),
-            1000 / this.settings.fps
-        );
+        World.add(this.engine.world, ground);
+        World.add(this.engine.world, ground2);
+        World.add(this.engine.world, ground3);
+        World.add(this.engine.world, ground4);
+        World.add(this.engine.world, box);
     }
 
     /**
