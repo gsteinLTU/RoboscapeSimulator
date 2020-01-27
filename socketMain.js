@@ -8,22 +8,24 @@ const settings = {
     maxRobots: 5
 };
 
+const rooms = [];
+
 /**
  * @param {SocketIO.Server} io
  */
 function socketMain(io) {
-    // Create a virtual environment for this session
-    var testRoom = new Room();
+    // Create a virtual environment
+    rooms.push(new Room());
 
-    function sendFullUpdate(socket) {
+    function sendFullUpdate(socket, room) {
         socket.emit(
             'fullUpdate',
-            _.keyBy(testRoom.getBodies(false), body => body.label)
+            _.keyBy(room.getBodies(false), body => body.label)
         );
     }
 
-    function sendUpdate(socket) {
-        let updateBodies = testRoom.getBodies(true);
+    function sendUpdate(socket, room) {
+        let updateBodies = room.getBodies(true);
 
         if (updateBodies.length > 0) {
             socket.emit(
@@ -34,35 +36,55 @@ function socketMain(io) {
     }
 
     let updateInterval = setInterval(() => {
-        // Check for dead bots
-        if (testRoom.removeDeadRobots() !== false) {
-            sendFullUpdate(io.to(testRoom.roomID));
-        } else {
-            sendUpdate(io.to(testRoom.roomID));
+        for (let room of rooms) {
+            // Check for dead bots
+            if (room.removeDeadRobots() !== false) {
+                sendFullUpdate(io.to(room.roomID), room);
+            } else {
+                sendUpdate(io.to(room.roomID), room);
+            }
         }
     }, 1000 / settings.updateRate);
 
     io.on('connect', socket => {
         debug(`Socket ${socket.id} connected`);
-        socket.join(testRoom.roomID);
 
-        // Create robot if not too many
-        let robot = null;
+        socket.emit(
+            'availableRooms',
+            rooms.map(room => room.roomID)
+        );
 
-        if (testRoom.robots.length < settings.maxRobots) {
-            // Add new robot and tell everyone about it
-            robot = testRoom.addRobot();
-            sendFullUpdate(io.to(testRoom.roomID));
-        } else {
-            // Begin sending updates
-            sendFullUpdate(socket);
-        }
+        // Allow joining a room
+        socket.on('joinRoom', data => {
+            let roomID = data.roomID;
 
-        // Temporary feature to reset example environment
-        socket.on('reset', confirm => {
-            if (confirm) {
-                testRoom = new Room();
-                sendFullUpdate(io.to(testRoom.roomID));
+            // Check that room is valid
+            if (rooms.map(room => room.roomID).indexOf(roomID) !== -1) {
+                let room = rooms[rooms.map(room => room.roomID).indexOf(roomID)];
+
+                socket.join(roomID);
+
+                // Create robot if not too many
+                let robot = null;
+
+                if (room.robots.length < settings.maxRobots) {
+                    // Add new robot and tell everyone about it
+                    robot = room.addRobot();
+                    sendFullUpdate(io.to(roomID), room);
+                } else {
+                    // Begin sending updates
+                    sendFullUpdate(socket, room);
+                }
+
+                // Temporary feature to reset example environment
+                socket.on('reset', confirm => {
+                    if (confirm) {
+                        room.close();
+                        rooms[roomID] = new Room({ roomID: roomID });
+                        room = rooms[roomID];
+                        sendFullUpdate(io.to(roomID), room);
+                    }
+                });
             }
         });
     });

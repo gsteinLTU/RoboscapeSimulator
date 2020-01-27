@@ -11,8 +11,19 @@ canvas.height = wHeight;
 let socket = io.connect();
 let bodies = {};
 let nextBodies = {};
+let availableRooms = [];
 let lastUpdateTime = Date.now();
 let nextUpdateTime = Date.now();
+
+socket.on('availableRooms', data => {
+    availableRooms = data;
+
+    //$('#rooms-select').append('<option value="create">Create a new room</option>');
+
+    for (let room of availableRooms) {
+        $('#rooms-select').append(`<option value=${room}>${room}</option>`);
+    }
+});
 
 // Handle incremental updates
 socket.on('update', data => {
@@ -74,3 +85,13 @@ window.addEventListener('resize', () => {
 
 // Start running immediately
 draw();
+
+$('#modal').modal({ keyboard: false, backdrop: 'static' });
+$('#rooms-select').change(e => {
+    $('#room-join-button').prop('disabled', e.target.value == '-1');
+});
+
+$('#room-join-button').click(() => {
+    socket.emit('joinRoom', { roomID: $('#rooms-select').val() });
+    $('#modal').modal('hide');
+});

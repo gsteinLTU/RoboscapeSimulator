@@ -15,10 +15,14 @@ const defaultSettings = {
 class Room {
     constructor(settings = {}) {
         // Get unique ID for this Room
-        this.roomID = shortid.generate();
-
-        while (Room.existingIDs.indexOf(this.roomID) !== -1) {
+        if (settings.roomID == undefined) {
             this.roomID = shortid.generate();
+
+            while (Room.existingIDs.indexOf(this.roomID) !== -1) {
+                this.roomID = shortid.generate();
+            }
+        } else {
+            this.roomID = settings.roomID;
         }
 
         this.bodies = [];
@@ -133,6 +137,19 @@ class Room {
         }
 
         return false;
+    }
+
+    /**
+     * Destroy this room
+     */
+    close() {
+        this.debug('Closing room...');
+
+        this.robots.forEach(robot => {
+            robot.close();
+        });
+
+        clearInterval(this.updateInterval);
     }
 }
 
