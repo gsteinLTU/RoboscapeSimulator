@@ -28,14 +28,14 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"
         ></script>
-        <div id="modal" class="modal" tabindex="-1" role="dialog">
+        <div id="room-modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2 class="modal-title">Join Room</h2>
                     </div>
                     <div class="modal-body">
-                        <p>Please select a room to join<!--, or create a new room:--></p>
+                        <p>Please select a room to join<span class="create-text">, or create a new room</span>:</p>
                         <div class="input-group">
                             <select class="custom-select" id="rooms-select">
                                 <option selected value="-1">Choose...</option>
@@ -43,9 +43,15 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-lg btn-primary" id="room-join-button" disabled>Join<!--/Create--></button>
+                        <button type="button" class="btn btn-lg btn-primary" id="room-join-button" disabled>Join<span class="create-text">/Create</span></button>
                     </div>
                 </div>
+            </div>
+            <div class="alert alert-danger" id="room-error" role="alert">
+                <div class="alert-header">
+                    <strong class="mr-auto text-danger">Error joining room</strong>
+                </div>
+                <div class="alert-body">Please try again later.</div>
             </div>
         </div>
         <script src="/js/main.js"></script>

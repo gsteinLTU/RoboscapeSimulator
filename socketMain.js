@@ -5,7 +5,8 @@ const Room = require('./src/Room');
 
 const settings = {
     updateRate: 30,
-    maxRobots: 5
+    maxRobots: 5,
+    maxRooms: 5
 };
 
 const rooms = [];
@@ -14,9 +15,6 @@ const rooms = [];
  * @param {SocketIO.Server} io
  */
 function socketMain(io) {
-    // Create a virtual environment
-    rooms.push(new Room());
-
     function sendFullUpdate(socket, room) {
         socket.emit(
             'fullUpdate',
@@ -35,6 +33,30 @@ function socketMain(io) {
         }
     }
 
+    function joinRoom(roomID, socket) {
+        let room = rooms[rooms.map(room => room.roomID).indexOf(roomID)];
+        socket.join(roomID);
+
+        // Create robot if not too many
+        if (room.robots.length < settings.maxRobots) {
+            // Add new robot and tell everyone about it
+            room.addRobot();
+            sendFullUpdate(io.to(roomID), room);
+        } else {
+            // Begin sending updates
+            sendFullUpdate(socket, room);
+        }
+        // Temporary feature to reset example environment
+        socket.on('reset', confirm => {
+            if (confirm) {
+                room.close();
+                rooms[roomID] = new Room({ roomID: roomID });
+                room = rooms[roomID];
+                sendFullUpdate(io.to(roomID), room);
+            }
+        });
+    }
+
     let updateInterval = setInterval(() => {
         for (let room of rooms) {
             // Check for dead bots
@@ -49,42 +71,37 @@ function socketMain(io) {
     io.on('connect', socket => {
         debug(`Socket ${socket.id} connected`);
 
-        socket.emit(
-            'availableRooms',
-            rooms.map(room => room.roomID)
-        );
+        socket.emit('availableRooms', { availableRooms: rooms.map(room => room.roomID), canCreate: rooms.length < settings.maxRooms });
+
+        let inRoom = false;
 
         // Allow joining a room
-        socket.on('joinRoom', data => {
-            let roomID = data.roomID;
+        socket.on('joinRoom', (data, cb) => {
+            if (!inRoom) {
+                let roomID = data.roomID;
 
-            // Check that room is valid
-            if (rooms.map(room => room.roomID).indexOf(roomID) !== -1) {
-                let room = rooms[rooms.map(room => room.roomID).indexOf(roomID)];
+                // Check that room is valid
+                if (rooms.map(room => room.roomID).indexOf(roomID) !== -1) {
+                    joinRoom(roomID, socket);
+                    inRoom = true;
+                    cb(roomID);
+                } else if (roomID === 'create' && rooms.length < settings.maxRooms) {
+                    debug(`Socket ${socket.id} requested to create room`);
+                    // Create a virtual environment
+                    let tempRoom = new Room();
+                    rooms.push(tempRoom);
+                    roomID = tempRoom.roomID;
 
-                socket.join(roomID);
-
-                // Create robot if not too many
-                let robot = null;
-
-                if (room.robots.length < settings.maxRobots) {
-                    // Add new robot and tell everyone about it
-                    robot = room.addRobot();
-                    sendFullUpdate(io.to(roomID), room);
+                    joinRoom(roomID, socket);
+                    cb(roomID);
+                    inRoom = true;
                 } else {
-                    // Begin sending updates
-                    sendFullUpdate(socket, room);
+                    debug(`Socket ${socket.id} attempted to join invalid room!`);
+                    cb(false);
                 }
-
-                // Temporary feature to reset example environment
-                socket.on('reset', confirm => {
-                    if (confirm) {
-                        room.close();
-                        rooms[roomID] = new Room({ roomID: roomID });
-                        room = rooms[roomID];
-                        sendFullUpdate(io.to(roomID), room);
-                    }
-                });
+            } else {
+                debug(`Socket ${socket.id} attempted to join second room!`);
+                cb(false);
             }
         });
     });

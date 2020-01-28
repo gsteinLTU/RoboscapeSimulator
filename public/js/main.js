@@ -16,9 +16,15 @@ let lastUpdateTime = Date.now();
 let nextUpdateTime = Date.now();
 
 socket.on('availableRooms', data => {
-    availableRooms = data;
+    availableRooms = data.availableRooms;
 
-    //$('#rooms-select').append('<option value="create">Create a new room</option>');
+    $('#rooms-select').html('<option value="-1" selected>Choose...</option>');
+    if (data.canCreate) {
+        $('.create-text').show();
+        $('#rooms-select').append('<option value="create">Create a new room</option>');
+    } else {
+        $('.create-text').hide();
+    }
 
     for (let room of availableRooms) {
         $('#rooms-select').append(`<option value=${room}>${room}</option>`);
@@ -39,6 +45,10 @@ socket.on('fullUpdate', data => {
     nextBodies = data;
     lastUpdateTime = Date.now();
     nextUpdateTime = Date.now();
+});
+
+socket.on('error', error => {
+    console.log(error);
 });
 
 function reset() {
@@ -85,13 +95,18 @@ window.addEventListener('resize', () => {
 
 // Start running immediately
 draw();
-
-$('#modal').modal({ keyboard: false, backdrop: 'static' });
+$('#room-modal').modal({ keyboard: false, backdrop: 'static' });
 $('#rooms-select').change(e => {
     $('#room-join-button').prop('disabled', e.target.value == '-1');
 });
 
 $('#room-join-button').click(() => {
-    socket.emit('joinRoom', { roomID: $('#rooms-select').val() });
-    $('#modal').modal('hide');
+    socket.emit('joinRoom', { roomID: $('#rooms-select').val() }, result => {
+        console.log(result);
+        if (result !== false) {
+            $('#room-modal').modal('hide');
+        } else {
+            $('#room-error').show();
+        }
+    });
 });
