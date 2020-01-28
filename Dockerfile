@@ -12,3 +12,4 @@ COPY . .
 ENV DEBUG=roboscape-sim:*
 
 EXPOSE 8000
+CMD ["sh", "-c", "node index.js"]
