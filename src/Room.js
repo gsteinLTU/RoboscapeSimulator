@@ -87,12 +87,19 @@ class Room {
     /**
      * Returns an array of the objects in the scene
      */
-    getBodies(onlySleeping = true) {
-        return this.bodies
-            .filter(body => !onlySleeping || (!body.isSleeping && !body.isStatic))
-            .map(body => {
+    getBodies(onlySleeping = true, allData = false) {
+        let relevantBodies = this.bodies.filter(body => !onlySleeping || (!body.isSleeping && !body.isStatic));
+
+        if (allData) {
+            return relevantBodies.map(body => {
                 return { label: body.label, pos: body.position, vel: body.velocity, angle: body.angle, anglevel: body.angularVelocity, width: body.width, height: body.height };
             });
+        } else {
+            return relevantBodies.map(body => {
+                // Only position/orientation for update
+                return { label: body.label, pos: body.position, angle: body.angle };
+            });
+        }
     }
 
     /**

@@ -4,7 +4,7 @@ const debug = require('debug')('roboscape-sim:socketMain');
 const Room = require('./src/Room');
 
 const settings = {
-    updateRate: 30,
+    updateRate: 20,
     maxRobots: 5,
     maxRooms: 5
 };
@@ -18,12 +18,12 @@ function socketMain(io) {
     function sendFullUpdate(socket, room) {
         socket.emit(
             'fullUpdate',
-            _.keyBy(room.getBodies(false), body => body.label)
+            _.keyBy(room.getBodies(false, true), body => body.label)
         );
     }
 
     function sendUpdate(socket, room) {
-        let updateBodies = room.getBodies(true);
+        let updateBodies = room.getBodies(true, false);
 
         if (updateBodies.length > 0) {
             socket.emit(

@@ -11,6 +11,7 @@ canvas.height = wHeight;
 let socket = io.connect();
 let bodies = {};
 let nextBodies = {};
+let bodiesInfo = {};
 let availableRooms = [];
 let lastUpdateTime = Date.now();
 let nextUpdateTime = Date.now();
@@ -41,6 +42,7 @@ socket.on('update', data => {
 
 // Handle full updates
 socket.on('fullUpdate', data => {
+    bodiesInfo = data;
     bodies = data;
     nextBodies = data;
     lastUpdateTime = Date.now();
@@ -67,6 +69,7 @@ function draw() {
         context.fillStyle = '#222222';
 
         let { x, y } = body.pos;
+        let { height, width } = bodiesInfo[label];
         let angle = body.angle;
 
         // Extrapolate/Interpolate position and rotation
@@ -77,7 +80,7 @@ function draw() {
         // Draw rect for body
         context.translate(x, y);
         context.rotate(angle);
-        context.fillRect(-body.width / 2, -body.height / 2, body.width, body.height);
+        context.fillRect(-width / 2, -height / 2, width, height);
         context.rotate(-angle);
         context.translate(-x, -y);
     }
