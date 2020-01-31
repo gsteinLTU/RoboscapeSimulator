@@ -1,4 +1,4 @@
-ARG BASE=node:lts
+ARG BASE=node:lts-alpine
 FROM $BASE
 
 WORKDIR /source/roboscape-simulator
