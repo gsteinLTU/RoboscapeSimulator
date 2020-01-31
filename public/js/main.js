@@ -21,6 +21,7 @@ const images = {};
 images['parallax_robot'] = new Image();
 images['parallax_robot'].src = '/img/parallax_robot.png';
 images['parallax_robot'].offsetAngle = Math.PI;
+images['parallax_robot'].offset = { left: -0.6, right: 0.6, top: -0.8, bottom: 0.9 };
 
 socket.on('availableRooms', data => {
     availableRooms = data.availableRooms;
@@ -91,7 +92,13 @@ function draw() {
             context.rotate(angle + imageData.offsetAngle);
 
             // Draw sprite
-            context.drawImage(imageData, -width / 2, -height / 2, width, height);
+            context.drawImage(
+                imageData,
+                -width / 2 + width * imageData.offset.left,
+                -height / 2 + width * imageData.offset.top,
+                width + width * imageData.offset.right,
+                height + width * imageData.offset.bottom
+            );
 
             // Undo transform
             context.rotate(-angle - imageData.offsetAngle);
