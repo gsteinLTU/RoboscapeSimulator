@@ -55,28 +55,38 @@ class Room {
         const boxSize = 80;
         const groundWidth = 800;
 
+        // Add walls
         var ground = Bodies.rectangle(groundWidth / 2 + boxSize, groundWidth, groundWidth, boxSize, { isStatic: true, label: 'ground' });
         ground.width = groundWidth;
         ground.height = boxSize;
+        ground.image = 'wall';
         this.bodies.push(ground);
+
         var ground2 = Bodies.rectangle(groundWidth / 2 + boxSize, boxSize, groundWidth, boxSize, { isStatic: true, label: 'ground2' });
         ground2.width = groundWidth;
         ground2.height = boxSize;
+        ground2.image = 'wall';
         this.bodies.push(ground2);
+
         var ground3 = Bodies.rectangle(boxSize, groundWidth / 2 + boxSize / 2, boxSize, groundWidth, { isStatic: true, label: 'ground3' });
         ground3.width = boxSize;
         ground3.height = groundWidth;
+        ground3.image = 'wall';
         this.bodies.push(ground3);
+
         var ground4 = Bodies.rectangle(groundWidth + boxSize, groundWidth / 2 + boxSize / 2, boxSize, groundWidth, { isStatic: true, label: 'ground4' });
         ground4.width = boxSize;
         ground4.height = groundWidth;
+        ground4.image = 'wall';
         this.bodies.push(ground4);
 
         // Demo box
         var box = Bodies.rectangle(groundWidth / 2 - boxSize / 2, groundWidth / 2 - boxSize / 2, boxSize, boxSize, { label: 'box', frictionAir: 0.7 });
         box.width = boxSize;
         box.height = boxSize;
+        box.image = 'box';
         this.bodies.push(box);
+
         World.add(this.engine.world, ground);
         World.add(this.engine.world, ground2);
         World.add(this.engine.world, ground3);
@@ -92,7 +102,16 @@ class Room {
 
         if (allData) {
             return relevantBodies.map(body => {
-                return { label: body.label, pos: body.position, vel: body.velocity, angle: body.angle, anglevel: body.angularVelocity, width: body.width, height: body.height };
+                return {
+                    label: body.label,
+                    pos: body.position,
+                    vel: body.velocity,
+                    angle: body.angle,
+                    anglevel: body.angularVelocity,
+                    width: body.width,
+                    height: body.height,
+                    image: body.image
+                };
             });
         } else {
             return relevantBodies.map(body => {

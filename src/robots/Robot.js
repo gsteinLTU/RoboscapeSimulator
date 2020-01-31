@@ -13,7 +13,8 @@ const defaultSettings = {
     minX: 100,
     maxX: 700,
     minY: 100,
-    maxY: 700
+    maxY: 700,
+    image: 'parallax_robot'
 };
 class Robot {
     constructor(mac = null, position = null, settings = {}) {
@@ -32,6 +33,7 @@ class Robot {
         this.body = Bodies.rectangle(position.x, position.y, settings.width, settings.height, { label: this.mac, friction: 0.6, frictionAir: 0.45, frictionStatic: 0 });
         this.body.width = settings.width;
         this.body.height = settings.height;
+        this.body.image = settings.image;
         this.setSpeed = { left: 0, right: 0 };
 
         // Connect to RoboScape server to get commands

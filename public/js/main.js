@@ -16,6 +16,12 @@ let availableRooms = [];
 let lastUpdateTime = Date.now();
 let nextUpdateTime = Date.now();
 
+// Load sprites
+const images = {};
+images['parallax_robot'] = new Image();
+images['parallax_robot'].src = '/img/parallax_robot.png';
+images['parallax_robot'].offsetAngle = Math.PI;
+
 socket.on('availableRooms', data => {
     availableRooms = data.availableRooms;
 
@@ -69,7 +75,7 @@ function draw() {
         context.fillStyle = '#222222';
 
         let { x, y } = body.pos;
-        let { height, width } = bodiesInfo[label];
+        let { height, width, image } = bodiesInfo[label];
         let angle = body.angle;
 
         // Extrapolate/Interpolate position and rotation
@@ -77,12 +83,31 @@ function draw() {
         y += ((nextBodies[label].pos.y - y) * (frameTime - lastUpdateTime)) / Math.max(1, nextUpdateTime - lastUpdateTime);
         angle += ((nextBodies[label].angle - angle) * (frameTime - lastUpdateTime)) / Math.max(1, nextUpdateTime - lastUpdateTime);
 
-        // Draw rect for body
-        context.translate(x, y);
-        context.rotate(angle);
-        context.fillRect(-width / 2, -height / 2, width, height);
-        context.rotate(-angle);
-        context.translate(-x, -y);
+        if (images[image] !== undefined) {
+            let imageData = images[image];
+
+            // Transform
+            context.translate(x, y);
+            context.rotate(angle + imageData.offsetAngle);
+
+            // Draw sprite
+            context.drawImage(imageData, -width / 2, -height / 2, width, height);
+
+            // Undo transform
+            context.rotate(-angle - imageData.offsetAngle);
+            context.translate(-x, -y);
+        } else {
+            // Transform
+            context.translate(x, y);
+            context.rotate(angle);
+
+            // Default to rectangle
+            context.fillRect(-width / 2, -height / 2, width, height);
+
+            // Undo transform
+            context.rotate(-angle);
+            context.translate(-x, -y);
+        }
     }
 
     requestAnimationFrame(draw);
