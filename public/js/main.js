@@ -88,28 +88,5 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
-// Window resize handler
-window.addEventListener('resize', () => {
-    wHeight = $(window).height();
-    wWidth = $(window).width();
-    canvas.width = wWidth;
-    canvas.height = wHeight;
-});
-
 // Start running immediately
 draw();
-$('#room-modal').modal({ keyboard: false, backdrop: 'static' });
-$('#rooms-select').change(e => {
-    $('#room-join-button').prop('disabled', e.target.value == '-1');
-});
-
-$('#room-join-button').click(() => {
-    socket.emit('joinRoom', { roomID: $('#rooms-select').val() }, result => {
-        console.log(result);
-        if (result !== false) {
-            $('#room-modal').modal('hide');
-        } else {
-            $('#room-error').show();
-        }
-    });
-});
