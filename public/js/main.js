@@ -21,7 +21,7 @@ const images = {};
 images['parallax_robot'] = new Image();
 images['parallax_robot'].src = '/img/parallax_robot.png';
 images['parallax_robot'].offsetAngle = Math.PI;
-images['parallax_robot'].offset = { left: -0.6, right: 0.6, top: -0.8, bottom: 0.9 };
+images['parallax_robot'].offset = { left: -0.6, right: 0.6, top: -1, bottom: 1.1 };
 
 socket.on('availableRooms', data => {
     availableRooms = data.availableRooms;
