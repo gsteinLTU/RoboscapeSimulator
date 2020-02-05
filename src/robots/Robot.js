@@ -1,5 +1,7 @@
 const Matter = require('matter-js');
 const Bodies = Matter.Bodies;
+const Vector = Matter.Vector;
+const Body = Matter.Body;
 const _ = require('lodash');
 const dgram = require('dgram');
 
@@ -103,14 +105,14 @@ class Robot {
     drive() {
         let v1 = this.setSpeed.left;
         let v2 = this.setSpeed.right;
-        let vleft = Matter.Vector.create(1, 0);
-        vleft = Matter.Vector.rotate(vleft, this.body.angle);
-        let vup = Matter.Vector.create(0, 1);
-        vup = Matter.Vector.rotate(vup, this.body.angle);
+        let vleft = Vector.create(1, 0);
+        vleft = Vector.rotate(vleft, this.body.angle);
+        let vup = Vector.create(0, 1);
+        vup = Vector.rotate(vup, this.body.angle);
 
         // Apply force
-        Matter.Body.applyForce(this.body, Matter.Vector.add(this.body.position, vleft), Matter.Vector.mult(vup, v1));
-        Matter.Body.applyForce(this.body, Matter.Vector.sub(this.body.position, vleft), Matter.Vector.mult(vup, v2));
+        Body.applyForce(this.body, Vector.add(this.body.position, vleft), Vector.mult(vup, v1));
+        Body.applyForce(this.body, Vector.sub(this.body.position, vleft), Vector.mult(vup, v2));
     }
 
     /**

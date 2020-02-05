@@ -25,7 +25,6 @@ class Room {
             this.roomID = settings.roomID;
         }
 
-        this.bodies = [];
         this.robots = [];
 
         this.debug = require('debug')(`roboscape-sim:Room-${this.roomID}`);
@@ -60,32 +59,27 @@ class Room {
         ground.width = groundWidth;
         ground.height = boxSize;
         ground.image = 'wall';
-        this.bodies.push(ground);
 
         var ground2 = Bodies.rectangle(groundWidth / 2 + boxSize, boxSize, groundWidth, boxSize, { isStatic: true, label: 'ground2' });
         ground2.width = groundWidth;
         ground2.height = boxSize;
         ground2.image = 'wall';
-        this.bodies.push(ground2);
 
         var ground3 = Bodies.rectangle(boxSize, groundWidth / 2 + boxSize / 2, boxSize, groundWidth, { isStatic: true, label: 'ground3' });
         ground3.width = boxSize;
         ground3.height = groundWidth;
         ground3.image = 'wall';
-        this.bodies.push(ground3);
 
         var ground4 = Bodies.rectangle(groundWidth + boxSize, groundWidth / 2 + boxSize / 2, boxSize, groundWidth, { isStatic: true, label: 'ground4' });
         ground4.width = boxSize;
         ground4.height = groundWidth;
         ground4.image = 'wall';
-        this.bodies.push(ground4);
 
         // Demo box
         var box = Bodies.rectangle(groundWidth / 2 - boxSize / 2, groundWidth / 2 - boxSize / 2, boxSize, boxSize, { label: 'box', frictionAir: 0.7 });
         box.width = boxSize;
         box.height = boxSize;
         box.image = 'box';
-        this.bodies.push(box);
 
         World.add(this.engine.world, ground);
         World.add(this.engine.world, ground2);
@@ -98,7 +92,7 @@ class Room {
      * Returns an array of the objects in the scene
      */
     getBodies(onlySleeping = true, allData = false) {
-        let relevantBodies = this.bodies.filter(body => !onlySleeping || (!body.isSleeping && !body.isStatic));
+        let relevantBodies = this.engine.world.bodies.filter(body => !onlySleeping || (!body.isSleeping && !body.isStatic));
 
         if (allData) {
             return relevantBodies.map(body => {
@@ -130,7 +124,6 @@ class Room {
     addRobot(mac = null, position = null) {
         let bot = new ParallaxRobot(mac, position);
         this.robots.push(bot);
-        this.bodies.push(bot.body);
         World.add(this.engine.world, [bot.body]);
         this.debug(`Robot ${bot.mac} added to room`);
         return bot;
@@ -151,7 +144,6 @@ class Room {
                 deadRobots.map(robot => robot.mac)
             );
             this.robots = _.without(this.robots, ...deadRobots);
-            this.bodies = _.without(this.bodies, ...deadRobots.map(robot => robot.body));
 
             // Cleanup
             deadRobots.forEach(robot => {
