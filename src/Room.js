@@ -5,7 +5,7 @@ const Engine = Matter.Engine,
 const _ = require('lodash');
 const shortid = require('shortid');
 
-const Robot = require('./robots/Robot');
+const ParallaxRobot = require('./robots/ParallaxRobot');
 
 const defaultSettings = {
     robotKeepAliveTime: 1000 * 60 * 10,
@@ -128,7 +128,7 @@ class Room {
      * @returns {Robot} Robot created
      */
     addRobot(mac = null, position = null) {
-        let bot = new Robot(mac, position);
+        let bot = new ParallaxRobot(mac, position);
         this.robots.push(bot);
         this.bodies.push(bot.body);
         World.add(this.engine.world, [bot.body]);

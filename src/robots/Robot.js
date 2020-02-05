@@ -5,22 +5,14 @@ const dgram = require('dgram');
 
 const { generateRandomMAC } = require('../util');
 
-const defaultSettings = {
-    server: process.env.SERVER || '52.73.65.98',
-    port: 1973,
-    width: 20,
-    height: 40,
-    minX: 100,
-    maxX: 700,
-    minY: 100,
-    maxY: 700,
-    image: 'parallax_robot'
-};
+/**
+ * Represents an abstract robot
+ */
 class Robot {
     constructor(mac = null, position = null, settings = {}) {
         // Generate random new MAC address to use if none provided
         this.mac = mac || generateRandomMAC(mac);
-        this.settings = _.defaults(settings, defaultSettings);
+        this.settings = _.defaults(settings, Robot.defaultSettings);
 
         this.debug = require('debug')(`roboscape-sim:Robot-${this.mac}`);
 
@@ -75,18 +67,7 @@ class Robot {
     msgHandler(msg) {
         // Set speed command
         if (String.fromCharCode(msg[0]) == 'S') {
-            let v1 = msg.readInt16LE(1);
-            let v2 = msg.readInt16LE(3);
-            let boost = (2 * Math.abs(v1 - v2)) / (Math.abs(v1) + Math.abs(v2)) + 1;
-
-            if (Math.abs(v1) + Math.abs(v2) === 0) {
-                boost = 1;
-            }
-
-            this.setSpeed = {
-                left: (boost * (Math.sign(v1) * Math.pow(Math.abs(v1), 0.6))) / 10000,
-                right: (boost * (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6))) / 10000
-            };
+            this.updateSpeed(msg);
 
             //this.sendToServer(msg);
 
@@ -95,6 +76,25 @@ class Robot {
         }
 
         this.debug(msg);
+    }
+
+    /**
+     * Handle an incoming "set speed" message
+     * @param {Buffer} msg Message from server to this robot
+     */
+    updateSpeed(msg) {
+        let v1 = msg.readInt16LE(1);
+        let v2 = msg.readInt16LE(3);
+        let boost = (2 * Math.abs(v1 - v2)) / (Math.abs(v1) + Math.abs(v2)) + 1;
+
+        if (Math.abs(v1) + Math.abs(v2) === 0) {
+            boost = 1;
+        }
+
+        this.setSpeed = {
+            left: (boost * (Math.sign(v1) * Math.pow(Math.abs(v1), 0.6))) / 10000,
+            right: (boost * (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6))) / 10000
+        };
     }
 
     /**
@@ -123,5 +123,16 @@ class Robot {
         this.socket.close();
     }
 }
+
+Robot.defaultSettings = {
+    server: process.env.SERVER || '52.73.65.98',
+    port: 1973,
+    width: 20,
+    height: 40,
+    minX: 100,
+    maxX: 700,
+    minY: 100,
+    maxY: 700
+};
 
 module.exports = Robot;
