@@ -2,6 +2,7 @@ const Matter = require('matter-js');
 const Bodies = Matter.Bodies;
 const Vector = Matter.Vector;
 const Body = Matter.Body;
+const World = Matter.World;
 const _ = require('lodash');
 const dgram = require('dgram');
 
@@ -11,7 +12,7 @@ const { generateRandomMAC } = require('../util');
  * Represents an abstract robot
  */
 class Robot {
-    constructor(mac = null, position = null, settings = {}) {
+    constructor(mac = null, position = null, engine = null, settings = {}) {
         // Generate random new MAC address to use if none provided
         this.mac = mac || generateRandomMAC(mac);
         this.settings = _.defaults(settings, Robot.defaultSettings);
@@ -42,6 +43,9 @@ class Robot {
 
         // Keep track of last use
         this.lastCommandTime = Date.now();
+
+        // Add to world
+        World.add(engine.world, [this.body]);
 
         this.debug(`Robot with MAC ${this.mac} created`);
     }

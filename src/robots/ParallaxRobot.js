@@ -1,4 +1,7 @@
 const _ = require('lodash');
+const Matter = require('matter-js');
+const Bodies = Matter.Bodies;
+const World = Matter.World;
 
 const Robot = require('./Robot');
 
@@ -6,7 +9,7 @@ const Robot = require('./Robot');
  * Represents a Parallax ActivityBot robot
  */
 class ParallaxRobot extends Robot {
-    constructor(mac = null, position = null, settings = {}) {
+    constructor(mac = null, position = null, engine = null, settings = {}) {
         // Allow overriding sprite setting
         if (settings.image == undefined) {
             settings.image = 'parallax_robot';
@@ -14,7 +17,7 @@ class ParallaxRobot extends Robot {
 
         settings = _.defaults(settings, Robot.defaultSettings);
 
-        super(mac, position, settings);
+        super(mac, position, engine, settings);
     }
 }
 

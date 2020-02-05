@@ -122,9 +122,8 @@ class Room {
      * @returns {Robot} Robot created
      */
     addRobot(mac = null, position = null) {
-        let bot = new ParallaxRobot(mac, position);
+        let bot = new ParallaxRobot(mac, position, this.engine);
         this.robots.push(bot);
-        World.add(this.engine.world, [bot.body]);
         this.debug(`Robot ${bot.mac} added to room`);
         return bot;
     }
