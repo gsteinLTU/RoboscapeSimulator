@@ -1,7 +1,8 @@
 const Matter = require('matter-js');
 const Engine = Matter.Engine,
     World = Matter.World,
-    Bodies = Matter.Bodies;
+    Bodies = Matter.Bodies,
+    Events = Matter.Events;
 const _ = require('lodash');
 const shortid = require('shortid');
 
@@ -86,6 +87,39 @@ class Room {
         World.add(this.engine.world, ground3);
         World.add(this.engine.world, ground4);
         World.add(this.engine.world, box);
+
+        // Setup collision events
+        Events.on(this.engine, 'collisionStart', function(event) {
+            var pairs = event.pairs;
+
+            for (var i = 0; i < pairs.length; i++) {
+                var pair = pairs[i];
+
+                if (pair.bodyA.onCollisionStart !== undefined) {
+                    pair.bodyA.onCollisionStart();
+                }
+
+                if (pair.bodyB.onCollisionStart !== undefined) {
+                    pair.bodyB.onCollisionStart();
+                }
+            }
+        });
+
+        Events.on(this.engine, 'collisionEnd', function(event) {
+            var pairs = event.pairs;
+
+            for (var i = 0; i < pairs.length; i++) {
+                var pair = pairs[i];
+
+                if (pair.bodyA.onCollisionEnd !== undefined) {
+                    pair.bodyA.onCollisionEnd();
+                }
+
+                if (pair.bodyB.onCollisionEnd !== undefined) {
+                    pair.bodyB.onCollisionEnd();
+                }
+            }
+        });
     }
 
     /**

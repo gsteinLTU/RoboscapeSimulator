@@ -1,8 +1,8 @@
 const Matter = require('matter-js');
-const Bodies = Matter.Bodies;
-const Vector = Matter.Vector;
-const Body = Matter.Body;
-const World = Matter.World;
+const Bodies = Matter.Bodies,
+    Body = Matter.Body,
+    Vector = Matter.Vector,
+    World = Matter.World;
 const _ = require('lodash');
 const dgram = require('dgram');
 
@@ -25,10 +25,22 @@ class Robot {
         };
 
         // Create physics object
-        this.body = Bodies.rectangle(position.x, position.y, settings.width, settings.height, { label: this.mac, friction: 0.6, frictionAir: 0.45, frictionStatic: 0 });
-        this.body.width = settings.width;
-        this.body.height = settings.height;
-        this.body.image = settings.image;
+        this.mainBody = Bodies.rectangle(position.x, position.y, settings.width, settings.height, { label: `${this.mac}_main`, friction: 0.6, frictionAir: 0.45, frictionStatic: 0 });
+        this.body = Body.create({
+            label: this.mac,
+            position: { x: position.x, y: position.y },
+            parts: [this.mainBody],
+            friction: 0.6,
+            frictionAir: 0.45,
+            frictionStatic: 0
+        });
+
+        this.mainBody.width = settings.width;
+        this.mainBody.height = settings.height;
+        this.mainBody.image = settings.image;
+        this.body.width = this.mainBody.width;
+        this.body.height = this.mainBody.height;
+        this.body.image = this.mainBody.image;
         this.setSpeed = { left: 0, right: 0 };
 
         // Connect to RoboScape server to get commands
@@ -55,13 +67,32 @@ class Robot {
      * @param {String | Buffer} msg Message to send
      */
     sendToServer(msg) {
-        let msgBuff = Buffer.alloc(10 + msg.length);
+        let msgBuff;
+
+        // String needs preallocated space
+        if (typeof msg == typeof '') {
+            msgBuff = Buffer.alloc(10 + msg.length);
+        } else if (msg instanceof Buffer) {
+            msgBuff = Buffer.alloc(10);
+        } else {
+            throw 'Attempt to send message which is not Buffer or string type';
+        }
+
         let macParts = this.mac.split(':');
         for (let i = 0; i < macParts.length; i++) {
             msgBuff.writeUInt8(Number.parseInt(macParts[i], 16), i);
         }
         msgBuff.writeUInt32BE(process.uptime(), 6);
-        msgBuff.write(msg, 10);
+
+        // Write string to position, or combine buffers
+        if (typeof msg == typeof '') {
+            msgBuff.write(msg, 10);
+        } else {
+            msgBuff = Buffer.concat([msgBuff, msg]);
+        }
+
+        this.debug(msgBuff);
+
         // Tell server robot is alive
         this.socket.send(msgBuff, this.settings.port, this.settings.server);
     }
