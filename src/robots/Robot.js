@@ -91,7 +91,9 @@ class Robot {
             msgBuff = Buffer.concat([msgBuff, msg]);
         }
 
-        this.debug(msgBuff);
+        if (this.settings.debugMessages) {
+            this.debug(msgBuff);
+        }
 
         // Tell server robot is alive
         this.socket.send(msgBuff, this.settings.port, this.settings.server);
@@ -112,7 +114,9 @@ class Robot {
             this.lastCommandTime = Date.now();
         }
 
-        this.debug(msg);
+        if (this.settings.debugMessages) {
+            this.debug(msg);
+        }
     }
 
     /**
@@ -169,7 +173,8 @@ Robot.defaultSettings = {
     minX: 100,
     maxX: 700,
     minY: 100,
-    maxY: 700
+    maxY: 700,
+    debugMessages: false
 };
 
 module.exports = Robot;
