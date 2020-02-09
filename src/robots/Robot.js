@@ -99,7 +99,7 @@ class Robot {
             this.debug(msgBuff);
         }
 
-        // Tell server robot is alive
+        // Send complete message to server
         this.socket.send(msgBuff, this.settings.port, this.settings.server);
     }
 
