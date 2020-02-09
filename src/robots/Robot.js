@@ -43,6 +43,10 @@ class Robot {
         this.body.image = this.mainBody.image;
         this.setSpeed = { left: 0, right: 0 };
 
+        this.commandHandlers = {
+            S: this.updateSpeed.bind(this)
+        };
+
         // Connect to RoboScape server to get commands
         this.socket = dgram.createSocket('udp4');
         this.socket.on('message', this.msgHandler.bind(this));
@@ -104,14 +108,19 @@ class Robot {
      * @param {Buffer} msg Message from server to this robot
      */
     msgHandler(msg) {
-        // Set speed command
-        if (String.fromCharCode(msg[0]) == 'S') {
-            this.updateSpeed(msg);
+        // Handle known commands
+        if (msg.length > 0) {
+            let msgType = String.fromCharCode(msg[0]);
+            if (Object.keys(this.commandHandlers).indexOf(msgType) !== -1) {
+                this.commandHandlers[msgType](msg);
 
-            //this.sendToServer(msg);
+                //this.sendToServer(msg);
 
-            // Keep robot from timing out if in use
-            this.lastCommandTime = Date.now();
+                // Keep robot from timing out if in use
+                this.lastCommandTime = Date.now();
+            } else {
+                this.debug(`Unknown message type: ${msgType}`);
+            }
         }
 
         if (this.settings.debugMessages) {
