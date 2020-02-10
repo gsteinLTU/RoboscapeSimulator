@@ -17,6 +17,8 @@ class Robot {
         this.mac = mac || generateRandomMAC(mac);
         this.settings = _.defaults(settings, Robot.defaultSettings);
 
+        this.engine = engine;
+
         this.debug = require('debug')(`roboscape-sim:Robot-${this.mac}`);
 
         position = position || {
