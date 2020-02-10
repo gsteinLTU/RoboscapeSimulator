@@ -21,9 +21,6 @@ class ParallaxRobot extends Robot {
 
         super(mac, position, engine, settings);
 
-        // Add whiskers
-        this.addWhiskers(engine);
-
         // Setup range sensor
         this.commandHandlers['R'] = this.sendRange.bind(this);
 
@@ -38,6 +35,13 @@ class ParallaxRobot extends Robot {
         this.body.image = this.mainBody.image;
 
         World.add(engine.world, this.body);
+    }
+
+    createBody(position) {
+        // Make basic box
+        super.createBody(position);
+
+        this.addWhiskers(this.engine);
     }
 
     /**

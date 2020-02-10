@@ -27,22 +27,8 @@ class Robot {
         };
 
         // Create physics object
-        this.mainBody = Bodies.rectangle(position.x, position.y, settings.width, settings.height, { label: `${this.mac}_main`, friction: 0.6, frictionAir: 0.45, frictionStatic: 0 });
-        this.body = Body.create({
-            label: this.mac,
-            position: { x: position.x, y: position.y },
-            parts: [this.mainBody],
-            friction: 0.6,
-            frictionAir: 0.45,
-            frictionStatic: 0
-        });
+        this.createBody(position);
 
-        this.mainBody.width = settings.width;
-        this.mainBody.height = settings.height;
-        this.mainBody.image = settings.image;
-        this.body.width = this.mainBody.width;
-        this.body.height = this.mainBody.height;
-        this.body.image = this.mainBody.image;
         this.setSpeed = { left: 0, right: 0 };
 
         this.commandHandlers = {
@@ -62,10 +48,34 @@ class Robot {
         // Keep track of last use
         this.lastCommandTime = Date.now();
 
-        // Add to world
-        World.add(engine.world, [this.body]);
-
         this.debug(`Robot with MAC ${this.mac} created`);
+    }
+
+    createBody(position) {
+        this.mainBody = Bodies.rectangle(position.x, position.y, this.settings.width, this.settings.height, {
+            label: `${this.mac}_main`,
+            friction: 0.6,
+            frictionAir: 0.45,
+            frictionStatic: 0
+        });
+
+        this.body = Body.create({
+            label: this.mac,
+            position: { x: position.x, y: position.y },
+            parts: [this.mainBody],
+            friction: 0.6,
+            frictionAir: 0.45,
+            frictionStatic: 0
+        });
+        this.mainBody.width = this.settings.width;
+        this.mainBody.height = this.settings.height;
+        this.mainBody.image = this.settings.image;
+        this.body.width = this.mainBody.width;
+        this.body.height = this.mainBody.height;
+        this.body.image = this.mainBody.image;
+
+        // Add to world
+        World.add(this.engine.world, [this.body]);
     }
 
     /**
