@@ -147,15 +147,10 @@ class Robot {
     updateSpeed(msg) {
         let v1 = msg.readInt16LE(1);
         let v2 = msg.readInt16LE(3);
-        let boost = (2 * Math.abs(v1 - v2)) / (Math.abs(v1) + Math.abs(v2)) + 1;
-
-        if (Math.abs(v1) + Math.abs(v2) === 0) {
-            boost = 1;
-        }
 
         this.setSpeed = {
-            left: (boost * (Math.sign(v1) * Math.pow(Math.abs(v1), 0.6))) / 10000,
-            right: (boost * (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6))) / 10000
+            left: (Math.sign(v1) * Math.pow(Math.abs(v1), 0.6)) / 15000,
+            right: (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6)) / 15000
         };
     }
 
@@ -165,14 +160,14 @@ class Robot {
     drive() {
         let v1 = this.setSpeed.left;
         let v2 = this.setSpeed.right;
-        let vleft = Vector.create(1, 0);
+        let vleft = Vector.create(7, 0);
         vleft = Vector.rotate(vleft, this.body.angle);
         let vup = Vector.create(0, 1);
         vup = Vector.rotate(vup, this.body.angle);
 
         // Apply force
-        Body.applyForce(this.body, Vector.add(this.body.position, vleft), Vector.mult(vup, v1));
-        Body.applyForce(this.body, Vector.sub(this.body.position, vleft), Vector.mult(vup, v2));
+        Body.applyForce(this.body, Vector.add(this.mainBody.position, vleft), Vector.mult(vup, v1));
+        Body.applyForce(this.body, Vector.sub(this.mainBody.position, vleft), Vector.mult(vup, v2));
     }
 
     /**
