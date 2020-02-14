@@ -13,6 +13,8 @@ const defaultSettings = {
     fps: 60
 };
 
+Matter.Resolver._restingThresh = 0.1;
+
 class Room {
     constructor(settings = {}) {
         // Get unique ID for this Room

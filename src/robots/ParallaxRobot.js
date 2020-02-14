@@ -19,7 +19,7 @@ class ParallaxRobot extends Robot {
 
         settings = _.defaults(settings, Robot.defaultSettings);
 
-        super(mac, position, engine, settings);
+        super(mac, position, engine, { ...settings });
 
         // Setup range sensor
         this.commandHandlers['R'] = this.sendRange.bind(this);
@@ -30,8 +30,8 @@ class ParallaxRobot extends Robot {
         this.body.position.x = this.mainBody.position.x;
         this.body.position.y = this.mainBody.position.y;
 
-        this.body.width = this.mainBody.width;
-        this.body.height = this.mainBody.height;
+        this.body.width = this.settings.width;
+        this.body.height = this.settings.height;
         this.body.image = this.mainBody.image;
 
         World.add(engine.world, this.body);
