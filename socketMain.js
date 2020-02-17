@@ -90,11 +90,14 @@ function socketMain(io) {
                     // Create a virtual environment
                     let tempRoom = new Room();
                     rooms.push(tempRoom);
-                    roomID = tempRoom.roomID;
 
-                    joinRoom(roomID, socket);
-                    cb(roomID);
-                    inRoom = true;
+                    // Delay to allow environment to finish loading from file first
+                    setTimeout(() => {
+                        roomID = tempRoom.roomID;
+                        joinRoom(roomID, socket);
+                        cb(roomID);
+                        inRoom = true;
+                    }, 100);
                 } else {
                     debug(`Socket ${socket.id} attempted to join invalid room!`);
                     cb(false);

@@ -5,6 +5,8 @@ const Engine = Matter.Engine,
     Events = Matter.Events;
 const _ = require('lodash');
 const shortid = require('shortid');
+const fs = require('fs');
+const path = require('path');
 
 const ParallaxRobot = require('./robots/ParallaxRobot');
 
@@ -52,43 +54,37 @@ class Room {
 
     /**
      * Add initial objects to room
+     * @param {String} environment Filename of environment to use
      */
-    setupEnvironment() {
-        const boxSize = 80;
-        const groundWidth = 800;
+    setupEnvironment(environment = 'default_box') {
+        // Load environment info from file
+        fs.readFile(path.join(__dirname, '..', 'environments', environment + '.json'), (err, data) => {
+            if (err) {
+                this.debug(`Error loading environment ${environment}`);
+                return;
+            }
 
-        // Add walls
-        var ground = Bodies.rectangle(groundWidth / 2 + boxSize, groundWidth, groundWidth, boxSize, { isStatic: true, label: 'ground' });
-        ground.width = groundWidth;
-        ground.height = boxSize;
-        ground.image = 'wall';
+            let parsed = JSON.parse(data);
+            this.debug(`Loading environment ${parsed.name}...`);
 
-        var ground2 = Bodies.rectangle(groundWidth / 2 + boxSize, boxSize, groundWidth, boxSize, { isStatic: true, label: 'ground2' });
-        ground2.width = groundWidth;
-        ground2.height = boxSize;
-        ground2.image = 'wall';
+            for (let object of parsed.objects) {
+                var body = Bodies.rectangle(object.x, object.y, object.width, object.height, { label: object.label, isStatic: object.isStatic || false, frictionAir: object.frictionAir || 0.7 });
+                body.width = object.width;
+                body.height = object.height;
+                body.image = object.image;
 
-        var ground3 = Bodies.rectangle(boxSize, groundWidth / 2 + boxSize / 2, boxSize, groundWidth, { isStatic: true, label: 'ground3' });
-        ground3.width = boxSize;
-        ground3.height = groundWidth;
-        ground3.image = 'wall';
+                World.add(this.engine.world, body);
+            }
 
-        var ground4 = Bodies.rectangle(groundWidth + boxSize, groundWidth / 2 + boxSize / 2, boxSize, groundWidth, { isStatic: true, label: 'ground4' });
-        ground4.width = boxSize;
-        ground4.height = groundWidth;
-        ground4.image = 'wall';
-
-        // Demo box
-        var box = Bodies.rectangle(groundWidth / 2 - boxSize / 2, groundWidth / 2 - boxSize / 2, boxSize, boxSize, { label: 'box', frictionAir: 0.7 });
-        box.width = boxSize;
-        box.height = boxSize;
-        box.image = 'box';
-
-        World.add(this.engine.world, ground);
-        World.add(this.engine.world, ground2);
-        World.add(this.engine.world, ground3);
-        World.add(this.engine.world, ground4);
-        World.add(this.engine.world, box);
+            // Get spawn settings
+            if (parsed.robotSpawn.type == 'RandomPosition') {
+                this.settings.robotSpawnType = 'RandomPosition';
+                this.settings.minX = parsed.robotSpawn.minX;
+                this.settings.maxX = parsed.robotSpawn.maxX;
+                this.settings.minY = parsed.robotSpawn.minY;
+                this.settings.maxY = parsed.robotSpawn.maxY;
+            }
+        });
 
         // Setup collision events
         Events.on(this.engine, 'collisionStart', function(event) {
@@ -158,7 +154,18 @@ class Room {
      * @returns {Robot} Robot created
      */
     addRobot(mac = null, position = null) {
-        let bot = new ParallaxRobot(mac, position, this.engine);
+        // Use loaded spawn type
+        let settings = null;
+        if (position === null && this.settings.robotSpawnType === 'RandomPosition') {
+            settings = {
+                minX: this.settings.minX,
+                maxX: this.settings.maxX,
+                minY: this.settings.minY,
+                maxY: this.settings.maxY
+            };
+        }
+
+        let bot = new ParallaxRobot(mac, position, this.engine, settings);
         this.robots.push(bot);
         this.debug(`Robot ${bot.mac} added to room`);
         return bot;
