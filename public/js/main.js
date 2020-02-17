@@ -60,6 +60,10 @@ socket.on('error', error => {
     console.log(error);
 });
 
+socket.on('availableEnvironments', list => {
+    console.log(list);
+});
+
 function reset() {
     socket.emit('reset', true);
 }

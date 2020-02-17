@@ -72,6 +72,9 @@ function socketMain(io) {
         debug(`Socket ${socket.id} connected`);
 
         socket.emit('availableRooms', { availableRooms: rooms.map(room => room.roomID), canCreate: rooms.length < settings.maxRooms });
+        Room.listEnvironments().then(list => {
+            socket.emit('availableEnvironments', list);
+        });
 
         let inRoom = false;
 

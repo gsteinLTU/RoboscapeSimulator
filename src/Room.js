@@ -211,6 +211,32 @@ class Room {
 
         clearInterval(this.updateInterval);
     }
+
+    /**
+     * Returns an array of environments usable in Rooms
+     */
+    static listEnvironments() {
+        return new Promise((resolve, reject) => {
+            fs.readdir(path.join(__dirname, '..', 'environments'), (err, files) => {
+                let environments = [];
+                if (err) {
+                    require('debug')('Room')('Error loading environments');
+                    return;
+                }
+
+                for (let file of files) {
+                    let fileData = fs.readFileSync(path.join(__dirname, '..', 'environments', file));
+                    let parsed = JSON.parse(fileData);
+                    environments.push({
+                        file: file,
+                        name: parsed.name
+                    });
+                }
+
+                resolve(environments);
+            });
+        });
+    }
 }
 
 Room.existingIDs = [];
