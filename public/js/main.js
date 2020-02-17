@@ -13,6 +13,7 @@ let bodies = {};
 let nextBodies = {};
 let bodiesInfo = {};
 let availableRooms = [];
+let availableEnvironments = [{ name: 'Default', file: 'default' }];
 let lastUpdateTime = Date.now();
 let nextUpdateTime = Date.now();
 
@@ -61,7 +62,12 @@ socket.on('error', error => {
 });
 
 socket.on('availableEnvironments', list => {
-    console.log(list);
+    availableEnvironments = list;
+
+    $('#env-select').html('');
+    for (let environment of availableEnvironments) {
+        $('#env-select').append(`<option value=${environment.file}>${environment.name}</option>`);
+    }
 });
 
 function reset() {

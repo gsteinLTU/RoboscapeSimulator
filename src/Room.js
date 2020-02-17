@@ -12,7 +12,8 @@ const ParallaxRobot = require('./robots/ParallaxRobot');
 
 const defaultSettings = {
     robotKeepAliveTime: 1000 * 60 * 10,
-    fps: 60
+    fps: 60,
+    environment: 'default'
 };
 
 Matter.Resolver._restingThresh = 0.1;
@@ -41,7 +42,7 @@ class Room {
         this.engine.world.gravity.y = 0;
 
         // Load environment objects
-        this.setupEnvironment();
+        this.setupEnvironment(this.settings.environment);
 
         // Begin update loop
         this.updateInterval = setInterval(
@@ -57,66 +58,74 @@ class Room {
      * @param {String} environment Filename of environment to use
      */
     setupEnvironment(environment = 'default_box') {
-        // Load environment info from file
-        fs.readFile(path.join(__dirname, '..', 'environments', environment + '.json'), (err, data) => {
-            if (err) {
-                this.debug(`Error loading environment ${environment}`);
-                return;
+        Room.listEnvironments().then(list => {
+            // Validate that file actually exists on server as an environment
+            if (list.map(env => env.file).indexOf(environment) === -1) {
+                this.debug('Invalid environment requested, using default');
+                environment = 'default';
             }
 
-            let parsed = JSON.parse(data);
-            this.debug(`Loading environment ${parsed.name}...`);
-
-            for (let object of parsed.objects) {
-                var body = Bodies.rectangle(object.x, object.y, object.width, object.height, { label: object.label, isStatic: object.isStatic || false, frictionAir: object.frictionAir || 0.7 });
-                body.width = object.width;
-                body.height = object.height;
-                body.image = object.image;
-
-                World.add(this.engine.world, body);
-            }
-
-            // Get spawn settings
-            if (parsed.robotSpawn.type == 'RandomPosition') {
-                this.settings.robotSpawnType = 'RandomPosition';
-                this.settings.minX = parsed.robotSpawn.minX;
-                this.settings.maxX = parsed.robotSpawn.maxX;
-                this.settings.minY = parsed.robotSpawn.minY;
-                this.settings.maxY = parsed.robotSpawn.maxY;
-            }
-        });
-
-        // Setup collision events
-        Events.on(this.engine, 'collisionStart', function(event) {
-            var pairs = event.pairs;
-
-            for (var i = 0; i < pairs.length; i++) {
-                var pair = pairs[i];
-
-                if (pair.bodyA.onCollisionStart !== undefined) {
-                    pair.bodyA.onCollisionStart();
+            // Load environment info from file
+            fs.readFile(path.join(__dirname, '..', 'environments', environment + '.json'), (err, data) => {
+                if (err) {
+                    this.debug(`Error loading environment ${environment}`);
+                    return;
                 }
 
-                if (pair.bodyB.onCollisionStart !== undefined) {
-                    pair.bodyB.onCollisionStart();
-                }
-            }
-        });
+                let parsed = JSON.parse(data);
+                this.debug(`Loading environment ${parsed.name}...`);
 
-        Events.on(this.engine, 'collisionEnd', function(event) {
-            var pairs = event.pairs;
+                for (let object of parsed.objects) {
+                    var body = Bodies.rectangle(object.x, object.y, object.width, object.height, { label: object.label, isStatic: object.isStatic || false, frictionAir: object.frictionAir || 0.7 });
+                    body.width = object.width;
+                    body.height = object.height;
+                    body.image = object.image;
 
-            for (var i = 0; i < pairs.length; i++) {
-                var pair = pairs[i];
-
-                if (pair.bodyA.onCollisionEnd !== undefined) {
-                    pair.bodyA.onCollisionEnd();
+                    World.add(this.engine.world, body);
                 }
 
-                if (pair.bodyB.onCollisionEnd !== undefined) {
-                    pair.bodyB.onCollisionEnd();
+                // Get spawn settings
+                if (parsed.robotSpawn.type == 'RandomPosition') {
+                    this.settings.robotSpawnType = 'RandomPosition';
+                    this.settings.minX = parsed.robotSpawn.minX;
+                    this.settings.maxX = parsed.robotSpawn.maxX;
+                    this.settings.minY = parsed.robotSpawn.minY;
+                    this.settings.maxY = parsed.robotSpawn.maxY;
                 }
-            }
+            });
+
+            // Setup collision events
+            Events.on(this.engine, 'collisionStart', function(event) {
+                var pairs = event.pairs;
+
+                for (var i = 0; i < pairs.length; i++) {
+                    var pair = pairs[i];
+
+                    if (pair.bodyA.onCollisionStart !== undefined) {
+                        pair.bodyA.onCollisionStart();
+                    }
+
+                    if (pair.bodyB.onCollisionStart !== undefined) {
+                        pair.bodyB.onCollisionStart();
+                    }
+                }
+            });
+
+            Events.on(this.engine, 'collisionEnd', function(event) {
+                var pairs = event.pairs;
+
+                for (var i = 0; i < pairs.length; i++) {
+                    var pair = pairs[i];
+
+                    if (pair.bodyA.onCollisionEnd !== undefined) {
+                        pair.bodyA.onCollisionEnd();
+                    }
+
+                    if (pair.bodyB.onCollisionEnd !== undefined) {
+                        pair.bodyB.onCollisionEnd();
+                    }
+                }
+            });
         });
     }
 
@@ -228,7 +237,7 @@ class Room {
                     let fileData = fs.readFileSync(path.join(__dirname, '..', 'environments', file));
                     let parsed = JSON.parse(fileData);
                     environments.push({
-                        file: file,
+                        file: path.basename(file, '.json'),
                         name: parsed.name
                     });
                 }

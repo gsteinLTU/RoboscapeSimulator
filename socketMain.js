@@ -91,7 +91,7 @@ function socketMain(io) {
                 } else if (roomID === 'create' && rooms.length < settings.maxRooms) {
                     debug(`Socket ${socket.id} requested to create room`);
                     // Create a virtual environment
-                    let tempRoom = new Room();
+                    let tempRoom = new Room({ environment: data.env });
                     rooms.push(tempRoom);
 
                     // Delay to allow environment to finish loading from file first
