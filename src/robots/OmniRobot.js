@@ -68,16 +68,30 @@ class OmniRobot extends Robot {
      * Applies force of wheels to robot
      */
     drive() {
-        let v1 = this.setSpeed.left;
-        let v2 = this.setSpeed.right;
-        let vleft = Vector.create(7, 0);
-        vleft = Vector.rotate(vleft, this.body.angle);
+        let angular = this.setSpeed.right;
+        let forward = this.setSpeed.left;
+        let perpendicular = 0;
+
+        let f1 = (-Math.sqrt(3) / 2) * forward + perpendicular / 2 + angular;
+        let f2 = -perpendicular / 2 + angular;
+        let f3 = (Math.sqrt(3) / 2) * forward + perpendicular / 2 + angular;
+
+        let vWheel1 = Vector.create(10, 0);
+        let vWheel2 = Vector.create(10, 0);
+        let vWheel3 = Vector.create(10, 0);
+        const angle1 = this.body.angle + Math.PI / 3;
+        const angle2 = this.body.angle + Math.PI;
+        const angle3 = this.body.angle + (5 * Math.PI) / 3;
+
+        vWheel1 = Vector.rotate(vWheel1, angle1);
+        vWheel2 = Vector.rotate(vWheel2, angle2);
+        vWheel3 = Vector.rotate(vWheel3, angle3);
         let vup = Vector.create(0, 1);
-        vup = Vector.rotate(vup, this.body.angle);
 
         // Apply force
-        Body.applyForce(this.body, Vector.add(this.mainBody.position, vleft), Vector.mult(vup, v1));
-        Body.applyForce(this.body, Vector.sub(this.mainBody.position, vleft), Vector.mult(vup, v2));
+        Body.applyForce(this.body, Vector.add(this.mainBody.position, vWheel1), Vector.mult(Vector.rotate(vup, angle1), f1));
+        Body.applyForce(this.body, Vector.sub(this.mainBody.position, vWheel2), Vector.mult(Vector.rotate(vup, angle2), f2));
+        Body.applyForce(this.body, Vector.sub(this.mainBody.position, vWheel3), Vector.mult(Vector.rotate(vup, angle3), f3));
     }
 }
 

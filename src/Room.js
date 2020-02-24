@@ -8,8 +8,6 @@ const shortid = require('shortid');
 const fs = require('fs');
 const path = require('path');
 
-const Robot = require('./robots/Robot');
-
 const defaultSettings = {
     robotKeepAliveTime: 1000 * 60 * 10,
     fps: 60,
