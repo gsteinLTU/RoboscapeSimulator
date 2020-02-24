@@ -89,9 +89,9 @@ class OmniRobot extends Robot {
         let vup = Vector.create(0, 1);
 
         // Apply force
-        Body.applyForce(this.body, Vector.add(this.mainBody.position, vWheel1), Vector.mult(Vector.rotate(vup, angle1), f1));
-        Body.applyForce(this.body, Vector.sub(this.mainBody.position, vWheel2), Vector.mult(Vector.rotate(vup, angle2), f2));
-        Body.applyForce(this.body, Vector.sub(this.mainBody.position, vWheel3), Vector.mult(Vector.rotate(vup, angle3), f3));
+        Body.applyForce(this.body, Vector.add(this.body.position, vWheel1), Vector.mult(Vector.rotate(vup, angle1), f1));
+        Body.applyForce(this.body, Vector.add(this.body.position, vWheel2), Vector.mult(Vector.rotate(vup, angle2), f2));
+        Body.applyForce(this.body, Vector.add(this.body.position, vWheel3), Vector.mult(Vector.rotate(vup, angle3), f3));
     }
 }
 
