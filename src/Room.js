@@ -261,7 +261,8 @@ Room.existingIDs = [];
  * List of available robot types
  */
 Room.robotTypes = {
-    ParallaxRobot: require('./robots/ParallaxRobot')
+    ParallaxRobot: require('./robots/ParallaxRobot'),
+    OmniRobot: require('./robots/OmniRobot')
 };
 
 module.exports = Room;
