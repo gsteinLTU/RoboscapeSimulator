@@ -51,6 +51,10 @@ class Robot {
         this.debug(`Robot with MAC ${this.mac} created`);
     }
 
+    /**
+     * Creates body for robot at given position.
+     * @param {Object} position
+     */
     createBody(position) {
         this.mainBody = Bodies.rectangle(position.x, position.y, this.settings.width, this.settings.height, {
             label: `${this.mac}_main`,

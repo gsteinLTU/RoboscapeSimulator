@@ -8,7 +8,7 @@ const shortid = require('shortid');
 const fs = require('fs');
 const path = require('path');
 
-const ParallaxRobot = require('./robots/ParallaxRobot');
+const Robot = require('./robots/Robot');
 
 const defaultSettings = {
     robotKeepAliveTime: 1000 * 60 * 10,
@@ -85,12 +85,17 @@ class Room {
                 }
 
                 // Get spawn settings
-                if (parsed.robotSpawn.type == 'RandomPosition') {
+                if (parsed.robotSpawn.spawnType == 'RandomPosition') {
                     this.settings.robotSpawnType = 'RandomPosition';
                     this.settings.minX = parsed.robotSpawn.minX;
                     this.settings.maxX = parsed.robotSpawn.maxX;
                     this.settings.minY = parsed.robotSpawn.minY;
                     this.settings.maxY = parsed.robotSpawn.maxY;
+                    this.settings.robotTypes = parsed.robotSpawn.robotTypes
+                        .filter(type => {
+                            return Object.keys(Room.robotTypes).indexOf(type) !== -1;
+                        })
+                        .map(type => Room.robotTypes[type]);
                 }
             });
 
@@ -174,7 +179,9 @@ class Room {
             };
         }
 
-        let bot = new ParallaxRobot(mac, position, this.engine, settings);
+        // Create a robot of a random allowable type
+        let robotType = Math.floor(Math.random() * this.settings.robotTypes.length);
+        let bot = new this.settings.robotTypes[robotType](mac, position, this.engine, settings);
         this.robots.push(bot);
         this.debug(`Robot ${bot.mac} added to room`);
         return bot;
@@ -225,7 +232,7 @@ class Room {
      * Returns an array of environments usable in Rooms
      */
     static listEnvironments() {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             fs.readdir(path.join(__dirname, '..', 'environments'), (err, files) => {
                 let environments = [];
                 if (err) {
@@ -249,5 +256,12 @@ class Room {
 }
 
 Room.existingIDs = [];
+
+/**
+ * List of available robot types
+ */
+Room.robotTypes = {
+    ParallaxRobot: require('./robots/ParallaxRobot')
+};
 
 module.exports = Room;

@@ -49,7 +49,8 @@
         }
     ],
     "robotSpawn": {
-        "type": "RandomPosition",
+        "spawnType": "RandomPosition",
+        "robotTypes": ["ParallaxRobot"],
         "minX": 300,
         "maxX": 600,
         "minY": 300,
