@@ -46,15 +46,6 @@ function socketMain(io) {
             // Begin sending updates
             sendFullUpdate(socket, room);
         }
-        // Temporary feature to reset example environment
-        socket.on('reset', confirm => {
-            if (confirm) {
-                room.close();
-                rooms[roomID] = new Room({ roomID: roomID });
-                room = rooms[roomID];
-                sendFullUpdate(io.to(roomID), room);
-            }
-        });
     }
 
     let updateInterval = setInterval(() => {
