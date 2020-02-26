@@ -14,7 +14,7 @@ class OmniRobot extends Robot {
     constructor(mac = null, position = null, engine = null, settings = {}) {
         // Allow overriding sprite setting
         if (settings.image == undefined) {
-            settings.image = 'omnibot';
+            settings.image = 'omni_robot';
         }
 
         settings = _.defaults(settings, Robot.defaultSettings);

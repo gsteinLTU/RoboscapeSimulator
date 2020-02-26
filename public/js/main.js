@@ -23,6 +23,10 @@ images['parallax_robot'] = new Image();
 images['parallax_robot'].src = '/img/parallax_robot.png';
 images['parallax_robot'].offsetAngle = Math.PI;
 images['parallax_robot'].offset = { left: -0.6, right: 0.6, top: -1, bottom: 1.1 };
+images['omni_robot'] = new Image();
+images['omni_robot'].src = '/img/omni_robot.png';
+images['omni_robot'].offsetAngle = Math.PI / 2;
+images['omni_robot'].offset = { left: 0, right: 0, top: 0, bottom: 0 };
 
 socket.on('availableRooms', data => {
     availableRooms = data.availableRooms;
