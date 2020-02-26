@@ -21,8 +21,6 @@ class OmniRobot extends Robot {
         settings.width = settings.height;
 
         super(mac, position, engine, { ...settings });
-
-        World.add(engine.world, this.body);
     }
 
     /**

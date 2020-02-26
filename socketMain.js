@@ -51,7 +51,7 @@ function socketMain(io) {
     let updateInterval = setInterval(() => {
         for (let room of rooms) {
             // Check for dead bots
-            if (room.removeDeadRobots() !== false) {
+            if (room.removeDeadRobots()) {
                 sendFullUpdate(io.to(room.roomID), room);
             } else {
                 sendUpdate(io.to(room.roomID), room);

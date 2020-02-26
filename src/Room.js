@@ -204,7 +204,7 @@ class Room {
             // Cleanup
             deadRobots.forEach(robot => {
                 robot.close();
-                World.remove(this.engine.world, robot.body);
+                robot.body.parts.forEach(World.remove.bind(this, this.engine.world));
             });
 
             return true;
