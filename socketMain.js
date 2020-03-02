@@ -15,6 +15,11 @@ const rooms = [];
  * @param {SocketIO.Server} io
  */
 function socketMain(io) {
+    /**
+     * Sends all body information to socket
+     * @param {SocketIO.Socket} socket Socket to send update to
+     * @param {String} room Room to get bodies from
+     */
     function sendFullUpdate(socket, room) {
         socket.emit(
             'fullUpdate',
@@ -22,6 +27,11 @@ function socketMain(io) {
         );
     }
 
+    /**
+     * Sends update-relevant (position, orientation) body information to socket
+     * @param {SocketIO.Socket} socket Socket to send update to
+     * @param {String} room Room to get bodies from
+     */
     function sendUpdate(socket, room) {
         let updateBodies = room.getBodies(true, false);
 
@@ -33,6 +43,22 @@ function socketMain(io) {
         }
     }
 
+    /**
+     * Sends list of rooms to socket
+     * @param {SocketIO.Socket} socket Socket to send list to
+     */
+    function sendAvailableRooms(socket) {
+        socket.emit('availableRooms', { availableRooms: rooms.map(room => room.roomID), canCreate: rooms.length < settings.maxRooms });
+        Room.listEnvironments().then(list => {
+            socket.emit('availableEnvironments', list);
+        });
+    }
+
+    /**
+     * Add a user to a room
+     * @param {String} roomID Room to join
+     * @param {SocketIO.Socket} socket The user's socket
+     */
     function joinRoom(roomID, socket) {
         let room = rooms[rooms.map(room => room.roomID).indexOf(roomID)];
         socket.join(roomID);
@@ -62,22 +88,23 @@ function socketMain(io) {
     io.on('connect', socket => {
         debug(`Socket ${socket.id} connected`);
 
-        socket.emit('availableRooms', { availableRooms: rooms.map(room => room.roomID), canCreate: rooms.length < settings.maxRooms });
-        Room.listEnvironments().then(list => {
-            socket.emit('availableEnvironments', list);
-        });
+        // Join room for users in no real room
+        socket.join('waiting-room');
 
-        let inRoom = false;
+        sendAvailableRooms(socket);
 
         // Allow joining a room
         socket.on('joinRoom', (data, cb) => {
-            if (!inRoom) {
+            // Check if in waiting-room
+            if (Object.keys(socket.rooms).indexOf('waiting-room') !== -1) {
                 let roomID = data.roomID;
 
                 // Check that room is valid
                 if (rooms.map(room => room.roomID).indexOf(roomID) !== -1) {
                     joinRoom(roomID, socket);
-                    inRoom = true;
+
+                    socket.leave('waiting-room');
+
                     cb(roomID);
                 } else if (roomID === 'create' && rooms.length < settings.maxRooms) {
                     debug(`Socket ${socket.id} requested to create room`);
@@ -90,7 +117,10 @@ function socketMain(io) {
                         roomID = tempRoom.roomID;
                         joinRoom(roomID, socket);
                         cb(roomID);
-                        inRoom = true;
+                        socket.leave('waiting-room');
+
+                        // Tell other users about the new room
+                        sendAvailableRooms(io.to('waiting-room'));
                     }, 100);
                 } else {
                     debug(`Socket ${socket.id} attempted to join invalid room!`);
