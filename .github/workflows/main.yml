@@ -1,4 +1,7 @@
-on: push
+on:
+  push:
+    branches:
+      - master
 name: npm build, test and publish
 jobs:
   build-and-publish:
