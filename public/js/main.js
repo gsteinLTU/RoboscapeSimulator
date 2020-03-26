@@ -23,6 +23,11 @@ images['parallax_robot'] = new Image();
 images['parallax_robot'].src = '/img/parallax_robot.png';
 images['parallax_robot'].offsetAngle = Math.PI;
 images['parallax_robot'].offset = { left: -0.6, right: 0.6, top: -1, bottom: 1.1 };
+images['parallax_robot'].ledPositions = [
+    {x: 5, y: -10},
+    {x: 5, y: 10}
+];
+
 images['omni_robot'] = new Image();
 images['omni_robot'].src = '/img/omni_robot.png';
 images['omni_robot'].offsetAngle = Math.PI / 2;
@@ -113,6 +118,18 @@ function draw() {
                 width + width * imageData.offset.right,
                 height + width * imageData.offset.bottom
             );
+
+            // Draw LEDs (if available)
+            if(imageData.ledPositions !== undefined){
+                for (let i in imageData.ledPositions)
+                {
+                    let pos = imageData.ledPositions[i];
+                    context.fillStyle = 'red';
+                    context.beginPath();
+                    context.arc(pos.x, pos.y, 5, 0, 2 * Math.PI);
+                    context.fill();
+                }
+            }
 
             // Undo transform
             context.rotate(-angle - imageData.offsetAngle);
