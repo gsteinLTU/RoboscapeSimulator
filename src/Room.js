@@ -140,7 +140,7 @@ class Room {
 
         if (allData) {
             return relevantBodies.map(body => {
-                return {
+                let bodyInfo = {
                     label: body.label,
                     pos: body.position,
                     vel: body.velocity,
@@ -150,11 +150,25 @@ class Room {
                     height: body.height,
                     image: body.image
                 };
+
+                // Add LED status if it exists
+                if(body.ledStatus !== undefined){
+                    bodyInfo.ledStatus = body.ledStatus;
+                }
+
+                return bodyInfo;
             });
         } else {
             return relevantBodies.map(body => {
                 // Only position/orientation for update
-                return { label: body.label, pos: body.position, angle: body.angle };
+                let bodyInfo = { label: body.label, pos: body.position, angle: body.angle };
+
+                // Add LED status if it exists
+                if (body.ledStatus !== undefined) {
+                    bodyInfo.ledStatus = body.ledStatus;
+                }
+
+                return bodyInfo;
             });
         }
     }

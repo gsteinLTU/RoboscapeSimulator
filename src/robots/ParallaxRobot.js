@@ -24,6 +24,10 @@ class ParallaxRobot extends Robot {
         // Setup range sensor
         this.commandHandlers['R'] = this.sendRange.bind(this);
 
+        // Setup LEDs
+        this.body.ledStatus = [0, 0];
+        this.commandHandlers['L'] = this.updateLEDs.bind(this);
+
         // Update center of mass position
         this.body.positionPrev.x = this.mainBody.position.x - (this.body.position.x - this.body.positionPrev.x);
         this.body.positionPrev.y = this.mainBody.position.y - (this.body.position.y - this.body.positionPrev.y);
@@ -100,7 +104,7 @@ class ParallaxRobot extends Robot {
      */
     sendRange() {
         // Create Range message
-        let temp = new Buffer(3);
+        let temp = Buffer.alloc(3);
         temp.write('R');
 
         const upVec = Vector.rotate(Vector.create(0, 1), this.body.angle);
@@ -165,6 +169,22 @@ class ParallaxRobot extends Robot {
         // Return result with noise
         temp.writeInt16LE(distance * (Math.random() / 10 + 0.95), 1);
         this.sendToServer(temp);
+    }
+
+    /**
+     * Handle an incoming "set LED" message
+     * @param {Buffer} msg Message from server to this robot
+     */
+    updateLEDs(msg)
+    {
+        // Decompose message into parts
+        let led = msg.readUInt8(1);
+        let command = msg.readUInt8(2);
+
+        // Tell client LED changed
+        if (led < this.body.ledStatus.length) {
+            this.body.ledStatus[led] = command;
+        }
     }
 }
 
