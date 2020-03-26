@@ -124,10 +124,12 @@ function draw() {
                 for (let i in imageData.ledPositions)
                 {
                     let pos = imageData.ledPositions[i];
-                    context.fillStyle = nextBodies[label].ledStatus[i] == 0 ? 'red' : 'green';
-                    context.beginPath();
-                    context.arc(pos.x, pos.y, 5, 0, 2 * Math.PI);
-                    context.fill();
+                    if (nextBodies[label].ledStatus[i] != 0){
+                        context.fillStyle = 'orange';
+                        context.beginPath();
+                        context.arc(pos.x, pos.y, 5, 0, 2 * Math.PI);
+                        context.fill();
+                    }
                 }
             }
 
