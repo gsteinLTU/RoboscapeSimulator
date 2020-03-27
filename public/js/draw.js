@@ -12,7 +12,7 @@ function draw() {
     context.clearRect(-wWidth, -wHeight, wWidth * 2, wHeight * 2);
     context.translate(cameraPos.x, cameraPos.y);
     context.scale(cameraZoom, cameraZoom);
-    
+
     let frameTime = Date.now();
     for (let label of Object.keys(bodies)) {
         let body = bodies[label];
@@ -69,29 +69,29 @@ function updateCamera(params) {
     const zoomSpeed = 1.01;
 
     // Update position
-    if (keysdown.indexOf(37) !== -1 || keysdown.indexOf(65) !== -1) {
+    if (keysdown.has(37) || keysdown.has(65)) {
         cameraPos.x += moveSpeed;
     }
-    if (keysdown.indexOf(39) !== -1 || keysdown.indexOf(68) !== -1) {
+    if (keysdown.has(39) || keysdown.has(68)) {
         cameraPos.x -= moveSpeed;
     }
-    if (keysdown.indexOf(38) !== -1 || keysdown.indexOf(87) !== -1) {
+    if (keysdown.has(38) || keysdown.has(87)) {
         cameraPos.y += moveSpeed;
     }
-    if (keysdown.indexOf(40) !== -1 || keysdown.indexOf(83) !== -1) {
+    if (keysdown.has(40) || keysdown.has(83)) {
         cameraPos.y -= moveSpeed;
     }
 
     // Update zoom
-    if (keysdown.indexOf(61) !== -1) {
+    if (keysdown.has(61)) {
         cameraZoom *= zoomSpeed;
     }
-    if (keysdown.indexOf(173) !== -1) {
+    if (keysdown.has(173)) {
         cameraZoom /= zoomSpeed;
     }
 
     // Reset
-    if (keysdown.indexOf(32) !== -1) {
+    if (keysdown.has(32)) {
         cameraPos.x = 0;
         cameraPos.y = 0;
         cameraZoom = 1;

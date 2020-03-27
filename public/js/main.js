@@ -17,7 +17,7 @@ let availableEnvironments = [{ name: 'Default', file: 'default' }];
 let lastUpdateTime = Date.now();
 let nextUpdateTime = Date.now();
 let running = true;
-let keysdown = [];
+let keysdown = new Set();
 
 // Camera data
 let cameraPos = {x: 0, y: 0};
