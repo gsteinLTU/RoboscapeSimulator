@@ -57,37 +57,37 @@ function draw() {
             context.translate(-x, -y);
         }
     }
-
+    
     if(running){
         requestAnimationFrame(draw);
     }
 }
 
 function updateCamera(params) {
+    const moveSpeed = 1;
+    const zoomSpeed = 1.01;
 
     // Update position
     if (keysdown.indexOf(37) !== -1 || keysdown.indexOf(65) !== -1) {
-        cameraPos.x += 1;
+        cameraPos.x += moveSpeed;
     }
     if (keysdown.indexOf(39) !== -1 || keysdown.indexOf(68) !== -1) {
-        cameraPos.x -= 1;
+        cameraPos.x -= moveSpeed;
     }
     if (keysdown.indexOf(38) !== -1 || keysdown.indexOf(87) !== -1) {
-        cameraPos.y += 1;
+        cameraPos.y += moveSpeed;
     }
     if (keysdown.indexOf(40) !== -1 || keysdown.indexOf(83) !== -1) {
-        cameraPos.y -= 1;
+        cameraPos.y -= moveSpeed;
     }
-
 
     // Update zoom
     if (keysdown.indexOf(61) !== -1) {
-        cameraZoom *= 1.01;
+        cameraZoom *= zoomSpeed;
     }
     if (keysdown.indexOf(173) !== -1) {
-        cameraZoom /= 1.01;
+        cameraZoom /= zoomSpeed;
     }
-
 
     // Reset
     if (keysdown.indexOf(32) !== -1) {
@@ -95,5 +95,4 @@ function updateCamera(params) {
         cameraPos.y = 0;
         cameraZoom = 1;
     }
-
 }
