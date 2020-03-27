@@ -17,7 +17,15 @@ $('#room-join-button').click(() => {
     socket.emit('joinRoom', { roomID: $('#rooms-select').val(), env: $('#env-select').val() }, result => {
         console.log(result);
         if (result !== false) {
+            // Reset camera settings
+            cameraPos.x = 0;
+            cameraPos.y = 0;
+            cameraZoom = 1;
+
+            // Start running
+            draw();
             $('#room-modal').modal('hide');
+            $('#mainCanvas').focus();
         } else {
             $('#room-error').show();
         }
@@ -30,4 +38,15 @@ window.addEventListener('resize', () => {
     wWidth = $(window).width();
     canvas.width = wWidth;
     canvas.height = wHeight;
+});
+
+// Capture key events from canvas
+$('#mainCanvas').keydown(e => {
+    if(keysdown.indexOf(e.which) === -1){
+        keysdown.push(e.which);
+    }
+});
+
+$('#mainCanvas').keyup(e => {
+    keysdown.splice(keysdown.indexOf(e.which), 1);
 });
