@@ -10,8 +10,9 @@ function draw() {
     // Reset canvas
     context.setTransform(1, 0, 0, 1, 0, 0);
     context.clearRect(-wWidth, -wHeight, wWidth * 2, wHeight * 2);
-    context.scale(cameraZoom, cameraZoom);
     context.translate(cameraPos.x, cameraPos.y);
+    context.scale(cameraZoom, cameraZoom);
+    
     let frameTime = Date.now();
     for (let label of Object.keys(bodies)) {
         let body = bodies[label];
