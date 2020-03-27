@@ -17,6 +17,10 @@ let availableEnvironments = [{ name: 'Default', file: 'default' }];
 let lastUpdateTime = Date.now();
 let nextUpdateTime = Date.now();
 
+// Camera data
+let cameraPos = {x: 0, y: 0};
+let cameraZoom = 1;
+
 // Load sprites
 const images = {};
 images['parallax_robot'] = new Image();
@@ -88,6 +92,9 @@ function draw() {
     context.setTransform(1, 0, 0, 1, 0, 0);
     context.clearRect(-wWidth, -wHeight, wWidth * 2, wHeight * 2);
 
+    context.scale(cameraZoom, cameraZoom);
+    context.translate(cameraPos.x, cameraPos.y);
+
     let frameTime = Date.now();
 
     for (let label of Object.keys(bodies)) {
@@ -149,6 +156,7 @@ function draw() {
             context.translate(-x, -y);
         }
     }
+
 
     requestAnimationFrame(draw);
 }
