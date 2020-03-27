@@ -17,7 +17,15 @@ $('#room-join-button').click(() => {
     socket.emit('joinRoom', { roomID: $('#rooms-select').val(), env: $('#env-select').val() }, result => {
         console.log(result);
         if (result !== false) {
+            // Reset camera settings
+            cameraPos.x = 0;
+            cameraPos.y = 0;
+            cameraZoom = 1;
+
+            // Start running
+            draw();
             $('#room-modal').modal('hide');
+            $('#mainCanvas').focus();
         } else {
             $('#room-error').show();
         }
