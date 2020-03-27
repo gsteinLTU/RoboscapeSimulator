@@ -5,6 +5,8 @@
  * Begin updating the canvas
  */
 function draw() {
+    updateCamera();
+
     // Reset canvas
     context.setTransform(1, 0, 0, 1, 0, 0);
     context.clearRect(-wWidth, -wHeight, wWidth * 2, wHeight * 2);
@@ -59,4 +61,39 @@ function draw() {
     if(running){
         requestAnimationFrame(draw);
     }
+}
+
+function updateCamera(params) {
+
+    // Update position
+    if (keysdown.indexOf(37) !== -1 || keysdown.indexOf(65) !== -1) {
+        cameraPos.x += 1;
+    }
+    if (keysdown.indexOf(39) !== -1 || keysdown.indexOf(68) !== -1) {
+        cameraPos.x -= 1;
+    }
+    if (keysdown.indexOf(38) !== -1 || keysdown.indexOf(87) !== -1) {
+        cameraPos.y += 1;
+    }
+    if (keysdown.indexOf(40) !== -1 || keysdown.indexOf(83) !== -1) {
+        cameraPos.y -= 1;
+    }
+
+
+    // Update zoom
+    if (keysdown.indexOf(61) !== -1) {
+        cameraZoom *= 1.01;
+    }
+    if (keysdown.indexOf(173) !== -1) {
+        cameraZoom /= 1.01;
+    }
+
+
+    // Reset
+    if (keysdown.indexOf(32) !== -1) {
+        cameraPos.x = 0;
+        cameraPos.y = 0;
+        cameraZoom = 1;
+    }
+
 }
