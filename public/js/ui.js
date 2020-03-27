@@ -39,3 +39,14 @@ window.addEventListener('resize', () => {
     canvas.width = wWidth;
     canvas.height = wHeight;
 });
+
+// Capture key events from canvas
+$('#mainCanvas').keydown(e => {
+    if(keysdown.indexOf(e.which) === -1){
+        keysdown.push(e.which);
+    }
+});
+
+$('#mainCanvas').keyup(e => {
+    keysdown.splice(keysdown.indexOf(e.which), 1);
+});
