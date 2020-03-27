@@ -116,7 +116,11 @@ class Robot {
         }
 
         // Send complete message to server
-        this.socket.send(msgBuff, this.settings.port, this.settings.server);
+        try {
+            this.socket.send(msgBuff, this.settings.port, this.settings.server);
+        } catch (error) {
+            this.debug(`Error sending message ${error}`);
+        }
     }
 
     /**
