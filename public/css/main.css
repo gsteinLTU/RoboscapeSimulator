@@ -29,7 +29,6 @@
     font-size: 1.1em;
     font-weight: 300;
     line-height: 1.7em;
-    color: #999;
 }
 
 #side-panel #panel-toggle {
@@ -58,7 +57,6 @@
 #side-panel ul p {
     color: #fff;
     padding: 10px;
-    
 }
 
 #side-panel ul li a {
