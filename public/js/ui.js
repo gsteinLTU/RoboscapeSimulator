@@ -65,9 +65,9 @@ function updateRobotsPanel(){
                 `<li>
                     <a href="#">${body.label}</a>
                     <ul class="list-unstyled robosublist">
-                        <li>
+                        <!-- <li>
                             <button class="btn btn-light">Button</button>
-                        </li>
+                        </li> --!>
                     </ul>
                 </li>`);
         }
