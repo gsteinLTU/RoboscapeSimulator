@@ -78,8 +78,9 @@ class ParallaxRobot extends Robot {
         let whiskerHit = function(thisWhisker, whiskerL, whiskerR, value) {
             thisWhisker.currentState = value;
             // Create Whiskers message
-            let temp = new Buffer(2);
+            let temp = Buffer.alloc(2);
             temp.write('W');
+            
             // These values were inverted in the original RoboScape code
             temp.writeUInt8((whiskerL.currentState ? 0 : 2) | (whiskerR.currentState ? 0 : 1), 1);
             this.sendToServer(temp);
