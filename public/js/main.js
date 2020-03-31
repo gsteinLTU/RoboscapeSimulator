@@ -70,6 +70,7 @@ socket.on('fullUpdate', data => {
     nextBodies = data;
     lastUpdateTime = Date.now();
     nextUpdateTime = Date.now();
+    updateRobotsPanel();
 });
 
 socket.on('error', error => {
