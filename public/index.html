@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
     <title>RoboScape Simulator</title>
+    <script src="https://kit.fontawesome.com/2d4e34d5bc.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -59,7 +60,30 @@
             <div class="alert-body">Please try again later.</div>
         </div>
     </div>
-    <script src="/js/main.js"></script>
+    <div id="side-panel" class="hidden">
+        <div id="panel-toggle">
+            <i class="fas fa-ellipsis-v"></i>
+        </div>
+        <ul class="list-unstyled components">
+            <li>
+                <a href="#robomenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <i class="fas fa-robot"></i> Robots
+                </a>
+                <ul class="collapse list-unstyled" id="robomenu">
+                    <li>
+                        <a href="#">01:23:45:67:89:AB</a>
+                        <ul class="list-unstyled robosublist">
+                            <li>
+                                <button class="btn btn-light">Button</button>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <script src=" /js/main.js">
+    </script>
     <script src="/js/ui.js"></script>
     <script src="/js/draw.js"></script>
 </body>

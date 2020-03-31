@@ -25,6 +25,7 @@ $('#room-join-button').click(() => {
             // Start running
             draw();
             $('#room-modal').modal('hide');
+            $('#side-panel').removeClass('hidden');
             $('#mainCanvas').focus();
         } else {
             $('#room-error').show();
@@ -48,3 +49,28 @@ $('#mainCanvas').keydown(e => {
 $('#mainCanvas').keyup(e => {
     keysdown.delete(e.which);
 });
+
+// Hide/show side panel
+$('#panel-toggle').click(e => {
+    $('#side-panel').toggleClass('collapsed');
+});
+
+function updateRobotsPanel(){
+    $('#robomenu').html('');
+
+    for(let body of Object.values(bodiesInfo)){
+        // Check for robots by detecting MAC address label
+        if (/^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$/.test(body.label)){
+            $('#robomenu').append(
+                `<li>
+                    <a href="#">${body.label}</a>
+                    <ul class="list-unstyled robosublist">
+                        <li>
+                            <button class="btn btn-light">Button</button>
+                        </li>
+                    </ul>
+                </li>`);
+        }
+    }
+    
+}
