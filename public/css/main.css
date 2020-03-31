@@ -49,7 +49,7 @@
 
 #side-panel ul.components {
     padding: 20px 0;
-    border-bottom: 1px solid #47748b;
+    border-bottom: 2px solid #47748b;
     overflow-y: scroll;
     height: 100vh;
 }
@@ -66,6 +66,14 @@
     text-decoration: none;
 }
 
+#side-panel ul.components > li > a {
+    background: #7386D5;
+}
+
+#side-panel ul.components > li > a:hover {
+    background: #b0bbe8;
+}
+
 #side-panel .side-panel-header {
     padding: 20px;
     background: #6d7fcc;
@@ -77,6 +85,9 @@
 
 ul.robosublist li {
     padding-left: 25px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #47748b;
 }
 
 .hidden {
