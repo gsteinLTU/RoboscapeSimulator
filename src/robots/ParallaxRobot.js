@@ -17,6 +17,10 @@ class ParallaxRobot extends Robot {
             settings.image = 'parallax_robot';
         }
 
+        if(settings.speedToTicks == undefined){
+            settings.speedToTicks = (15000 / 60);
+        }
+
         settings = _.defaults(settings, Robot.defaultSettings);
 
         super(mac, position, engine, { ...settings });
@@ -50,6 +54,15 @@ class ParallaxRobot extends Robot {
         super.createBody(position);
 
         this.addWhiskers(this.engine);
+    }
+
+    /**
+     * Applies force of wheels to robot
+     */
+    drive() {
+        this.ticks.left += this.setSpeed.left * this.settings.speedToTicks;
+        this.ticks.right += this.setSpeed.right * this.settings.speedToTicks;
+        super.drive();
     }
 
     /**
@@ -192,7 +205,6 @@ class ParallaxRobot extends Robot {
             this.body.ledStatus[led] = command;
         }
     }
-
 
     /**
      * Send ticks information to server
