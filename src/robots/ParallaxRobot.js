@@ -85,6 +85,7 @@ class ParallaxRobot extends Robot {
             temp.writeUInt8((whiskerL.currentState ? 0 : 2) | (whiskerR.currentState ? 0 : 1), 1);
             this.sendToServer(temp);
         };
+        
         // Create collision event functions
         whiskerL.onCollisionStart = whiskerHit.bind(this, whiskerL, whiskerL, whiskerR, true);
         whiskerR.onCollisionStart = whiskerHit.bind(this, whiskerR, whiskerL, whiskerR, true);

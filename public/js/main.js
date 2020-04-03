@@ -90,3 +90,6 @@ function reset() {
     socket.emit('reset', true);
 }
 
+function sendClientEvent(type, data) {
+    socket.emit('clientEvent', { type: type, data: data });
+}

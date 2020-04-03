@@ -265,6 +265,30 @@ class Room {
             });
         });
     }
+
+    /**
+     * Handle an event from a browser client in this room
+     * @param {String} type 
+     * @param {Object} data 
+     * @param {SocketIO.Socket} socket 
+     */
+    // eslint-disable-next-line no-unused-vars
+    onClientEvent(type, data, socket) {
+        let temp;
+        switch(type){
+        case 'parallax_hw_button':
+            // Create Button message
+            temp = Buffer.alloc(2);
+            temp.write('P');
+            temp.writeUInt8(data.status ? 0 : 1, 1);
+
+            // Send button state to server
+            this.robots.find(r => r.mac == data.mac).sendToServer(temp);
+            break;
+        default:
+            this.debug(`Unknown client event: ${type}`);
+        }
+    }
 }
 
 Room.existingIDs = [];

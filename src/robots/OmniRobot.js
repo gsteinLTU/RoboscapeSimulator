@@ -29,7 +29,7 @@ class OmniRobot extends Robot {
      */
     createBody(position) {
         this.mainBody = Bodies.circle(position.x, position.y, this.settings.width / 2, {
-            label: `${this.mac}_main`,
+            label: `${this.mac}`,
             friction: 0.6,
             frictionAir: 0.45,
             frictionStatic: 0
