@@ -272,6 +272,7 @@ class Room {
      * @param {Object} data 
      * @param {SocketIO.Socket} socket 
      */
+    // eslint-disable-next-line no-unused-vars
     onClientEvent(type, data, socket) {
         let temp;
         switch(type){
