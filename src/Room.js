@@ -265,6 +265,13 @@ class Room {
             });
         });
     }
+
+    onClientEvent(type, data, socket) {
+        switch(type){
+        default:
+            this.debug(`Unknown client event: ${type}`);
+        }
+    }
 }
 
 Room.existingIDs = [];

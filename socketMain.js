@@ -62,7 +62,8 @@ function socketMain(io) {
     function joinRoom(roomID, socket) {
         let room = rooms[rooms.map(room => room.roomID).indexOf(roomID)];
         socket.join(roomID);
-
+        socket.activeRoom = room;
+        
         // Create robot if not too many
         if (room.robots.length < settings.maxRobots) {
             // Add new robot and tell everyone about it
@@ -90,6 +91,7 @@ function socketMain(io) {
 
         // Join room for users in no real room
         socket.join('waiting-room');
+        socket.activeRoom = null;
 
         sendAvailableRooms(socket);
 
@@ -129,6 +131,16 @@ function socketMain(io) {
             } else {
                 debug(`Socket ${socket.id} attempted to join second room!`);
                 cb(false);
+            }
+        });
+
+        socket.on('clientEvent', eventData => {
+            // Check if in real room
+            if (socket.activeRoom != null) {
+                let {type, data} = eventData;
+
+                // Send to Room to handle
+                socket.activeRoom.onClientEvent(type, data, socket);
             }
         });
     });
