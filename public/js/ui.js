@@ -62,15 +62,29 @@ function updateRobotsPanel(){
         // Check for robots by detecting MAC address label
         if (/^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$/.test(body.label)){
             $('#robomenu').append(
-                `<li>
+                `<li class="roboinfo" data-robot="${body.label}">
                     <a href="#">${body.label}</a>
                     ${body.image == 'parallax_robot' ? `<ul class="list-unstyled robosublist">
                         <li>
-                            <button class="btn btn-light">Hardware Button</button>
+                            <button class="btn btn-light hwbtn">Hardware Button</button>
                         </li>
                     </ul>` : ''}
                 </li>`);
         }
     }
     
+
+    $('.hwbtn').mousedown(e => {
+        let mac = $(e.target).closest('.roboinfo')[0].dataset['robot'];
+
+        // Tell server button was clicked
+        sendClientEvent('parallax_hw_button', { mac: mac, status: true });
+    });
+
+    $('.hwbtn').mouseup(e => {
+        let mac = $(e.target).closest('.roboinfo')[0].dataset['robot'];
+
+        // Tell server button was unclicked
+        sendClientEvent('parallax_hw_button', { mac: mac, status: false });
+    });
 }
