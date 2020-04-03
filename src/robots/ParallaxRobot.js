@@ -28,6 +28,10 @@ class ParallaxRobot extends Robot {
         this.body.ledStatus = [0, 0];
         this.commandHandlers['L'] = this.updateLEDs.bind(this);
 
+        // Setup ticks
+        this.ticks = {left: 0, right: 0};
+        this.commandHandlers['T'] = this.sendTicks.bind(this);
+
         // Update center of mass position
         this.body.positionPrev.x = this.mainBody.position.x - (this.body.position.x - this.body.positionPrev.x);
         this.body.positionPrev.y = this.mainBody.position.y - (this.body.position.y - this.body.positionPrev.y);
@@ -187,6 +191,21 @@ class ParallaxRobot extends Robot {
         if (led < this.body.ledStatus.length) {
             this.body.ledStatus[led] = command;
         }
+    }
+
+
+    /**
+     * Send ticks information to server
+     */
+    sendTicks() {
+        let temp = Buffer.alloc(9);
+        temp.write('T');
+
+        // Add ticks to message
+        temp.writeInt32LE(this.ticks.left,1);
+        temp.writeInt32LE(this.ticks.right,5);
+
+        this.sendToServer(temp);
     }
 }
 
