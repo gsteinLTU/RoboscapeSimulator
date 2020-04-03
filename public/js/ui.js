@@ -64,11 +64,11 @@ function updateRobotsPanel(){
             $('#robomenu').append(
                 `<li>
                     <a href="#">${body.label}</a>
-                    <ul class="list-unstyled robosublist">
-                        <!-- <li>
-                            <button class="btn btn-light">Button</button>
-                        </li> --!>
-                    </ul>
+                    ${body.image == 'parallax_robot' ? `<ul class="list-unstyled robosublist">
+                        <li>
+                            <button class="btn btn-light">Hardware Button</button>
+                        </li>
+                    </ul>` : ''}
                 </li>`);
         }
     }
