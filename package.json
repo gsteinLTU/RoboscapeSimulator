@@ -4,8 +4,10 @@
     "description": "Simple online simulation of robots for demonstration/education purposes",
     "main": "index.js",
     "scripts": {
-        "test": "jest",
-        "start": "node index.js"
+        "test": "jest --verbose",
+        "start": "node index.js",
+        "dev": "nodemon index.js",
+        "lint": "eslint ."
     },
     "repository": {
         "type": "git",

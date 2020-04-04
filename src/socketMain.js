@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('roboscape-sim:socketMain');
 
-const Room = require('./src/Room');
+const Room = require('./Room');
 
 const settings = {
     updateRate: 20,
@@ -75,6 +75,7 @@ function socketMain(io) {
         }
     }
 
+    // eslint-disable-next-line no-unused-vars
     let updateInterval = setInterval(() => {
         for (let room of rooms) {
             // Check for dead bots

@@ -5,7 +5,7 @@ const socketio = require('socket.io');
 const path = require('path');
 const debug = require('debug')('roboscape-sim:index');
 
-const socketMain = require('./socketMain.js');
+const socketMain = require('./src/socketMain.js');
 
 const port = process.env.PORT | 8000;
 
