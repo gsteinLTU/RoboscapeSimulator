@@ -75,6 +75,7 @@ function socketMain(io) {
         }
     }
 
+    // eslint-disable-next-line no-unused-vars
     let updateInterval = setInterval(() => {
         for (let room of rooms) {
             // Check for dead bots
