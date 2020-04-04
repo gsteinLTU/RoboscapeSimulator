@@ -26,4 +26,11 @@ describe('Robot tests', () => {
         expect(testRobot.body.position.x).toBeCloseTo(randX);
         expect(testRobot.body.position.y).toBeCloseTo(randY);
     });
+
+    test('Has all expected command handlers', () => {
+        let testRobot = new Robot(null, null, engine);
+        expect(testRobot.commandHandlers).toMatchObject(expect.objectContaining({
+            'S': expect.any(Function)
+        }));
+    });
 });
