@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const Matter = require('matter-js');
-const Vector = Matter.Vector,
-    World = Matter.World;
+const World = Matter.World;
 
 const Robot = require('./Robot');
 const WhiskersSensor = require('./sensors/WhiskersSensor');

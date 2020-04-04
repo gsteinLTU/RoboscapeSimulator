@@ -1,9 +1,3 @@
-const Matter = require('matter-js');
-const Body = Matter.Body,
-    Bodies = Matter.Bodies,
-    World = Matter.World;
-
-
 /**
  * A set of lights attached to the robot
  */
