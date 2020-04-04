@@ -7,11 +7,10 @@ const Vector = Matter.Vector;
 class RangeSensor {
 
     /**
-     * Adds Whiskers sensors to robot
+     * Adds Range sensor to robot
      * @param {Robot} robot 
      */
     static addTo(robot) {
-        // Setup range sensor
         robot.commandHandlers['R'] = RangeSensor._sendRange.bind(robot);
     }
 
