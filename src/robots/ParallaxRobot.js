@@ -6,6 +6,7 @@ const Vector = Matter.Vector,
 const Robot = require('./Robot');
 const WhiskersSensor = require('./sensors/WhiskersSensor');
 const RangeSensor = require('./sensors/RangeSensor');
+const LEDsActuator = require('./actuators/LEDsActuator');
 
 /**
  * Represents a Parallax ActivityBot robot
@@ -29,10 +30,7 @@ class ParallaxRobot extends Robot {
         // Add sensors
         WhiskersSensor.addTo(this);
         RangeSensor.addTo(this);
-
-        // Setup LEDs
-        this.body.ledStatus = [0, 0];
-        this.commandHandlers['L'] = this.updateLEDs.bind(this);
+        LEDsActuator.addTo(this, 2);
 
         // Setup ticks
         this.ticks = {left: 0, right: 0};
@@ -58,22 +56,6 @@ class ParallaxRobot extends Robot {
         this.ticks.left += this.setSpeed.left * this.settings.speedToTicks;
         this.ticks.right += this.setSpeed.right * this.settings.speedToTicks;
         super.drive();
-    }
-
-    /**
-     * Handle an incoming "set LED" message
-     * @param {Buffer} msg Message from server to this robot
-     */
-    updateLEDs(msg)
-    {
-        // Decompose message into parts
-        let led = msg.readUInt8(1);
-        let command = msg.readUInt8(2);
-
-        // Tell client LED changed
-        if (led < this.body.ledStatus.length) {
-            this.body.ledStatus[led] = command;
-        }
     }
 
     /**
