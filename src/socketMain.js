@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('roboscape-sim:socketMain');
 
-const Room = require('./src/Room');
+const Room = require('./Room');
 
 const settings = {
     updateRate: 20,
