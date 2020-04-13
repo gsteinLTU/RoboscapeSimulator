@@ -305,6 +305,7 @@ Room.existingIDs = [];
 Room.robotTypes = {
     ParallaxRobot: require('./robots/ParallaxRobot'),
     ParallaxRobotLidar: require('./robots/ParallaxRobotLidar'),
+    ParallaxRobotLight: require('./robots/ParallaxRobotLight'),
     OmniRobot: require('./robots/OmniRobot')
 };
 

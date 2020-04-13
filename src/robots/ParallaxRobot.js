@@ -7,6 +7,7 @@ const WhiskersSensor = require('./sensors/WhiskersSensor');
 const RangeSensor = require('./sensors/RangeSensor');
 const LEDsActuator = require('./actuators/LEDsActuator');
 const LidarSensor = require('./sensors/LidarSensor');
+const LightSensor = require('./sensors/BitmapLightSensor');
 
 /**
  * Represents a Parallax ActivityBot robot
@@ -36,6 +37,11 @@ class ParallaxRobot extends Robot {
             LidarSensor.addTo(this);    
         } else {
             RangeSensor.addTo(this);
+        }
+
+        // Optional light sensor
+        if(settings.extraSensors.indexOf('light' !== -1)){
+            LightSensor.addTo(this);
         }
         
         // Setup ticks

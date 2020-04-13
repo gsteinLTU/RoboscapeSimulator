@@ -21,7 +21,7 @@ class BitmapLightSensor {
         temp.write('l');
 
         // Return result with noise
-        let value = 0;
+        let value = 1;
         temp.writeUInt8(value, 1);
         this.sendToServer(temp);
     }
