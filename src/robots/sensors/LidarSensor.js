@@ -33,7 +33,7 @@ class LidarSensor extends RangeSensor {
         temp.write('R');
 
         // Difference between rays
-        let angleDiff = (this.lidarSettings.maxangle - this.lidarSettings.minangle) / this.lidarSettings.rays;
+        let angleDiff = (this.lidarSettings.maxangle - this.lidarSettings.minangle) / (this.lidarSettings.rays - 1);
 
         for (let i = 0; i < this.lidarSettings.rays; i++) {
             // Create vector in angle
