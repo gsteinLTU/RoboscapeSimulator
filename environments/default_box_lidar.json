@@ -1,0 +1,61 @@
+{
+    "name": "Default Room with Box and Lidar",
+    "objects": [
+        {
+            "label": "ground",
+            "image": "wall",
+            "isStatic": true,
+            "width": 800,
+            "height": 80,
+            "x": 440,
+            "y": 800
+        },
+        {
+            "label": "ground2",
+            "image": "wall",
+            "isStatic": true,
+            "width": 880,
+            "height": 80,
+            "x": 440,
+            "y": 40
+        },
+        {
+            "label": "ground3",
+            "image": "wall",
+            "isStatic": true,
+            "width": 80,
+            "height": 800,
+            "x": 40,
+            "y": 440
+        },
+        {
+            "label": "ground4",
+            "image": "wall",
+            "isStatic": true,
+            "width": 80,
+            "height": 800,
+            "x": 840,
+            "y": 440
+        },
+        {
+            "label": "box",
+            "image": "box",
+            "isStatic": false,
+            "frictionAir": 0.7,
+            "width": 80,
+            "height": 80,
+            "x": 480,
+            "y": 480
+        }
+    ],
+    "robotSpawn": {
+        "spawnType": "RandomPosition",
+        "robotTypes": [
+            "ParallaxRobotLidar"
+        ],
+        "minX": 300,
+        "maxX": 600,
+        "minY": 300,
+        "maxY": 600
+    }
+}
