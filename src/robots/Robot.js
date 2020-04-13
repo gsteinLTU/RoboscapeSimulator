@@ -198,7 +198,8 @@ Robot.defaultSettings = {
     maxX: 700,
     minY: 100,
     maxY: 700,
-    debugMessages: false
+    debugMessages: false,
+    extraSensors: [],
 };
 
 module.exports = Robot;
