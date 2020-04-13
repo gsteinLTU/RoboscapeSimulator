@@ -7,7 +7,8 @@ const debug = require('debug')('roboscape-sim:index');
 
 const socketMain = require('./src/socketMain.js');
 
-const port = process.env.PORT | 8000;
+const port = process.env.PORT || 8000;
+process.env.sensors = process.env.sensors || 'parallax';
 
 // Create Express server
 const app = express();
