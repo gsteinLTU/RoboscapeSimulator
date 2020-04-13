@@ -50,6 +50,9 @@
     ],
     "robotSpawn": {
         "spawnType": "RandomPosition",
+        "requiredExtraSensors": [
+            "lidar"
+        ],
         "robotTypes": [
             "ParallaxRobotLidar"
         ],

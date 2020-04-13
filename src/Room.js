@@ -255,10 +255,16 @@ class Room {
                 for (let file of files) {
                     let fileData = fs.readFileSync(path.join(__dirname, '..', 'environments', file));
                     let parsed = JSON.parse(fileData);
-                    environments.push({
-                        file: path.basename(file, '.json'),
-                        name: parsed.name
-                    });
+
+                    // Check for unsupported sensor types
+                    if (parsed.robotSpawn.requiredExtraSensors == undefined 
+                        || parsed.robotSpawn.requiredExtraSensors.length === 0 
+                        || process.env.SENSORS === 'all'){           
+                        environments.push({
+                            file: path.basename(file, '.json'),
+                            name: parsed.name
+                        });
+                    }
                 }
 
                 resolve(environments);
