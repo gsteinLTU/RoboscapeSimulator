@@ -28,6 +28,15 @@ class RangeSensor {
         const rayStart = Vector.add(this.body.position, Vector.mult(upVec, 1));
         const rayEnd = Vector.add(this.body.position, Vector.mult(upVec, 325));
 
+        let distance = RangeSensor._hitTest.call(this, rayStart, rayEnd);
+
+        // Return result with noise
+        temp.writeInt16LE(distance * (Math.random() / 10 + 0.95), 1);
+        this.sendToServer(temp);
+    }
+
+
+    static _hitTest(rayStart, rayEnd){
         // Find objects in sensor path
         let query = Matter.Query.ray(
             this.engine.world.bodies.filter(b => !b.label.includes(this.body.label)),
@@ -56,10 +65,11 @@ class RangeSensor {
             }
 
             // Test for intersections
+            let dirVec = Vector.normalise(Vector.sub(rayEnd, rayStart));
             let x1 = rayStart.x;
-            let x2 = rayStart.x + upVec.x * maxDist;
+            let x2 = rayStart.x + dirVec.x * maxDist;
             let y1 = rayStart.y;
-            let y2 = rayStart.y + upVec.y * maxDist;
+            let y2 = rayStart.y + dirVec.y * maxDist;
             for (let edge of targetEdges) {
                 let x3 = edge.p1x;
                 let y3 = edge.p1y;
@@ -82,11 +92,8 @@ class RangeSensor {
             }
         }
 
-        // Return result with noise
-        temp.writeInt16LE(distance * (Math.random() / 10 + 0.95), 1);
-        this.sendToServer(temp);
+        return distance;
     }
-
 }
 
 module.exports = RangeSensor;
