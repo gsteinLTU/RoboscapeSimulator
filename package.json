@@ -29,6 +29,7 @@
         "jest": "^25.1.0"
     },
     "dependencies": {
+        "codecov": "^3.6.5",
         "debug": "^4.1.1",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
@@ -39,5 +40,12 @@
         "shortid": "^2.2.15",
         "socket.io": "^2.3.0",
         "validator-js": "^0.2.1"
+    },
+    "jest": {
+        "collectCoverageFrom": [
+            "src/**/*.js"
+        ],
+        "coverageDirectory": "./coverage/",
+        "collectCoverage": true
     }
 }
