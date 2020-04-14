@@ -13,6 +13,12 @@ function draw() {
     context.translate(cameraPos.x, cameraPos.y);
     context.scale(cameraZoom, cameraZoom);
 
+    // Draw background
+    if(roomBG.complete){
+        context.drawImage(roomBG, 0, 0);
+    }
+    
+    // Draw bodies
     let frameTime = Date.now();
     for (let label of Object.keys(bodies)) {
         let body = bodies[label];

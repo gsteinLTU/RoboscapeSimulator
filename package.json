@@ -35,6 +35,7 @@
         "helmet": "^3.21.3",
         "lodash": "^4.17.15",
         "matter-js": "^0.14.2",
+        "pngjs": "^4.0.0",
         "shortid": "^2.2.15",
         "socket.io": "^2.3.0",
         "validator-js": "^0.2.1"

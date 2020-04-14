@@ -12,6 +12,8 @@ let socket = io.connect();
 let bodies = {};
 let nextBodies = {};
 let bodiesInfo = {};
+let roomInfo = {};
+let roomBG = new Image();
 let availableRooms = [];
 let availableEnvironments = [{ name: 'Default', file: 'default' }];
 let lastUpdateTime = Date.now();
@@ -26,7 +28,7 @@ let cameraZoom = 1;
 // Load sprites
 const images = {};
 images['parallax_robot'] = new Image();
-images['parallax_robot'].src = '/img/parallax_robot.png';
+images['parallax_robot'].src = '/img/robots/parallax_robot.png';
 images['parallax_robot'].offsetAngle = Math.PI;
 images['parallax_robot'].offset = { left: -0.6, right: 0.6, top: -1, bottom: 1.1 };
 images['parallax_robot'].ledPositions = [
@@ -35,7 +37,7 @@ images['parallax_robot'].ledPositions = [
 ];
 
 images['omni_robot'] = new Image();
-images['omni_robot'].src = '/img/omni_robot.png';
+images['omni_robot'].src = '/img/robots/omni_robot.png';
 images['omni_robot'].offsetAngle = Math.PI / 2;
 images['omni_robot'].offset = { left: 0, right: 0, top: 0, bottom: 0 };
 
@@ -71,6 +73,15 @@ socket.on('fullUpdate', data => {
     lastUpdateTime = Date.now();
     nextUpdateTime = Date.now();
     updateRobotsPanel();
+});
+
+// Handle room info
+socket.on('roomInfo', info => {
+    roomInfo = info;
+
+    if(info.background != ''){
+        roomBG.src = `/img/backgrounds/${info.background}.png`;
+    }
 });
 
 socket.on('error', error => {

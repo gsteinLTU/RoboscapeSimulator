@@ -1,0 +1,57 @@
+{
+    "name": "Default Room with Light Sensor",
+    "objects": [
+        {
+            "label": "ground",
+            "image": "wall",
+            "isStatic": true,
+            "width": 1100,
+            "height": 100,
+            "x": 500,
+            "y": 1000
+        },
+        {
+            "label": "ground2",
+            "image": "wall",
+            "isStatic": true,
+            "width": 1100,
+            "height": 100,
+            "x": 500,
+            "y": 0
+        },
+        {
+            "label": "ground3",
+            "image": "wall",
+            "isStatic": true,
+            "width": 100,
+            "height": 1000,
+            "x": 0,
+            "y": 500
+        },
+        {
+            "label": "ground4",
+            "image": "wall",
+            "isStatic": true,
+            "width": 100,
+            "height": 1000,
+            "x": 1000,
+            "y": 500
+        }
+    ],
+    "robotSpawn": {
+        "spawnType": "RandomPosition",
+        "requiredExtraSensors": [
+            "light"
+        ],
+        "robotTypes": [
+            "ParallaxRobotLight"
+        ],
+        "minX": 300,
+        "maxX": 600,
+        "minY": 300,
+        "maxY": 600
+    },
+    "background": {
+        "image": "lineloop"
+    }
+}

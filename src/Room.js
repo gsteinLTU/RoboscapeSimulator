@@ -7,6 +7,7 @@ const _ = require('lodash');
 const shortid = require('shortid');
 const fs = require('fs');
 const path = require('path');
+const PNG = require('pngjs').PNG;
 
 const defaultSettings = {
     robotKeepAliveTime: 1000 * 60 * 10,
@@ -94,6 +95,17 @@ class Room {
                             return Object.keys(Room.robotTypes).indexOf(type) !== -1;
                         })
                         .map(type => Room.robotTypes[type]);
+
+                    if(parsed.background != undefined){
+                        this.settings.background = parsed.background.image || '';
+
+                        // Load background 
+                        this.backgroundImage = fs.createReadStream(path.join(__dirname, '..', 'public', 'img', 'backgrounds', this.settings.background + '.png'))
+                            .pipe(new PNG());
+                    } else {
+                        this.settings.background = '';
+                        this.backgroundImage = null;
+                    }
                 }
             });
 
@@ -194,8 +206,12 @@ class Room {
         // Create a robot of a random allowable type
         let robotType = Math.floor(Math.random() * this.settings.robotTypes.length);
         let bot = new this.settings.robotTypes[robotType](mac, position, this.engine, settings);
+        
         this.robots.push(bot);
+        bot.room = this;
+
         this.debug(`Robot ${bot.mac} added to room`);
+        
         return bot;
     }
 
@@ -295,6 +311,18 @@ class Room {
             this.debug(`Unknown client event: ${type}`);
         }
     }
+
+    /**
+     * Send a client the information about the room
+     * @param {SocketIO.Socket} socket 
+     */
+    sendRoomInfo(socket) {
+        let info = {};
+
+        info.background = this.settings.background;
+
+        socket.emit('roomInfo', info);
+    }
 }
 
 Room.existingIDs = [];
@@ -305,6 +333,7 @@ Room.existingIDs = [];
 Room.robotTypes = {
     ParallaxRobot: require('./robots/ParallaxRobot'),
     ParallaxRobotLidar: require('./robots/ParallaxRobotLidar'),
+    ParallaxRobotLight: require('./robots/ParallaxRobotLight'),
     OmniRobot: require('./robots/OmniRobot')
 };
 

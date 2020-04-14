@@ -64,6 +64,9 @@ function socketMain(io) {
         socket.join(roomID);
         socket.activeRoom = room;
         
+        // Give new client information about room
+        room.sendRoomInfo(socket);
+
         // Create robot if not too many
         if (room.robots.length < settings.maxRobots) {
             // Add new robot and tell everyone about it
