@@ -109,38 +109,22 @@ class Room {
                 }
             });
 
+            const handleCollisionEvent = function (type, event) {
+                var pairs = event.pairs;
+                for (var i = 0; i < pairs.length; i++) {
+                    var pair = pairs[i];
+                    if (pair.bodyA[type] !== undefined) {
+                        pair.bodyA[type]();
+                    }
+                    if (pair.bodyB[type] !== undefined) {
+                        pair.bodyB[type]();
+                    }
+                }
+            };
+
             // Setup collision events
-            Events.on(this.engine, 'collisionStart', function(event) {
-                var pairs = event.pairs;
-
-                for (var i = 0; i < pairs.length; i++) {
-                    var pair = pairs[i];
-
-                    if (pair.bodyA.onCollisionStart !== undefined) {
-                        pair.bodyA.onCollisionStart();
-                    }
-
-                    if (pair.bodyB.onCollisionStart !== undefined) {
-                        pair.bodyB.onCollisionStart();
-                    }
-                }
-            });
-
-            Events.on(this.engine, 'collisionEnd', function(event) {
-                var pairs = event.pairs;
-
-                for (var i = 0; i < pairs.length; i++) {
-                    var pair = pairs[i];
-
-                    if (pair.bodyA.onCollisionEnd !== undefined) {
-                        pair.bodyA.onCollisionEnd();
-                    }
-
-                    if (pair.bodyB.onCollisionEnd !== undefined) {
-                        pair.bodyB.onCollisionEnd();
-                    }
-                }
-            });
+            Events.on(this.engine, 'collisionStart', handleCollisionEvent.bind(this, 'onCollisionStart'));
+            Events.on(this.engine, 'collisionEnd', handleCollisionEvent.bind(this, 'onCollisionEnd'));
         });
     }
 

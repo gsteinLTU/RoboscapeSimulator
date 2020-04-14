@@ -74,17 +74,13 @@ function updateRobotsPanel(){
     }
     
 
-    $('.hwbtn').mousedown(e => {
-        let mac = $(e.target).closest('.roboinfo')[0].dataset['robot'];
+    $('.hwbtn').mousedown(handleHWButton.bind(null, true));
 
+    $('.hwbtn').mouseup(handleHWButton.bind(null, false));
+
+    function handleHWButton(val, e) {
+        let mac = $(e.target).closest('.roboinfo')[0].dataset['robot'];
         // Tell server button was clicked
-        sendClientEvent('parallax_hw_button', { mac: mac, status: true });
-    });
-
-    $('.hwbtn').mouseup(e => {
-        let mac = $(e.target).closest('.roboinfo')[0].dataset['robot'];
-
-        // Tell server button was unclicked
-        sendClientEvent('parallax_hw_button', { mac: mac, status: false });
-    });
+        sendClientEvent('parallax_hw_button', { mac: mac, status: val });
+    }
 }
