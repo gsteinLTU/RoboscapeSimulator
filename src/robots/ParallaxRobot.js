@@ -41,7 +41,7 @@ class ParallaxRobot extends Robot {
 
         // Optional light sensor
         if(settings.extraSensors.indexOf('light' !== -1)){
-            LightSensor.addTo(this);
+            LightSensor.addTo(this, {x: 0, y: 20});
         }
         
         // Setup ticks
