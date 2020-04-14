@@ -21,7 +21,11 @@ class BitmapLightSensor {
         temp.write('l');
 
         // Return result with noise
-        let value = 1;
+        let idx = this.room.backgroundImage.width * Math.min(Math.max(this.mainBody.position.y, 0), this.room.backgroundImage.width);
+        idx += Math.min(Math.max(this.mainBody.position.x, 0), this.room.backgroundImage.width);
+        idx = idx << 2;
+
+        let value = this.room.backgroundImage.data[idx];
         temp.writeUInt8(value, 1);
         this.sendToServer(temp);
     }

@@ -7,6 +7,7 @@ const _ = require('lodash');
 const shortid = require('shortid');
 const fs = require('fs');
 const path = require('path');
+const PNG = require('pngjs').PNG;
 
 const defaultSettings = {
     robotKeepAliveTime: 1000 * 60 * 10,
@@ -97,8 +98,13 @@ class Room {
 
                     if(parsed.background != undefined){
                         this.settings.background = parsed.background.image || '';
+
+                        // Load background 
+                        this.backgroundImage = fs.createReadStream(path.join(__dirname, '..', 'public', 'img', 'backgrounds', this.settings.background + '.png'))
+                            .pipe(new PNG());
                     } else {
                         this.settings.background = '';
+                        this.backgroundImage = null;
                     }
                 }
             });
@@ -200,8 +206,12 @@ class Room {
         // Create a robot of a random allowable type
         let robotType = Math.floor(Math.random() * this.settings.robotTypes.length);
         let bot = new this.settings.robotTypes[robotType](mac, position, this.engine, settings);
+        
         this.robots.push(bot);
+        bot.room = this;
+
         this.debug(`Robot ${bot.mac} added to room`);
+        
         return bot;
     }
 
