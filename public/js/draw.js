@@ -14,8 +14,10 @@ function draw() {
     context.scale(cameraZoom, cameraZoom);
 
     // Draw background
-    context.drawImage(roomBG, 0, 0);
-
+    if(roomBG.complete){
+        context.drawImage(roomBG, 0, 0);
+    }
+    
     // Draw bodies
     let frameTime = Date.now();
     for (let label of Object.keys(bodies)) {
