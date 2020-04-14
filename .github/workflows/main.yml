@@ -27,4 +27,4 @@ jobs:
       - name: docker push
         run: docker push gstein17/roboscape-simulator
       - name: codecov
-        run: npx jest && npx codecov -t :${{ secrets.CODECOV_TOKEN }}
+        run: npx jest --coverage && npx codecov -t ${{ secrets.CODECOV_TOKEN }}
