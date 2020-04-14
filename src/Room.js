@@ -94,6 +94,12 @@ class Room {
                             return Object.keys(Room.robotTypes).indexOf(type) !== -1;
                         })
                         .map(type => Room.robotTypes[type]);
+
+                    if(parsed.background != undefined){
+                        this.settings.background = parsed.background.image || '';
+                    } else {
+                        this.settings.background = '';
+                    }
                 }
             });
 
@@ -294,6 +300,18 @@ class Room {
         default:
             this.debug(`Unknown client event: ${type}`);
         }
+    }
+
+    /**
+     * Send a client the information about the room
+     * @param {SocketIO.Socket} socket 
+     */
+    sendRoomInfo(socket) {
+        let info = {};
+
+        info.background = this.settings.background;
+
+        socket.emit('roomInfo', info);
     }
 }
 
