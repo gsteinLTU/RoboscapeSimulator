@@ -26,27 +26,37 @@ class BitmapLightSensor {
 
         // Find position with offset
         let offsetVec = Vector.rotate(Vector.create(this.lightSensorOffset.x, this.lightSensorOffset.y), this.body.angle);
-
-        // Determine if position is outside of 
         let testPoint = {
             x: this.mainBody.position.x + offsetVec.x,
             y: this.mainBody.position.y + offsetVec.y
         };
 
-        // If point is invalid, return default value
-        let value = 255;
-        
-        // Make sure point is on image
-        if (testPoint.x >= 0 && testPoint.x < this.room.backgroundImage.width && testPoint.y >= 0 && testPoint.y < this.room.backgroundImage.height){
-            let idx = this.room.backgroundImage.width * Math.round(testPoint.y);
-            idx += Math.round(testPoint.x);
-            idx = idx << 2;
-            value = this.room.backgroundImage.data[idx];
-        }
+        let value = BitmapLightSensor._getValueFromImage(testPoint, this.room.backgroundImage);
         
         // Return result
         temp.writeUInt8(value, 1);
         this.sendToServer(temp);
+    }
+
+    /**
+     * Get value at a given position in an image
+     * @param {Object} testPoint 
+     * @param {PNG} image 
+     * @param {Number=} defaultValue Value to use if testPoint is outside image bounds
+     */
+    static _getValueFromImage(testPoint, image, defaultValue = 255) {
+        // If point is invalid, return default value
+        let value = defaultValue;
+        
+        // Make sure point is on image
+        if (testPoint.x >= 0 && testPoint.x < image.width && testPoint.y >= 0 && testPoint.y < image.height) {
+            let idx = image.width * Math.round(testPoint.y);
+            idx += Math.round(testPoint.x);
+            idx = idx << 2;
+            value = image.data[idx];
+        }
+
+        return value;
     }
 }
 
