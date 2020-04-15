@@ -2,6 +2,8 @@ const ParallaxRobot = require('./ParallaxRobot');
 const Matter = require('matter-js');
 const Engine = Matter.Engine;
 
+const { expectCommandHandlers } = require('../util');
+
 describe('ParallaxRobot tests', () => {
     let engine;
     let testRobot;
@@ -11,12 +13,7 @@ describe('ParallaxRobot tests', () => {
     });
 
     test('Has all expected command handlers', () => {
-        expect(testRobot.commandHandlers).toMatchObject(expect.objectContaining({
-            'L': expect.any(Function),
-            'R': expect.any(Function),
-            'S': expect.any(Function),
-            'T': expect.any(Function)
-        }));
+        expectCommandHandlers(['S','L','R','T'], testRobot);
     });
 
     test('Can set LEDs', () => {

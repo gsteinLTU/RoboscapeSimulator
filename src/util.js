@@ -13,4 +13,20 @@ function generateRandomMAC() {
     return mac;
 }
 
-module.exports = { generateRandomMAC };
+/**
+ * Test that a robot has handlers for a list of commands
+ * @param {Array<String>} commands 
+ * @param {Robot} testRobot 
+ */
+function expectCommandHandlers(commands, testRobot){
+
+    let expectedCommands = {};
+
+    commands.forEach((command) => {
+        expectedCommands[command] = expect.any(Function);
+    });
+
+    expect(testRobot.commandHandlers).toMatchObject(expect.objectContaining(expectedCommands));
+}
+
+module.exports = { generateRandomMAC, expectCommandHandlers };

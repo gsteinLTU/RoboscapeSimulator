@@ -3,7 +3,7 @@ const ParallaxRobot = require('./ParallaxRobot');
 /**
  * Class to create ParallaxRobot with Lidar sensor
  */
-class ParallaxRobotLidar extends ParallaxRobot {
+class ParallaxRobotLight extends ParallaxRobot {
     constructor(mac = null, position = null, engine = null, settings = {}) {
 
         if(settings.extraSensors == undefined){
@@ -14,4 +14,4 @@ class ParallaxRobotLidar extends ParallaxRobot {
     }
 }
 
-module.exports = ParallaxRobotLidar;
+module.exports = ParallaxRobotLight;
