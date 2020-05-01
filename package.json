@@ -1,51 +1,55 @@
 {
-    "name": "roboscapesimulator",
-    "version": "0.0.1",
-    "description": "Simple online simulation of robots for demonstration/education purposes",
-    "main": "index.js",
-    "scripts": {
-        "test": "jest --verbose",
-        "start": "node index.js",
-        "dev": "nodemon index.js",
-        "lint": "eslint ."
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/gsteinLTU/RoboscapeSimulator.git"
-    },
-    "author": "Gordon Stein",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/gsteinLTU/RoboscapeSimulator/issues"
-    },
-    "homepage": "https://github.com/gsteinLTU/RoboscapeSimulator#readme",
-    "devDependencies": {
-        "eslint": "^6.8.0",
-        "eslint-config-standard": "^14.1.0",
-        "eslint-plugin-import": "^2.20.1",
-        "eslint-plugin-node": "^11.0.0",
-        "eslint-plugin-promise": "^4.2.1",
-        "eslint-plugin-standard": "^4.0.1",
-        "jest": "^25.1.0"
-    },
-    "dependencies": {
-        "codecov": "^3.6.5",
-        "debug": "^4.1.1",
-        "dotenv": "^8.2.0",
-        "express": "^4.17.1",
-        "helmet": "^3.21.3",
-        "lodash": "^4.17.15",
-        "matter-js": "^0.14.2",
-        "pngjs": "^4.0.0",
-        "shortid": "^2.2.15",
-        "socket.io": "^2.3.0",
-        "validator-js": "^0.2.1"
-    },
-    "jest": {
-        "collectCoverageFrom": [
-            "src/**/*.js"
-        ],
-        "coverageDirectory": "./coverage/",
-        "collectCoverage": true
-    }
+  "name": "roboscapesimulator",
+  "version": "0.0.1",
+  "description": "Simple online simulation of robots for demonstration/education purposes",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --verbose",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint .",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gsteinLTU/RoboscapeSimulator.git"
+  },
+  "author": "Gordon Stein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gsteinLTU/RoboscapeSimulator/issues"
+  },
+  "homepage": "https://github.com/gsteinLTU/RoboscapeSimulator#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^25.1.0"
+  },
+  "dependencies": {
+    "codecov": "^3.6.5",
+    "debug": "^4.1.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^3.21.3",
+    "lodash": "^4.17.15",
+    "matter-js": "^0.14.2",
+    "pngjs": "^4.0.0",
+    "shortid": "^2.2.15",
+    "socket.io": "^2.3.0",
+    "validator-js": "^0.2.1",
+    "snyk": "^1.316.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
+  },
+  "snyk": true
 }
