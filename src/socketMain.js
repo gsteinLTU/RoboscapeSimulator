@@ -60,7 +60,7 @@ function socketMain(io) {
      * @param {SocketIO.Socket} socket The user's socket
      */
     function joinRoom(roomID, socket) {
-        let room = rooms[rooms.map(room => room.roomID).indexOf(roomID)];
+        let room = rooms[getRoomIndex(roomID)];
         socket.join(roomID);
         socket.activeRoom = room;
 
@@ -76,6 +76,14 @@ function socketMain(io) {
             // Begin sending updates
             sendFullUpdate(socket, room);
         }
+    }
+
+    /**
+     * Get the index of a room ID in the list of all rooms
+     * @param {String} roomID ID of Room to locate
+     */
+    function getRoomIndex(roomID) {
+        return rooms.map(room => room.roomID).indexOf(roomID);
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -111,7 +119,7 @@ function socketMain(io) {
             if (Object.keys(socket.rooms).indexOf('waiting-room') !== -1) {
 
                 // Check that room is valid
-                if (rooms.map(room => room.roomID).indexOf(roomID) !== -1) {
+                if (getRoomIndex(roomID) !== -1) {
                     joinRoom(roomID, socket);
 
                     socket.leave('waiting-room');
@@ -152,7 +160,19 @@ function socketMain(io) {
                 socket.activeRoom.onClientEvent(type, data, socket);
             }
         });
+
+        // If user reconnects, determine if they can be readded to their room
+        socket.on('postReconnect', roomID => {
+            if (roomID != null && getRoomIndex(roomID) !== -1) {
+                joinRoom(roomID, socket);
+            } else {
+                debug(`Client attempted to join room ${roomID} that no longer exists`);
+                socket.emit('forceRefesh', 0);
+            }
+        });
     });
+
+
 }
 
 module.exports = socketMain;

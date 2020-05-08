@@ -15,8 +15,10 @@ $('#rooms-select').change(e => {
 
 $('#room-join-button').click(() => {
     socket.emit('joinRoom', $('#rooms-select').val(), $('#env-select').val(), result => {
-        console.log(result);
         if (result !== false) {
+            console.log(`Joined room ${result}`);
+            roomID = result;
+
             // Reset camera settings
             cameraPos.x = 0;
             cameraPos.y = 0;

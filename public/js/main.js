@@ -12,6 +12,7 @@ let socket = io.connect();
 let bodies = {};
 let nextBodies = {};
 let bodiesInfo = {};
+let roomID = null;
 let roomInfo = {};
 let roomBG = new Image();
 let availableRooms = [];
@@ -22,7 +23,7 @@ let running = true;
 let keysdown = new Set();
 
 // Camera data
-let cameraPos = {x: 0, y: 0};
+let cameraPos = { x: 0, y: 0 };
 let cameraZoom = 1;
 
 // Load sprites
@@ -32,8 +33,8 @@ images['parallax_robot'].src = '/img/robots/parallax_robot.png';
 images['parallax_robot'].offsetAngle = Math.PI;
 images['parallax_robot'].offset = { left: -0.6, right: 0.6, top: -1, bottom: 1.1 };
 images['parallax_robot'].ledPositions = [
-    {x: 5, y: -10},
-    {x: 5, y: 10}
+    { x: 5, y: -10 },
+    { x: 5, y: 10 }
 ];
 
 images['omni_robot'] = new Image();
@@ -79,7 +80,7 @@ socket.on('fullUpdate', data => {
 socket.on('roomInfo', info => {
     roomInfo = info;
 
-    if(info.background != ''){
+    if (info.background != '') {
         roomBG.src = `/img/backgrounds/${info.background}.png`;
     }
 });
@@ -97,9 +98,16 @@ socket.on('availableEnvironments', list => {
     }
 });
 
-function reset() {
-    socket.emit('reset', true);
-}
+// If we were previously connected, let server know we had an issue
+socket.on('reconnect', attempt => {
+    console.log(`Reconnected after ${attempt} attempts!`);
+    socket.emit('postReconnect', roomID);
+});
+
+// Allow server to request refresh
+socket.on('forceRefesh', reason => {
+    location.reload();
+});
 
 function sendClientEvent(type, data) {
     socket.emit('clientEvent', { type: type, data: data });
