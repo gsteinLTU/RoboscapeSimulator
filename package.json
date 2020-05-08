@@ -4,9 +4,9 @@
     "description": "Simple online simulation of robots for demonstration/education purposes",
     "main": "index.js",
     "scripts": {
-        "test": "jest --verbose",
-        "start": "node index.js",
-        "dev": "nodemon index.js",
+        "test": "cross-env NODE_ENV=test jest --verbose",
+        "start": "cross-env NODE_ENV=production node index.js",
+        "dev": "cross-env NODE_ENV=development nodemon index.js",
         "lint": "eslint ."
     },
     "repository": {
@@ -30,6 +30,7 @@
     },
     "dependencies": {
         "codecov": "^3.6.5",
+        "cross-env": "^7.0.2",
         "debug": "^4.1.1",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
@@ -39,6 +40,7 @@
         "pngjs": "^4.0.0",
         "shortid": "^2.2.15",
         "socket.io": "^2.3.0",
+        "socket.io-client": "^2.3.0",
         "validator-js": "^0.2.1"
     },
     "jest": {
