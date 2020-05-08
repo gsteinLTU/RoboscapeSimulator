@@ -15,7 +15,7 @@ class LidarSensor extends RangeSensor {
      * @param {Number=} maxangle
      * @param {Number=} rays
      */
-    static addTo(robot, minangle = -Math.PI / 2, maxangle = Math.PI / 2, rays = 5) {
+    static addTo(robot, minangle = -Math.PI / 2, maxangle = Math.PI / 2, rays = 19) {
         robot.commandHandlers['R'] = LidarSensor._sendRange.bind(robot);
         robot.lidarSettings = {
             minangle: minangle,
