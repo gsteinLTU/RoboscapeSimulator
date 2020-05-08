@@ -14,7 +14,7 @@ $('#rooms-select').change(e => {
 });
 
 $('#room-join-button').click(() => {
-    socket.emit('joinRoom', { roomID: $('#rooms-select').val(), env: $('#env-select').val() }, result => {
+    socket.emit('joinRoom', $('#rooms-select').val(), $('#env-select').val(), result => {
         console.log(result);
         if (result !== false) {
             // Reset camera settings
@@ -55,12 +55,12 @@ $('#panel-toggle').click(e => {
     $('#side-panel').toggleClass('collapsed');
 });
 
-function updateRobotsPanel(){
+function updateRobotsPanel() {
     $('#robomenu').html('');
 
-    for(let body of Object.values(bodiesInfo)){
+    for (let body of Object.values(bodiesInfo)) {
         // Check for robots by detecting MAC address label
-        if (/^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$/.test(body.label)){
+        if (/^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$/.test(body.label)) {
             $('#robomenu').append(
                 `<li class="roboinfo" data-robot="${body.label}">
                     <a href="#">${body.label}</a>
@@ -72,7 +72,7 @@ function updateRobotsPanel(){
                 </li>`);
         }
     }
-    
+
 
     $('.hwbtn').mousedown(handleHWButton.bind(null, true));
 

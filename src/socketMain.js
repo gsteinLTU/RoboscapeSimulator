@@ -63,7 +63,7 @@ function socketMain(io) {
         let room = rooms[rooms.map(room => room.roomID).indexOf(roomID)];
         socket.join(roomID);
         socket.activeRoom = room;
-        
+
         // Give new client information about room
         room.sendRoomInfo(socket);
 
@@ -100,10 +100,15 @@ function socketMain(io) {
         sendAvailableRooms(socket);
 
         // Allow joining a room
-        socket.on('joinRoom', (data, cb) => {
+        socket.on('joinRoom', (roomID, env, cb) => {
+            // Validate callback
+            if (!_.isFunction(cb)) {
+                // No callback provided, replace with NOP function
+                cb = () => { };
+            }
+
             // Check if in waiting-room
             if (Object.keys(socket.rooms).indexOf('waiting-room') !== -1) {
-                let roomID = data.roomID;
 
                 // Check that room is valid
                 if (rooms.map(room => room.roomID).indexOf(roomID) !== -1) {
@@ -115,7 +120,7 @@ function socketMain(io) {
                 } else if (roomID === 'create' && rooms.length < settings.maxRooms) {
                     debug(`Socket ${socket.id} requested to create room`);
                     // Create a virtual environment
-                    let tempRoom = new Room({ environment: data.env });
+                    let tempRoom = new Room({ environment: env });
                     rooms.push(tempRoom);
 
                     // Delay to allow environment to finish loading from file first
@@ -141,7 +146,7 @@ function socketMain(io) {
         socket.on('clientEvent', eventData => {
             // Check if in real room
             if (socket.activeRoom != null) {
-                let {type, data} = eventData;
+                let { type, data } = eventData;
 
                 // Send to Room to handle
                 socket.activeRoom.onClientEvent(type, data, socket);
