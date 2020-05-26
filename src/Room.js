@@ -16,11 +16,12 @@ const defaultSettings = {
 };
 
 Matter.Resolver._restingThresh = 0.1;
+const SENSORS = (process.env.SENSORS || 'parallax').toLowerCase();
 
 class Room {
     constructor(settings = {}) {
         // Get unique ID for this Room
-        if (settings.roomID == undefined) {
+        if(settings.roomID == undefined) {
             this.roomID = shortid.generate();
 
             while (Room.existingIDs.indexOf(this.roomID) !== -1) {
@@ -45,7 +46,7 @@ class Room {
 
         // Begin update loop
         this.updateInterval = setInterval(
-            function() {
+            function () {
                 Engine.update(this.engine, 1000 / this.settings.fps);
             }.bind(this),
             1000 / this.settings.fps
@@ -59,7 +60,7 @@ class Room {
     setupEnvironment(environment = 'default_box') {
         Room.listEnvironments().then(list => {
             // Validate that file actually exists on server as an environment
-            if (list.map(env => env.file).indexOf(environment) === -1) {
+            if(list.map(env => env.file).indexOf(environment) === -1) {
                 this.debug('Invalid environment requested, using default');
                 environment = 'default';
             }
@@ -96,7 +97,7 @@ class Room {
                         })
                         .map(type => Room.robotTypes[type]);
 
-                    if(parsed.background != undefined){
+                    if (parsed.background != undefined) {
                         this.settings.background = parsed.background.image || '';
 
                         // Load background 
@@ -148,7 +149,7 @@ class Room {
                 };
 
                 // Add LED status if it exists
-                if(body.ledStatus !== undefined){
+                if (body.ledStatus !== undefined) {
                     bodyInfo.ledStatus = body.ledStatus;
                 }
 
@@ -190,12 +191,12 @@ class Room {
         // Create a robot of a random allowable type
         let robotType = Math.floor(Math.random() * this.settings.robotTypes.length);
         let bot = new this.settings.robotTypes[robotType](mac, position, this.engine, settings);
-        
+
         this.robots.push(bot);
         bot.room = this;
 
         this.debug(`Robot ${bot.mac} added to room`);
-        
+
         return bot;
     }
 
@@ -248,7 +249,7 @@ class Room {
             fs.readdir(path.join(__dirname, '..', 'environments'), (err, files) => {
                 let environments = [];
                 if (err) {
-                    require('debug')('Room')('Error loading environments');
+                    require('debug')('roboscape-sim:Room')('Error loading environments');
                     return;
                 }
 
@@ -257,9 +258,9 @@ class Room {
                     let parsed = JSON.parse(fileData);
 
                     // Check for unsupported sensor types
-                    if (parsed.robotSpawn.requiredExtraSensors == undefined 
-                        || parsed.robotSpawn.requiredExtraSensors.length === 0 
-                        || process.env.SENSORS === 'all'){           
+                    if (parsed.robotSpawn.requiredExtraSensors == undefined
+                        || parsed.robotSpawn.requiredExtraSensors.length === 0
+                        || SENSORS === 'all'){
                         environments.push({
                             file: path.basename(file, '.json'),
                             name: parsed.name
