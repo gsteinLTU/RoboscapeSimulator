@@ -1,0 +1,9 @@
+config:
+  target: "http://localhost:8000"
+  phases:
+    - duration: 120
+      arrivalRate: 20
+scenarios:
+  - engine: "socketio"
+    flow:
+      - think: 60 # do nothing for 1m and disconnect
