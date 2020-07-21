@@ -29,7 +29,7 @@
         "jest": "^25.1.0"
     },
     "dependencies": {
-        "codecov": "^3.6.5",
+        "codecov": "^3.7.1",
         "cross-env": "^7.0.2",
         "debug": "^4.1.1",
         "dotenv": "^8.2.0",
