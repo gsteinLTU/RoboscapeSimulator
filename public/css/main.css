@@ -93,3 +93,16 @@ ul.robosublist li {
 .hidden {
     display: none !important;
 }
+
+#side-panel .dropdown-toggle .fas {
+    width: 24px;
+}
+
+#roominfo > li {
+    padding-left: 15px;
+}
+
+#room-link {
+    font-size: 15px !important;
+    display: inline !important;
+}
