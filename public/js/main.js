@@ -128,6 +128,11 @@ function joinRoom(room, env = '') {
             console.log(`Joined room ${result}`);
             roomID = result;
 
+            // Create room link
+            let roomLink = window.location.protocol + '//' + window.location.host + window.location.pathname + '?join=' + roomID;
+            $('#room-link').html(roomLink);
+            $('#room-link').attr('href', roomLink);
+
             // Reset camera settings
             cameraPos.x = 0;
             cameraPos.y = 0;
@@ -149,4 +154,10 @@ function joinRoom(room, env = '') {
 let urlParams = new URLSearchParams(window.location.search);
 if(urlParams.has('join')){
     joinRoom(urlParams.get('join'));
+
+    // Remove param from url
+    if (window.history.pushState){
+        urlParams.delete('join');
+        window.history.pushState({}, document.title, window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + urlParams.toString());
+    }
 }
