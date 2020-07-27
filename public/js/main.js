@@ -131,7 +131,9 @@ function joinRoom(room, env = '') {
             // Create room link
             let roomLink = window.location.protocol + '//' + window.location.host + window.location.pathname + '?join=' + roomID;
             $('#room-link').html(roomLink);
-            $('#room-link').attr('href', roomLink);
+            $('#room-link-copy').click(() => {
+                navigator.clipboard.writeText(roomLink);
+            });
 
             // Reset camera settings
             cameraPos.x = 0;
