@@ -112,3 +112,54 @@ socket.on('forceRefesh', reason => {
 function sendClientEvent(type, data) {
     socket.emit('clientEvent', { type: type, data: data });
 }
+
+/**
+ * Send message to join room
+ * @param {string} room 
+ * @param {string} env 
+ */
+function joinRoom(room, env = '') {
+    if (roomID !== null) {
+        throw 'Already in room.';
+    }
+
+    socket.emit('joinRoom', room, env, result => {
+        if (result !== false) {
+            console.log(`Joined room ${result}`);
+            roomID = result;
+
+            // Create room link
+            let roomLink = window.location.protocol + '//' + window.location.host + window.location.pathname + '?join=' + roomID;
+            $('#room-link').html(roomLink);
+            $('#room-link-copy').click(() => {
+                navigator.clipboard.writeText(roomLink);
+            });
+
+            // Reset camera settings
+            cameraPos.x = 0;
+            cameraPos.y = 0;
+            cameraZoom = 1;
+
+            // Start running
+            draw();
+            $('#room-modal').modal('hide');
+            $('#side-panel').removeClass('hidden');
+            $('#mainCanvas').focus();
+        }
+        else {
+            $('#room-error').show();
+        }
+    });
+}
+
+// Detect request to join existing room
+let urlParams = new URLSearchParams(window.location.search);
+if(urlParams.has('join')){
+    joinRoom(urlParams.get('join'));
+
+    // Remove param from url
+    if (window.history.pushState){
+        urlParams.delete('join');
+        window.history.pushState({}, document.title, window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + urlParams.toString());
+    }
+}

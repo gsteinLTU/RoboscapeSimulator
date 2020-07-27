@@ -14,25 +14,7 @@ $('#rooms-select').change(e => {
 });
 
 $('#room-join-button').click(() => {
-    socket.emit('joinRoom', $('#rooms-select').val(), $('#env-select').val(), result => {
-        if (result !== false) {
-            console.log(`Joined room ${result}`);
-            roomID = result;
-
-            // Reset camera settings
-            cameraPos.x = 0;
-            cameraPos.y = 0;
-            cameraZoom = 1;
-
-            // Start running
-            draw();
-            $('#room-modal').modal('hide');
-            $('#side-panel').removeClass('hidden');
-            $('#mainCanvas').focus();
-        } else {
-            $('#room-error').show();
-        }
-    });
+    joinRoom($('#rooms-select').val(), $('#env-select').val());
 });
 
 // Window resize handler
