@@ -42,6 +42,23 @@ images['omni_robot'].src = '/img/robots/omni_robot.png';
 images['omni_robot'].offsetAngle = Math.PI / 2;
 images['omni_robot'].offset = { left: 0, right: 0, top: 0, bottom: 0 };
 
+/**
+ * Replace HTML characters with entities for safe display
+ * Thanks to Ben Vinegar
+ * @param {string} str String to be sanitized
+ * @returns {string} str with risky characters replaced
+ */
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/\//g, '&#x2F;');
+}
+
+// Populate available rooms list when received
 socket.on('availableRooms', data => {
     availableRooms = data.availableRooms;
 
@@ -89,12 +106,16 @@ socket.on('error', error => {
     console.log(error);
 });
 
+// Populate environments list when received
 socket.on('availableEnvironments', list => {
     availableEnvironments = list;
 
     $('#env-select').html('');
     for (let environment of availableEnvironments) {
-        $('#env-select').append(`<option value=${environment.file}>${environment.name}</option>`);
+        let optionNode = document.createElement('option');
+        optionNode.setAttribute('value', environment.file);
+        optionNode.innerHTML = escapeHtml(environment.name);
+        $('#env-select').append(optionNode);
     }
 });
 
@@ -115,10 +136,11 @@ function sendClientEvent(type, data) {
 
 /**
  * Send message to join room
- * @param {string} room 
- * @param {string} env 
+ * @param {string} room
+ * @param {string} env
  */
 function joinRoom(room, env = '') {
+    // Prevent joining a second room
     if (roomID !== null) {
         throw 'Already in room.';
     }
@@ -130,7 +152,8 @@ function joinRoom(room, env = '') {
 
             // Create room link
             let roomLink = window.location.protocol + '//' + window.location.host + window.location.pathname + '?join=' + roomID;
-            $('#room-link').html(roomLink);
+            $('#room-link').attr('href', roomLink);
+            $('#room-link').html(escapeHtml(roomLink));
             $('#room-link-copy').click(() => {
                 navigator.clipboard.writeText(roomLink);
             });
@@ -145,8 +168,8 @@ function joinRoom(room, env = '') {
             $('#room-modal').modal('hide');
             $('#side-panel').removeClass('hidden');
             $('#mainCanvas').focus();
-        }
-        else {
+        } else {
+            // Failed to join room
             $('#room-error').show();
         }
     });
@@ -154,11 +177,11 @@ function joinRoom(room, env = '') {
 
 // Detect request to join existing room
 let urlParams = new URLSearchParams(window.location.search);
-if(urlParams.has('join')){
+if (urlParams.has('join')) {
     joinRoom(urlParams.get('join'));
 
     // Remove param from url
-    if (window.history.pushState){
+    if (window.history.pushState) {
         urlParams.delete('join');
         window.history.pushState({}, document.title, window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + urlParams.toString());
     }
