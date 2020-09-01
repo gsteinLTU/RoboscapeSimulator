@@ -3,11 +3,11 @@ FROM $BASE
 
 WORKDIR /source/roboscape-simulator
 
-COPY package.json /source/roboscape-simulator
+COPY package*.json ./
 
 RUN cd /source/roboscape-simulator && npm i --only=production
 
-COPY . .
+COPY ./ ./
 
 ENV DEBUG=roboscape-sim:*
 

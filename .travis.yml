@@ -4,7 +4,10 @@ services:
     - docker
 
 before_install:
-    - docker build -f Dockerfile.dev -t gstein17/roboscape-simulator .
+    - docker build -f Dockerfile -t gstein17/roboscape-simulator .
+
+before_script:
+    - npm install jest
 
 script:
     - docker run -e CI=true gstein17/roboscape-simulator npm run test -- --coverage
