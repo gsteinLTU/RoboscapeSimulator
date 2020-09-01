@@ -1,4 +1,7 @@
-language: generic
+language: node_js
+node_js:
+    - lts/*
+
 sudo: required
 services:
     - docker
@@ -7,7 +10,7 @@ before_install:
     - docker build -f Dockerfile -t gstein17/roboscape-simulator .
 
 before_script:
-    - npm install jest
+    - npm install -g jest
 
 script:
     - docker run -e CI=true gstein17/roboscape-simulator npm run test -- --coverage
