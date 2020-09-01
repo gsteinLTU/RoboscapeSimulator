@@ -16,7 +16,7 @@ deploy:
     provider: elasticbeanstalk
     region: 'us-east-2'
     app: 'RoboScape Simulator'
-    env: 'RoboscapeSimulator-env'
+    env: 'RoboscapeSimulator-env-1'
     bucket_name: 'elasticbeanstalk-us-east-2-631166995015'
     bucket_path: 'RoboscapeSimulator'
     access_key_id: $AWS_ACCESS_KEY
