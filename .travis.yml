@@ -9,11 +9,8 @@ services:
 before_install:
     - docker build -f Dockerfile -t gstein17/roboscape-simulator .
 
-before_script:
-    - npm install -g jest
-
 script:
-    - docker run -e CI=true gstein17/roboscape-simulator npm run test -- --coverage
+    - docker run -e CI=true gstein17/roboscape-simulator sh -c "npm install -g jest && npm run test --coverage"
 
 deploy:
     provider: elasticbeanstalk
