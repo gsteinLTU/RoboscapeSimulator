@@ -12,7 +12,7 @@ script:
 deploy:
     provider: elasticbeanstalk
     region: 'us-east-2'
-    app: 'RoboscapeSimulator'
+    app: 'RoboScape Simulator'
     env: 'RoboscapeSimulator-env'
     bucket_name: 'elasticbeanstalk-us-east-2-631166995015'
     bucket_path: 'RoboscapeSimulator'
