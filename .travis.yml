@@ -12,12 +12,18 @@ before_install:
 script:
     - docker run -e CI=true gstein17/roboscape-simulator sh -c "npm install -g jest && npm run test --coverage"
 
+after_success:
+    - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+      docker login -u gstein17 -p $DOCKER_HUB_KEY ;
+      docker push gstein17/roboscape-simulator ;
+      fi
+
 deploy:
     provider: elasticbeanstalk
-    region: 'us-east-2'
+    region: 'us-east-1'
     app: 'RoboScape Simulator'
-    env: 'RoboscapeSimulator-env-1'
-    bucket_name: 'elasticbeanstalk-us-east-2-631166995015'
+    env: 'RoboscapeSimulator-env'
+    bucket_name: 'elasticbeanstalk-us-east-1-631166995015'
     bucket_path: 'RoboscapeSimulator'
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_SECRET_KEY
