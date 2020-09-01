@@ -4,7 +4,19 @@ services:
     - docker
 
 before_install:
-    - docker build -t gstein17/roboscape-simulator .
+    - docker build -f Dockerfile.dev -t gstein17/roboscape-simulator .
 
 script:
     - docker run -e CI=true gstein17/roboscape-simulator npm run test -- --coverage
+
+deploy:
+    provider: elasticbeanstalk
+    region: 'us-east-2'
+    app: 'RoboscapeSimulator'
+    env: 'RoboscapeSimulator-env'
+    bucket_name: 'elasticbeanstalk-us-east-2-631166995015'
+    bucket_path: 'RoboscapeSimulator'
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    on:
+        branch: master
