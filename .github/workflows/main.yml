@@ -17,14 +17,5 @@ jobs:
         run: npm ci --no-save
       - name: npm test
         run: npm test
-      - name: docker build
-        run: docker build -t gstein17/roboscape-simulator .
-      - name: docker login
-        run: docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
-        env:
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      - name: docker push
-        run: docker push gstein17/roboscape-simulator
       - name: codecov
         run: npx jest --coverage && npx codecov -t ${{ secrets.CODECOV_TOKEN }}
