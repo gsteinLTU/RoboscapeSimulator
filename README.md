@@ -1,3 +1,5 @@
+![Travis CI Status](https://travis-ci.org/gsteinLTU/RoboscapeSimulator.svg?branch=master)
+
 # RoboscapeSimulator
 Simple online simulation of robots for demonstration/education purposes.
 
