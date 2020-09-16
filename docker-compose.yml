@@ -1,0 +1,11 @@
+version: '3'
+services:
+    sim-web:
+        build:
+            context: .
+            dockerfile: 'Dockerfile'
+        ports:
+            - '8000:8000'
+        volumes:
+            - /source/roboscape-simulator/node_modules
+            - .:/source/roboscape-simulator
