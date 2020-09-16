@@ -12,7 +12,7 @@ const PNG = require('pngjs').PNG;
 const defaultSettings = {
     robotKeepAliveTime: 1000 * 60 * 10,
     fps: 60,
-    environment: 'default'
+    environment: 'default',
 };
 
 Matter.Resolver._restingThresh = 0.1;
@@ -21,7 +21,7 @@ const SENSORS = (process.env.SENSORS || 'parallax').toLowerCase();
 class Room {
     constructor(settings = {}) {
         // Get unique ID for this Room
-        if(settings.roomID == undefined) {
+        if (settings.roomID == undefined) {
             this.roomID = shortid.generate();
 
             while (Room.existingIDs.indexOf(this.roomID) !== -1) {
@@ -58,9 +58,9 @@ class Room {
      * @param {String} environment Filename of environment to use
      */
     setupEnvironment(environment = 'default_box') {
-        Room.listEnvironments().then(list => {
+        Room.listEnvironments().then((list) => {
             // Validate that file actually exists on server as an environment
-            if(list.map(env => env.file).indexOf(environment) === -1) {
+            if (list.map((env) => env.file).indexOf(environment) === -1) {
                 this.debug('Invalid environment requested, using default');
                 environment = 'default';
             }
@@ -92,17 +92,16 @@ class Room {
                     this.settings.minY = parsed.robotSpawn.minY;
                     this.settings.maxY = parsed.robotSpawn.maxY;
                     this.settings.robotTypes = parsed.robotSpawn.robotTypes
-                        .filter(type => {
+                        .filter((type) => {
                             return Object.keys(Room.robotTypes).indexOf(type) !== -1;
                         })
-                        .map(type => Room.robotTypes[type]);
+                        .map((type) => Room.robotTypes[type]);
 
                     if (parsed.background != undefined) {
                         this.settings.background = parsed.background.image || '';
 
-                        // Load background 
-                        this.backgroundImage = fs.createReadStream(path.join(__dirname, '..', 'public', 'img', 'backgrounds', this.settings.background + '.png'))
-                            .pipe(new PNG());
+                        // Load background
+                        this.backgroundImage = fs.createReadStream(path.join(__dirname, '..', 'public', 'img', 'backgrounds', this.settings.background + '.png')).pipe(new PNG());
                     } else {
                         this.settings.background = '';
                         this.backgroundImage = null;
@@ -133,10 +132,10 @@ class Room {
      * Returns an array of the objects in the scene
      */
     getBodies(onlySleeping = true, allData = false) {
-        let relevantBodies = this.engine.world.bodies.filter(body => !onlySleeping || (!body.isSleeping && !body.isStatic));
+        let relevantBodies = this.engine.world.bodies.filter((body) => !onlySleeping || (!body.isSleeping && !body.isStatic));
 
         if (allData) {
-            return relevantBodies.map(body => {
+            return relevantBodies.map((body) => {
                 let bodyInfo = {
                     label: body.label,
                     pos: body.position,
@@ -145,7 +144,7 @@ class Room {
                     anglevel: body.angularVelocity,
                     width: body.width,
                     height: body.height,
-                    image: body.image
+                    image: body.image,
                 };
 
                 // Add LED status if it exists
@@ -156,7 +155,7 @@ class Room {
                 return bodyInfo;
             });
         } else {
-            return relevantBodies.map(body => {
+            return relevantBodies.map((body) => {
                 // Only position/orientation for update
                 let bodyInfo = { label: body.label, pos: body.position, angle: body.angle };
 
@@ -184,7 +183,7 @@ class Room {
                 minX: this.settings.minX,
                 maxX: this.settings.maxX,
                 minY: this.settings.minY,
-                maxY: this.settings.maxY
+                maxY: this.settings.maxY,
             };
         }
 
@@ -205,19 +204,19 @@ class Room {
      * @returns {Boolean} Whether robots were removed
      */
     removeDeadRobots() {
-        let deadRobots = this.robots.filter(robot => {
-            return this.settings.robotKeepAliveTime > 0 && Date.now() - robot.lastCommandTime > this.settings.robotKeepAliveTime;
+        let deadRobots = this.robots.filter((robot) => {
+            return (this.settings.robotKeepAliveTime > 0 && Date.now() - robot.lastCommandTime > this.settings.robotKeepAliveTime) || robot.isDead === true;
         });
 
         if (deadRobots.length > 0) {
             this.debug(
                 'Dead robots: ',
-                deadRobots.map(robot => robot.mac)
+                deadRobots.map((robot) => robot.mac)
             );
             this.robots = _.without(this.robots, ...deadRobots);
 
             // Cleanup
-            deadRobots.forEach(robot => {
+            deadRobots.forEach((robot) => {
                 robot.close();
                 robot.body.parts.forEach(World.remove.bind(this, this.engine.world));
             });
@@ -234,7 +233,7 @@ class Room {
     close() {
         this.debug('Closing room...');
 
-        this.robots.forEach(robot => {
+        this.robots.forEach((robot) => {
             robot.close();
         });
 
@@ -245,7 +244,7 @@ class Room {
      * Returns an array of environments usable in Rooms
      */
     static listEnvironments() {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             fs.readdir(path.join(__dirname, '..', 'environments'), (err, files) => {
                 let environments = [];
                 if (err) {
@@ -258,12 +257,10 @@ class Room {
                     let parsed = JSON.parse(fileData);
 
                     // Check for unsupported sensor types
-                    if (parsed.robotSpawn.requiredExtraSensors == undefined
-                        || parsed.robotSpawn.requiredExtraSensors.length === 0
-                        || SENSORS === 'all'){
+                    if (parsed.robotSpawn.requiredExtraSensors == undefined || parsed.robotSpawn.requiredExtraSensors.length === 0 || SENSORS === 'all') {
                         environments.push({
                             file: path.basename(file, '.json'),
-                            name: parsed.name
+                            name: parsed.name,
                         });
                     }
                 }
@@ -275,31 +272,31 @@ class Room {
 
     /**
      * Handle an event from a browser client in this room
-     * @param {String} type 
-     * @param {Object} data 
-     * @param {SocketIO.Socket} socket 
+     * @param {String} type
+     * @param {Object} data
+     * @param {SocketIO.Socket} socket
      */
     // eslint-disable-next-line no-unused-vars
     onClientEvent(type, data, socket) {
         let temp;
-        switch(type){
-        case 'parallax_hw_button':
-            // Create Button message
-            temp = Buffer.alloc(2);
-            temp.write('P');
-            temp.writeUInt8(data.status ? 0 : 1, 1);
+        switch (type) {
+            case 'parallax_hw_button':
+                // Create Button message
+                temp = Buffer.alloc(2);
+                temp.write('P');
+                temp.writeUInt8(data.status ? 0 : 1, 1);
 
-            // Send button state to server
-            this.robots.find(r => r.mac == data.mac).sendToServer(temp);
-            break;
-        default:
-            this.debug(`Unknown client event: ${type}`);
+                // Send button state to server
+                this.robots.find((r) => r.mac == data.mac).sendToServer(temp);
+                break;
+            default:
+                this.debug(`Unknown client event: ${type}`);
         }
     }
 
     /**
      * Send a client the information about the room
-     * @param {SocketIO.Socket} socket 
+     * @param {SocketIO.Socket} socket
      */
     sendRoomInfo(socket) {
         let info = {};
@@ -319,7 +316,7 @@ Room.robotTypes = {
     ParallaxRobot: require('./robots/ParallaxRobot'),
     ParallaxRobotLidar: require('./robots/ParallaxRobotLidar'),
     ParallaxRobotLight: require('./robots/ParallaxRobotLight'),
-    OmniRobot: require('./robots/OmniRobot')
+    OmniRobot: require('./robots/OmniRobot'),
 };
 
 module.exports = Room;

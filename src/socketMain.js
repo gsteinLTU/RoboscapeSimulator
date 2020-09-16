@@ -4,9 +4,9 @@ const debug = require('debug')('roboscape-sim:socketMain');
 const Room = require('./Room');
 
 const settings = {
-    updateRate: 20,
+    updateRate: 10,
     maxRobots: 5,
-    maxRooms: 5
+    maxRooms: 5,
 };
 
 const rooms = [];
@@ -23,7 +23,7 @@ function socketMain(io) {
     function sendFullUpdate(socket, room) {
         socket.emit(
             'fullUpdate',
-            _.keyBy(room.getBodies(false, true), body => body.label)
+            _.keyBy(room.getBodies(false, true), (body) => body.label)
         );
     }
 
@@ -38,7 +38,7 @@ function socketMain(io) {
         if (updateBodies.length > 0) {
             socket.emit(
                 'update',
-                _.keyBy(updateBodies, body => body.label)
+                _.keyBy(updateBodies, (body) => body.label)
             );
         }
     }
@@ -48,8 +48,8 @@ function socketMain(io) {
      * @param {SocketIO.Socket} socket Socket to send list to
      */
     function sendAvailableRooms(socket) {
-        socket.emit('availableRooms', { availableRooms: rooms.map(room => room.roomID), canCreate: rooms.length < settings.maxRooms });
-        Room.listEnvironments().then(list => {
+        socket.emit('availableRooms', { availableRooms: rooms.map((room) => room.roomID), canCreate: rooms.length < settings.maxRooms });
+        Room.listEnvironments().then((list) => {
             socket.emit('availableEnvironments', list);
         });
     }
@@ -70,8 +70,24 @@ function socketMain(io) {
         // Create robot if not too many
         if (room.robots.length < settings.maxRobots) {
             // Add new robot and tell everyone about it
-            room.addRobot();
+            socket.robot = room.addRobot();
             sendFullUpdate(io.to(roomID), room);
+            socket.emit('assignRobot', socket.robot.body.label);
+
+            socket.on('clientUpdate', (newX, newY, newZ, newPitch, newYaw, newRoll) => {
+                // Move robot
+                socket.robot.mainBody.position.x = newZ;
+                socket.robot.mainBody.position.y = newX;
+                socket.robot.body.position.x = newZ;
+                socket.robot.body.position.y = newX;
+
+                socket.robot.body.angle = newYaw;
+            });
+
+            socket.on('disconnect', () => {
+                // Remove robot
+                socket.robot.isDead = true;
+            });
         } else {
             // Begin sending updates
             sendFullUpdate(socket, room);
@@ -83,7 +99,7 @@ function socketMain(io) {
      * @param {String} roomID ID of Room to locate
      */
     function getRoomIndex(roomID) {
-        return rooms.map(room => room.roomID).indexOf(roomID);
+        return rooms.map((room) => room.roomID).indexOf(roomID);
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -98,7 +114,7 @@ function socketMain(io) {
         }
     }, 1000 / settings.updateRate);
 
-    io.on('connect', socket => {
+    io.on('connect', (socket) => {
         debug(`Socket ${socket.id} connected`);
 
         // Join room for users in no real room
@@ -112,12 +128,11 @@ function socketMain(io) {
             // Validate callback
             if (!_.isFunction(cb)) {
                 // No callback provided, replace with NOP function
-                cb = () => { };
+                cb = () => {};
             }
 
             // Check if in waiting-room
             if (Object.keys(socket.rooms).indexOf('waiting-room') !== -1) {
-
                 // Check that room is valid
                 if (getRoomIndex(roomID) !== -1) {
                     joinRoom(roomID, socket);
@@ -151,7 +166,7 @@ function socketMain(io) {
             }
         });
 
-        socket.on('clientEvent', eventData => {
+        socket.on('clientEvent', (eventData) => {
             // Check if in real room
             if (socket.activeRoom != null) {
                 let { type, data } = eventData;
@@ -162,7 +177,7 @@ function socketMain(io) {
         });
 
         // If user reconnects, determine if they can be readded to their room
-        socket.on('postReconnect', roomID => {
+        socket.on('postReconnect', (roomID) => {
             if (roomID != null && getRoomIndex(roomID) !== -1) {
                 joinRoom(roomID, socket);
             } else {
@@ -171,8 +186,6 @@ function socketMain(io) {
             }
         });
     });
-
-
 }
 
 module.exports = socketMain;

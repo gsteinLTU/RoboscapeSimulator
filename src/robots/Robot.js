@@ -23,7 +23,7 @@ class Robot {
 
         position = position || {
             x: Math.random() * (settings.maxX - settings.minX) + settings.minX,
-            y: Math.random() * (settings.maxY - settings.minY) + settings.minY
+            y: Math.random() * (settings.maxY - settings.minY) + settings.minY,
         };
 
         // Create physics object
@@ -32,7 +32,7 @@ class Robot {
         this.setSpeed = { left: 0, right: 0 };
 
         this.commandHandlers = {
-            S: this.updateSpeed.bind(this)
+            S: this.updateSpeed.bind(this),
         };
 
         // Connect to RoboScape server to get commands
@@ -60,7 +60,7 @@ class Robot {
             label: `${this.mac}_main`,
             friction: 0.6,
             frictionAir: 0.45,
-            frictionStatic: 0
+            frictionStatic: 0,
         });
 
         this.body = Body.create({
@@ -69,7 +69,7 @@ class Robot {
             parts: [this.mainBody],
             friction: 0.6,
             frictionAir: 0.45,
-            frictionStatic: 0
+            frictionStatic: 0,
         });
         this.mainBody.width = this.settings.width;
         this.mainBody.height = this.settings.height;
@@ -158,7 +158,7 @@ class Robot {
 
         this.setSpeed = {
             left: (Math.sign(v1) * Math.pow(Math.abs(v1), 0.6)) / 15000,
-            right: (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6)) / 15000
+            right: (Math.sign(v2) * Math.pow(Math.abs(v2), 0.6)) / 15000,
         };
     }
 
@@ -192,8 +192,8 @@ class Robot {
 Robot.defaultSettings = {
     server: process.env.SERVER || '52.73.65.98',
     port: 1973,
-    width: 20,
-    height: 40,
+    width: 50,
+    height: 50,
     minX: 100,
     maxX: 700,
     minY: 100,
