@@ -82,6 +82,8 @@ function socketMain(io) {
                 socket.robot.body.position.y = newX;
 
                 socket.robot.body.angle = newYaw;
+
+                socket.robot.lastCommandTime = Date.now();
             });
 
             socket.on('disconnect', () => {
