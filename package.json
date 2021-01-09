@@ -39,8 +39,8 @@
         "matter-js": "^0.14.2",
         "pngjs": "^4.0.1",
         "shortid": "^2.2.15",
-        "socket.io": "^2.3.0",
-        "socket.io-client": "^2.3.0",
+        "socket.io": "^3.0.0",
+        "socket.io-client": "^3.0.0",
         "validator-js": "^0.2.1"
     },
     "jest": {
