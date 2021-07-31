@@ -118,7 +118,6 @@ function socketMain(io) {
                 // Check that room is valid
                 if (getRoomIndex(roomID) !== -1) {
                     joinRoom(roomID, socket);
-                    socket.leave('waiting-room');
                     socket.emit('roomJoined', roomID);
                 } else if (roomID === 'create' && rooms.length < settings.maxRooms) {
                     debug(`Socket ${socket.id} requested to create room`);

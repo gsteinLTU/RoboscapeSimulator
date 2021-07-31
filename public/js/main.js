@@ -161,6 +161,18 @@ socket.onConnect(e => {
             $('#room-error').show();
         }
     });
+
+    // Detect request to join existing room
+    let urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('join')) {
+        joinRoom(urlParams.get('join'));
+
+        // Remove param from url
+        if (window.history.pushState) {
+            urlParams.delete('join');
+            window.history.pushState({}, document.title, window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + urlParams.toString());
+        }
+    }
 });
 
 function sendClientEvent(type, data) {
@@ -180,16 +192,4 @@ function joinRoom(room, env = '') {
 
     socket.emit('joinRoom', room, env);
 
-}
-
-// Detect request to join existing room
-let urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('join')) {
-    joinRoom(urlParams.get('join'));
-
-    // Remove param from url
-    if (window.history.pushState) {
-        urlParams.delete('join');
-        window.history.pushState({}, document.title, window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + urlParams.toString());
-    }
 }
