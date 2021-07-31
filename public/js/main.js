@@ -190,6 +190,6 @@ function joinRoom(room, env = '') {
         throw 'Already in room.';
     }
 
-    socket.emit('joinRoom', room, env);
+    socket.emit('joinRoom', { roomID: room, env });
 
 }

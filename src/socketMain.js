@@ -4,7 +4,7 @@ const debug = require('debug')('roboscape-sim:socketMain');
 const Room = require('./Room');
 
 const settings = {
-    updateRate: 20,
+    updateRate: 15,
     maxRobots: 5,
     maxRooms: 5
 };
@@ -111,7 +111,10 @@ function socketMain(io) {
         sendAvailableRooms(socket);
 
         // Allow joining a room
-        socket.on('joinRoom', (roomID, env) => {
+        socket.on('joinRoom', (data) => {
+
+            let { roomID, env } = data;
+            
             // Check if in waiting-room
             if (socket.roomId == 'waiting-room') {
 
@@ -120,7 +123,7 @@ function socketMain(io) {
                     joinRoom(roomID, socket);
                     socket.emit('roomJoined', roomID);
                 } else if (roomID === 'create' && rooms.length < settings.maxRooms) {
-                    debug(`Socket ${socket.id} requested to create room`);
+                    debug(`Socket ${socket.id} requested to create room ${env}`);
                     // Create a virtual environment
                     let tempRoom = new Room({ environment: env });
                     rooms.push(tempRoom);
