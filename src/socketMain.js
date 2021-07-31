@@ -130,7 +130,6 @@ function socketMain(io) {
                         roomID = tempRoom.roomID;
                         joinRoom(roomID, socket);
                         socket.emit('roomJoined', roomID);
-                        socket.leave('waiting-room');
 
                         // Tell other users about the new room
                         sendAvailableRooms(io.room('waiting-room'));
