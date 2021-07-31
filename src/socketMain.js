@@ -15,6 +15,8 @@ const rooms = [];
  * @param {SocketIO.Server} io
  */
 function socketMain(io) {
+    debug('Setting up geckos server...');
+    
     /**
      * Sends all body information to socket
      * @param {SocketIO.Socket} socket Socket to send update to
@@ -48,6 +50,7 @@ function socketMain(io) {
      * @param {SocketIO.Socket} socket Socket to send list to
      */
     function sendAvailableRooms(socket) {
+        debug('Sending available rooms to ' + socket.id);
         socket.emit('availableRooms', { availableRooms: rooms.map(room => room.roomID), canCreate: rooms.length < settings.maxRooms });
         Room.listEnvironments().then(list => {
             socket.emit('availableEnvironments', list);
@@ -71,7 +74,7 @@ function socketMain(io) {
         if (room.robots.length < settings.maxRobots) {
             // Add new robot and tell everyone about it
             room.addRobot();
-            sendFullUpdate(io.to(roomID), room);
+            sendFullUpdate(io.room(roomID), room);
         } else {
             // Begin sending updates
             sendFullUpdate(socket, room);
@@ -91,14 +94,14 @@ function socketMain(io) {
         for (let room of rooms) {
             // Check for dead bots
             if (room.removeDeadRobots()) {
-                sendFullUpdate(io.to(room.roomID), room);
+                sendFullUpdate(io.room(room.roomID), room);
             } else {
-                sendUpdate(io.to(room.roomID), room);
+                sendUpdate(io.room(room.roomID), room);
             }
         }
     }, 1000 / settings.updateRate);
 
-    io.on('connect', socket => {
+    io.onConnection(socket => {
         debug(`Socket ${socket.id} connected`);
 
         // Join room for users in no real room
@@ -108,23 +111,15 @@ function socketMain(io) {
         sendAvailableRooms(socket);
 
         // Allow joining a room
-        socket.on('joinRoom', (roomID, env, cb) => {
-            // Validate callback
-            if (!_.isFunction(cb)) {
-                // No callback provided, replace with NOP function
-                cb = () => { };
-            }
-
+        socket.on('joinRoom', (roomID, env) => {
             // Check if in waiting-room
-            if (Object.keys(socket.rooms).indexOf('waiting-room') !== -1) {
+            if (socket.roomId == 'waiting-room') {
 
                 // Check that room is valid
                 if (getRoomIndex(roomID) !== -1) {
                     joinRoom(roomID, socket);
-
                     socket.leave('waiting-room');
-
-                    cb(roomID);
+                    socket.emit('roomJoined', roomID);
                 } else if (roomID === 'create' && rooms.length < settings.maxRooms) {
                     debug(`Socket ${socket.id} requested to create room`);
                     // Create a virtual environment
@@ -135,19 +130,19 @@ function socketMain(io) {
                     setTimeout(() => {
                         roomID = tempRoom.roomID;
                         joinRoom(roomID, socket);
-                        cb(roomID);
+                        socket.emit('roomJoined', roomID);
                         socket.leave('waiting-room');
 
                         // Tell other users about the new room
-                        sendAvailableRooms(io.to('waiting-room'));
+                        sendAvailableRooms(io.room('waiting-room'));
                     }, 100);
                 } else {
                     debug(`Socket ${socket.id} attempted to join invalid room!`);
-                    cb(false);
+                    socket.emit('roomJoined', false);
                 }
             } else {
                 debug(`Socket ${socket.id} attempted to join second room!`);
-                cb(false);
+                socket.emit('roomJoined', false);
             }
         });
 
@@ -172,7 +167,7 @@ function socketMain(io) {
         });
     });
 
-
+    io.listen(9208);
 }
 
 module.exports = socketMain;

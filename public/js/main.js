@@ -8,7 +8,7 @@ let context = canvas.getContext('2d');
 canvas.width = wWidth;
 canvas.height = wHeight;
 
-let socket = io.connect();
+let socket = geckos();
 let bodies = {};
 let nextBodies = {};
 let bodiesInfo = {};
@@ -58,94 +58,82 @@ function escapeHtml(str) {
         .replace(/\//g, '&#x2F;');
 }
 
-// Populate available rooms list when received
-socket.on('availableRooms', data => {
-    availableRooms = data.availableRooms;
 
-    $('#rooms-select').html('<option value="-1" selected>Choose...</option>');
-    if (data.canCreate) {
-        $('.create-text').show();
-        $('#rooms-select').append('<option value="create">Create a new room</option>');
-    } else {
-        $('.create-text').hide();
-    }
+socket.onConnect(e => {
+    // Populate available rooms list when received
+    socket.on('availableRooms', data => {
+        availableRooms = data.availableRooms;
 
-    for (let room of availableRooms) {
-        $('#rooms-select').append(`<option value=${room}>${room}</option>`);
-    }
-});
+        $('#rooms-select').html('<option value="-1" selected>Choose...</option>');
+        if (data.canCreate) {
+            $('.create-text').show();
+            $('#rooms-select').append('<option value="create">Create a new room</option>');
+        } else {
+            $('.create-text').hide();
+        }
 
-// Handle incremental updates
-socket.on('update', data => {
-    bodies = { ...nextBodies };
-    nextBodies = { ...bodies, ...data };
-    lastUpdateTime = nextUpdateTime;
-    nextUpdateTime = Date.now();
-});
+        for (let room of availableRooms) {
+            $('#rooms-select').append(`<option value=${room}>${room}</option>`);
+        }
+    });
 
-// Handle full updates
-socket.on('fullUpdate', data => {
-    bodiesInfo = data;
-    bodies = data;
-    nextBodies = data;
-    lastUpdateTime = Date.now();
-    nextUpdateTime = Date.now();
-    updateRobotsPanel();
-});
+    // Handle incremental updates
+    socket.on('update', data => {
+        bodies = { ...nextBodies };
+        nextBodies = { ...bodies, ...data };
+        lastUpdateTime = nextUpdateTime;
+        nextUpdateTime = Date.now();
+    });
 
-// Handle room info
-socket.on('roomInfo', info => {
-    roomInfo = info;
+    // Handle full updates
+    socket.on('fullUpdate', data => {
+        bodiesInfo = data;
+        bodies = data;
+        nextBodies = data;
+        lastUpdateTime = Date.now();
+        nextUpdateTime = Date.now();
+        updateRobotsPanel();
+    });
 
-    if (info.background != '') {
-        roomBG.src = `/img/backgrounds/${info.background}.png`;
-    }
-});
+    // Handle room info
+    socket.on('roomInfo', info => {
+        roomInfo = info;
 
-socket.on('error', error => {
-    console.log(error);
-});
+        if (info.background != '') {
+            roomBG.src = `/img/backgrounds/${info.background}.png`;
+        }
+    });
 
-// Populate environments list when received
-socket.on('availableEnvironments', list => {
-    availableEnvironments = list;
+    socket.on('error', error => {
+        console.log(error);
+    });
 
-    $('#env-select').html('');
-    for (let environment of availableEnvironments) {
-        let optionNode = document.createElement('option');
-        optionNode.setAttribute('value', environment.file);
-        optionNode.innerHTML = escapeHtml(environment.name);
-        $('#env-select').append(optionNode);
-    }
-});
+    // Populate environments list when received
+    socket.on('availableEnvironments', list => {
+        availableEnvironments = list;
 
-// If we were previously connected, let server know we had an issue
-socket.on('reconnect', attempt => {
-    console.log(`Reconnected after ${attempt} attempts!`);
-    socket.emit('postReconnect', roomID);
-});
+        $('#env-select').html('');
+        for (let environment of availableEnvironments) {
+            let optionNode = document.createElement('option');
+            optionNode.setAttribute('value', environment.file);
+            optionNode.innerHTML = escapeHtml(environment.name);
+            $('#env-select').append(optionNode);
+        }
+    });
 
-// Allow server to request refresh
-socket.on('forceRefesh', reason => {
-    location.reload();
-});
+    // If we were previously connected, let server know we had an issue
+    socket.on('reconnect', attempt => {
+        console.log(`Reconnected after ${attempt} attempts!`);
+        socket.emit('postReconnect', roomID);
+    });
 
-function sendClientEvent(type, data) {
-    socket.emit('clientEvent', { type: type, data: data });
-}
+    // Allow server to request refresh
+    socket.on('forceRefesh', reason => {
+        location.reload();
+    });
 
-/**
- * Send message to join room
- * @param {string} room
- * @param {string} env
- */
-function joinRoom(room, env = '') {
-    // Prevent joining a second room
-    if (roomID !== null) {
-        throw 'Already in room.';
-    }
-
-    socket.emit('joinRoom', room, env, result => {
+    // Room joined message
+    socket.on('roomJoined', result => {
         if (result !== false) {
             console.log(`Joined room ${result}`);
             roomID = result;
@@ -173,6 +161,25 @@ function joinRoom(room, env = '') {
             $('#room-error').show();
         }
     });
+});
+
+function sendClientEvent(type, data) {
+    socket.emit('clientEvent', { type: type, data: data });
+}
+
+/**
+ * Send message to join room
+ * @param {string} room
+ * @param {string} env
+ */
+function joinRoom(room, env = '') {
+    // Prevent joining a second room
+    if (roomID !== null) {
+        throw 'Already in room.';
+    }
+
+    socket.emit('joinRoom', room, env);
+
 }
 
 // Detect request to join existing room

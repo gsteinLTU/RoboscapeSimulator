@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const socketio = require('socket.io');
+const geckos = require('@geckos.io/server').default;
 const path = require('path');
 const debug = require('debug')('roboscape-sim:index');
 
@@ -15,6 +16,6 @@ app.use(helmet());
 app.use(express.static(path.join(__dirname, 'public')));
 const expressServer = app.listen(PORT, () => debug(`Listening on port ${PORT}!`));
 
-// Start socket.io server
-const io = socketio(expressServer);
+const io = geckos();
+
 socketMain(io);
