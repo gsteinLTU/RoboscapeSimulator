@@ -5,21 +5,21 @@ const Room = require('./Room');
 
 const settings = {
     updateRate: 15,
-    maxRobots: 5,
-    maxRooms: 5
+    maxRobots: 3,
+    maxRooms: 10
 };
 
 const rooms = [];
 
 /**
- * @param {SocketIO.Server} io
+ * @param {} io
  */
 function socketMain(io) {
     debug('Setting up geckos server...');
     
     /**
      * Sends all body information to socket
-     * @param {SocketIO.Socket} socket Socket to send update to
+     * @param {Object} socket Socket to send update to
      * @param {String} room Room to get bodies from
      */
     function sendFullUpdate(socket, room) {
@@ -31,7 +31,7 @@ function socketMain(io) {
 
     /**
      * Sends update-relevant (position, orientation) body information to socket
-     * @param {SocketIO.Socket} socket Socket to send update to
+     * @param {Object} socket Socket to send update to
      * @param {String} room Room to get bodies from
      */
     function sendUpdate(socket, room) {
@@ -47,7 +47,7 @@ function socketMain(io) {
 
     /**
      * Sends list of rooms to socket
-     * @param {SocketIO.Socket} socket Socket to send list to
+     * @param {Object} socket Socket to send list to
      */
     function sendAvailableRooms(socket) {
         debug('Sending available rooms to ' + socket.id);
@@ -60,7 +60,7 @@ function socketMain(io) {
     /**
      * Add a user to a room
      * @param {String} roomID Room to join
-     * @param {SocketIO.Socket} socket The user's socket
+     * @param {Object} socket The user's socket
      */
     function joinRoom(roomID, socket) {
         let room = rooms[getRoomIndex(roomID)];
@@ -114,7 +114,7 @@ function socketMain(io) {
         socket.on('joinRoom', (data) => {
 
             let { roomID, env } = data;
-            
+
             // Check if in waiting-room
             if (socket.roomId == 'waiting-room') {
 
