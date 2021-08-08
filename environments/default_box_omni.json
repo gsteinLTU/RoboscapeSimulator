@@ -49,8 +49,14 @@
         }
     ],
     "robotSpawn": {
-        "spawnType": "RandomPosition",
-        "robotTypes": ["OmniRobot"],
+        "robotSpawnType": "RandomPosition",
+        "populationStrategy": {
+            "strategy": "PrePopulate",
+            "numRobots": 1
+        },
+        "robotTypes": [
+            "OmniRobot"
+        ],
         "minX": 300,
         "maxX": 600,
         "minY": 300,

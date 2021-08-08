@@ -39,7 +39,11 @@
         }
     ],
     "robotSpawn": {
-        "spawnType": "RandomPosition",
+        "robotSpawnType": "RandomPosition",
+        "populationStrategy": {
+            "strategy": "PrePopulate",
+            "numRobots": 1
+        },
         "requiredExtraSensors": [
             "light"
         ],

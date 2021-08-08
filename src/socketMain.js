@@ -72,8 +72,11 @@ function socketMain(io) {
 
         // Create robot if not too many
         if (room.robots.length < settings.maxRobots) {
-            // Add new robot and tell everyone about it
-            room.addRobot();
+            // Add new robot (if desired) and tell everyone about it
+            if (room.settings.populationStrategy.strategy.toLowerCase() != 'prepopulate') {
+                room.addRobot();
+            }
+
             sendFullUpdate(io.room(roomID), room);
         } else {
             // Begin sending updates

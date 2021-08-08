@@ -2,7 +2,11 @@
     "name": "Empty Space with Lidar",
     "objects": [],
     "robotSpawn": {
-        "spawnType": "RandomPosition",
+        "robotSpawnType": "RandomPosition",
+        "populationStrategy": {
+            "strategy": "PrePopulate",
+            "numRobots": 1
+        },
         "requiredExtraSensors": [
             "lidar"
         ],

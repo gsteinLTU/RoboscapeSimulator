@@ -75,6 +75,7 @@ class Room {
                 let parsed = JSON.parse(data);
                 this.debug(`Loading environment ${parsed.name}...`);
 
+                // Create objects
                 for (let object of parsed.objects) {
                     var body = Bodies.rectangle(object.x, object.y, object.width, object.height, { label: object.label, isStatic: object.isStatic || false, frictionAir: object.frictionAir || 0.7 });
                     body.width = object.width;
@@ -85,18 +86,21 @@ class Room {
                 }
 
                 // Get spawn settings
-                if (parsed.robotSpawn.spawnType == 'RandomPosition') {
+                if (parsed.robotSpawn.robotSpawnType == 'RandomPosition') {
                     this.settings.robotSpawnType = 'RandomPosition';
                     this.settings.minX = parsed.robotSpawn.minX;
                     this.settings.maxX = parsed.robotSpawn.maxX;
                     this.settings.minY = parsed.robotSpawn.minY;
                     this.settings.maxY = parsed.robotSpawn.maxY;
+
+                    // Validate available robot types
                     this.settings.robotTypes = parsed.robotSpawn.robotTypes
                         .filter(type => {
                             return Object.keys(Room.robotTypes).indexOf(type) !== -1;
                         })
                         .map(type => Room.robotTypes[type]);
 
+                    // Determine background image
                     if (parsed.background != undefined) {
                         this.settings.background = parsed.background.image || '';
 
@@ -106,6 +110,14 @@ class Room {
                     } else {
                         this.settings.background = '';
                         this.backgroundImage = null;
+                    }
+                }
+
+                // Prepopulate set number of robots if requested
+                this.settings.populationStrategy = parsed.robotSpawn.populationStrategy;
+                if (this.settings.populationStrategy.strategy.toLowerCase() == 'prepopulate') {
+                    for (let i = 0; i < this.settings.populationStrategy.numRobots; i++) {
+                        this.addRobot();
                     }
                 }
             });
@@ -158,7 +170,7 @@ class Room {
         } else {
             return relevantBodies.map(body => {
                 // Only position/orientation for update
-                let bodyInfo = { label: body.label, pos: body.position, angle: body.angle };
+                let bodyInfo = { label: body.label, pos: body.position, vel: body.velocity, angle: body.angle };
 
                 // Add LED status if it exists
                 if (body.ledStatus !== undefined) {

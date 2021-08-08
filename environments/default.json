@@ -39,8 +39,14 @@
         }
     ],
     "robotSpawn": {
-        "spawnType": "RandomPosition",
-        "robotTypes": ["ParallaxRobot"],
+        "robotSpawnType": "RandomPosition",
+        "populationStrategy": {
+            "strategy": "PrePopulate",
+            "numRobots": 1
+        },
+        "robotTypes": [
+            "ParallaxRobot"
+        ],
         "minX": 300,
         "maxX": 600,
         "minY": 300,
