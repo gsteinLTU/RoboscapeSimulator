@@ -6,6 +6,7 @@ services:
             dockerfile: 'Dockerfile'
         ports:
             - '8000:8000'
+            - '9208:9208'
         volumes:
             - /source/roboscape-simulator/node_modules
             - .:/source/roboscape-simulator

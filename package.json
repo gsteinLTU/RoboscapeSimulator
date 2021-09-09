@@ -29,8 +29,8 @@
         "jest": "^27.0.6"
     },
     "dependencies": {
-        "@geckos.io/client": "^1.7.2",
-        "@geckos.io/server": "^1.7.2",
+        "@geckos.io/client": "^2.0.0",
+        "@geckos.io/server": "^2.0.0",
         "codecov": "^3.7.2",
         "cross-env": "^7.0.2",
         "debug": "^4.3.0",
@@ -41,6 +41,7 @@
         "matter-js": "^0.14.2",
         "pngjs": "^4.0.1",
         "shortid": "^2.2.15",
+        "tar": "^6.1.10",
         "validator-js": "^0.2.1"
     },
     "jest": {

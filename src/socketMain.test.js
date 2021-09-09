@@ -1,4 +1,5 @@
-const socketio = require('socket.io');
+
+const geckos = require('@geckos.io/server').default;
 const socketioclient = require('socket.io-client');
 const app = require('express')();
 
