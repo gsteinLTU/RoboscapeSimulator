@@ -1,0 +1,50 @@
+{
+  "name": "roboscapesimulator",
+  "version": "0.1.0",
+  "description": "Simple online simulation of robots for demonstration/education purposes",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx npm-run-all --parallel server client",
+    "server": "npx nodemon ./server/index.js --ignore public",
+    "client": "npx webpack-dev-server --config webpack.dev.js",
+    "build": "npx webpack --config webpack.prod.js"
+  },
+  "author": "Gordon Stein",
+  "license": "MIT",
+  "dependencies": {
+    "babylonjs": "^4.2.0",
+    "babylonjs-loaders": "^4.2.0",
+    "cannon": "^0.6.2",
+    "codecov": "^3.7.2",
+    "cross-env": "^7.0.2",
+    "debug": "^4.3.0",
+    "dotenv": "^8.2.0",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "helmet": "^3.23.3",
+    "lodash": "^4.17.21",
+    "matter-js": "^0.14.2",
+    "nengi": "^1.23.0",
+    "pngjs": "^4.0.1",
+    "shortid": "^2.2.15",
+    "tar": "^6.1.10",
+    "validator-js": "^0.2.1",
+    "xhr2": "^0.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "1.19.3",
+    "npm-run-all": "4.1.5",
+    "terser-webpack-plugin": "^2.3.4",
+    "webpack": "4.41.1",
+    "webpack-cli": "3.3.9",
+    "webpack-dev-server": "3.8.2",
+    "webpack-merge": "4.2.2",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^27.0.6"
+  }
+}

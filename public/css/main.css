@@ -1,0 +1,108 @@
+#room-modal {
+    padding-right: 0 !important;
+}
+
+#room-error {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 450px;
+    box-sizing: content-box;
+}
+
+#side-panel {
+    transition: ease-in-out 0.5s transform;
+    position: fixed;
+    right: 0;
+    top: 0;
+    min-width: 350px;
+    max-width: 350px;
+    min-height: 100vh;
+    z-index: 2000;
+    padding: 0;
+    background: #7386D5;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+}
+
+#side-panel #panel-toggle {
+    position: absolute;
+    right: 350px;
+    top: 45vh;
+    height: 10vh;
+    width: 20px;
+    color: #fff;
+    background: #7386D5;
+    text-align: center;
+    line-height: 10vh; 
+}
+
+#side-panel a {
+    color: #fff;
+}
+
+#side-panel ul.components {
+    padding: 20px 0;
+    border-bottom: 2px solid #47748b;
+    overflow-y: scroll;
+    height: 100vh;
+}
+
+#side-panel ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+#side-panel ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+    text-decoration: none;
+}
+
+#side-panel ul.components > li > a {
+    background: #7386D5;
+}
+
+#side-panel ul.components > li > a:hover {
+    background: #b0bbe8;
+}
+
+#side-panel .side-panel-header {
+    padding: 20px;
+    background: #6d7fcc;
+}
+
+#side-panel.collapsed {
+    transform: translateX(100%);
+}
+
+ul.robosublist li {
+    padding-left: 25px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #47748b;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#side-panel .dropdown-toggle .fas {
+    width: 24px;
+}
+
+#roominfo > li {
+    padding-left: 15px;
+}
+
+#room-link {
+    font-size: 15px !important;
+    display: inline !important;
+}
