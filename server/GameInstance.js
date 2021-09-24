@@ -56,11 +56,10 @@ class GameInstance {
             // this.instance.addEntity(smoothEntity);
             const robot = new Robot(true);
             robot.mesh.checkCollisions = true;
-            robot.x = Math.random() * 10.0;
-            robot.y = Math.random() * 10.0;
-            robot.z = Math.random() * 10.0;
-            robot.rotationX = Math.random();
-            robot.rotationZ = Math.random();
+            robot.x = Math.random() * 5.0;
+            robot.y = Math.random() * 1.0 + 0.65;
+            robot.z = Math.random() * 5.0;
+            robot.rotationY = Math.random();
             this.instance.addEntity(robot);
             
             robot.mesh.computeWorldMatrix(true);
@@ -143,11 +142,11 @@ class GameInstance {
             this.scene.render();            
         }
 
-        if(lastRobot){
-            lastRobot.rotationY += 0.0001;
-            lastRobot.rotationX += 0.0001;
-            lastRobot.rotationZ += 0.0001;
-        }
+        // if(lastRobot){
+        //     lastRobot.rotationY += 0.0001;
+        //     lastRobot.rotationX += 0.0001;
+        //     lastRobot.rotationZ += 0.0001;
+        // }
 
         this.instance.update();
     }

@@ -17,23 +17,13 @@ class Simulator {
         this.renderer = new BABYLONRenderer();
         this.obstacles = new Map();
 
-        this.myRawId = -1;
-        this.mySmoothId = -1;
-
-        this.myRawEntity = null;
-        this.mySmoothEntity = null;
-
         client.entityUpdateFilter = (update) => {
             return shouldIgnore(this.myRawId, update);
         };
 
-        client.on('message::Identity', message => {
-            // these are the ids of our two entities.. we just store them here on simulator until
-            // we receive these entities over the network (see: createPlayerFactory)
-            this.myRawId = message.rawId;
-            this.mySmoothId = message.smoothId;
-            console.log('identified as', message);
-        });
+        // client.on('message::Identity', message => {
+
+        // });
     }
 
     update(delta) {

@@ -82,7 +82,6 @@ export default (client) => {
         }
         const entity = client.entities.get(update.nid);
         if (entity) {
-            console.log(update.prop);
             entity[update.prop] = update.value;
         } else {
             console.log('tried to update a entity that did not exist');
