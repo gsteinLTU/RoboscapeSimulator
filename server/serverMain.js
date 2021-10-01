@@ -1,6 +1,9 @@
 import GameInstance from './GameInstance';
 import nengiConfig from '../common/nengiConfig';
 
+import { config } from 'dotenv';
+config();
+
 const gameInstance = new GameInstance(/*args*/);
 
 const hrtimeMs = function() {

@@ -7,9 +7,11 @@ import applyCommand from '../common/applyCommand';
 import followPath from './followPath';
 import lagCompensatedHitscanCheck from './lagCompensatedHitscanCheck';
 import CANNON from 'cannon';
+import {createSocket} from 'dgram';
 
 import * as BABYLON from 'babylonjs';
 import Ground from '../common/entity/Ground';
+import { debug } from 'debug';
 
 //import 'babylonjs-loaders' // mutates something globally
 global.XMLHttpRequest = require('xhr2').XMLHttpRequest;
@@ -22,6 +24,8 @@ class GameInstance {
         this.engine.enableOfflineSupport = false;
         this.scene = new BABYLON.Scene(this.engine);
         this.scene.collisionsEnabled = true;
+
+        this.updateEntities = [];
         
         this.scene.enablePhysics(new BABYLON.Vector3(0,-9.81, 0), new BABYLON.CannonJSPlugin(true, 10, CANNON));
 	
@@ -57,13 +61,47 @@ class GameInstance {
             const robot = new Robot(true);
             robot.mesh.checkCollisions = true;
             robot.x = Math.random() * 5.0;
-            robot.y = Math.random() * 1.0 + 0.65;
+            robot.y = Math.random() * 1.0 + 0.5;
             robot.z = Math.random() * 5.0;
             robot.rotationY = Math.random();
-            this.instance.addEntity(robot);
-            
+            this.instance.addEntity(robot);          
+            this.updateEntities.push(robot);
+
             robot.mesh.computeWorldMatrix(true);
             lastRobot = robot;
+            
+            robot.setSpeed = {
+                left: 0,
+                right: 0
+            };
+
+            robot.settings = {};
+            robot.commandHandlers = {
+                S: (msg) => {
+                    let v1 = msg.readInt16LE(1);
+                    let v2 = msg.readInt16LE(3);
+
+                    robot.setSpeed = {
+                        left: v1 / 100,
+                        right: v2 / 100
+                    };
+                }
+            };
+
+            robot.onUpdate = (delta) => {
+                const width = 10;
+                robot.mesh.translate(BABYLON.Vector3.Forward(), (robot.setSpeed.left + robot.setSpeed.right) * delta);
+                robot.mesh.rotate(BABYLON.Vector3.Up(), Math.atan2(robot.setSpeed.left - robot.setSpeed.right, width));
+            };
+
+            // Connect to RoboScape server to get commands
+            //robot.debug = debug('roboscapesim:robot:' + robot.mac);
+            robot.debug = console.log;
+            robot.socket = createSocket('udp4');
+            robot.socket.on('message', (msg) => msgHandler(robot, msg));
+
+            // Start heartbeat
+            robot.heartbeatInterval = setInterval(() => sendToServer(robot, 'I'), 1000);
 
             // tell the client which entities it controls
             //this.instance.message(new Identity(rawEntity.nid, smoothEntity.nid), client);
@@ -148,8 +186,80 @@ class GameInstance {
         //     lastRobot.rotationZ += 0.0001;
         // }
 
+        for (const updateEntity of this.updateEntities) {
+            updateEntity.onUpdate(delta, tick, now);
+        }
+
         this.instance.update();
     }
 }
+
+const msgHandler = function(robot, msg) {
+    // Handle known commands
+    if (msg.length > 0) {
+        let msgType = String.fromCharCode(msg[0]);
+        if (Object.keys(robot.commandHandlers).indexOf(msgType) !== -1) {
+            robot.commandHandlers[msgType](msg);
+
+            //sendToServer(robot, msg);
+
+            // Keep robot from timing out if in use
+            robot.lastCommandTime = Date.now();
+        } else {
+            robot.debug(`Unknown message type: ${msgType}`);
+        }
+    }
+
+    if (robot.settings.debugMessages) {
+        robot.debug(msg);
+    }
+};
+
+/**
+ * Send a message as this robot to the server
+ * @param {String | Buffer} msg Message to send
+ */
+const sendToServer = function(robot, msg) {
+    let msgBuff;
+
+    // String needs preallocated space
+    if (typeof msg == typeof '') {
+        msgBuff = Buffer.alloc(10 + msg.length);
+    } else if (msg instanceof Buffer) {
+        msgBuff = Buffer.alloc(10);
+    } else {
+        throw 'Attempt to send message which is not Buffer or string type';
+    }
+
+    let macParts = robot.mac.split(':');
+    for (let i = 0; i < macParts.length; i++) {
+        msgBuff.writeUInt8(Number.parseInt(macParts[i], 16), i);
+    }
+    msgBuff.writeUInt32BE(process.uptime(), 6);
+
+    // Write string to position, or combine buffers
+    if (typeof msg == typeof '') {
+        msgBuff.write(msg, 10);
+    } else {
+        msgBuff = Buffer.concat([msgBuff, msg]);
+    }
+
+    if (robot.settings.debugMessages) {
+        robot.debug(msgBuff);
+    }
+
+    // Send complete message to server
+    try {
+        robot.socket.send(msgBuff, settings.port, settings.server);
+    } catch (error) {
+        robot.debug(`Error sending message ${error}`);
+    }
+};
+
+const settings = {
+    server: 'dev.netsblox.org',
+    port: 1970
+};
+
 
 export default GameInstance;
