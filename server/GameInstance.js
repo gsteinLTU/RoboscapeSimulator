@@ -16,7 +16,7 @@ import { debug } from 'debug';
 //import 'babylonjs-loaders' // mutates something globally
 global.XMLHttpRequest = require('xhr2').XMLHttpRequest;
 
-var lastRobot;
+var lastRobot = null;
 
 class GameInstance {
     constructor() {
@@ -58,50 +58,52 @@ class GameInstance {
             // const smoothEntity = new Robot();
             // smoothEntity.mesh.checkCollisions = false;
             // this.instance.addEntity(smoothEntity);
-            const robot = new Robot(true);
-            robot.mesh.checkCollisions = true;
-            robot.x = Math.random() * 5.0;
-            robot.y = Math.random() * 1.0 + 0.5;
-            robot.z = Math.random() * 5.0;
-            robot.rotationY = Math.random();
-            this.instance.addEntity(robot);          
-            this.updateEntities.push(robot);
+            if(!lastRobot){
+                const robot = new Robot(true);
+                robot.mesh.checkCollisions = true;
+                robot.x = Math.random() * 5.0;
+                robot.y = Math.random() * 1.0 + 0.5;
+                robot.z = Math.random() * 5.0;
+                robot.rotationY = Math.random();
+                this.instance.addEntity(robot);          
+                this.updateEntities.push(robot);
 
-            robot.mesh.computeWorldMatrix(true);
-            lastRobot = robot;
-            
-            robot.setSpeed = {
-                left: 0,
-                right: 0
-            };
+                robot.mesh.computeWorldMatrix(true);
+                lastRobot = robot;
+                
+                robot.setSpeed = {
+                    left: 0,
+                    right: 0
+                };
 
-            robot.settings = {};
-            robot.commandHandlers = {
-                S: (msg) => {
-                    let v1 = msg.readInt16LE(1);
-                    let v2 = msg.readInt16LE(3);
+                robot.settings = {};
+                robot.commandHandlers = {
+                    S: (msg) => {
+                        let v1 = msg.readInt16LE(1);
+                        let v2 = msg.readInt16LE(3);
 
-                    robot.setSpeed = {
-                        left: v1 / 100,
-                        right: v2 / 100
-                    };
-                }
-            };
+                        robot.setSpeed = {
+                            left: v1 / 100,
+                            right: v2 / 100
+                        };
+                    }
+                };
 
-            robot.onUpdate = (delta) => {
-                const width = 10;
-                robot.mesh.translate(BABYLON.Vector3.Forward(), (robot.setSpeed.left + robot.setSpeed.right) * delta);
-                robot.mesh.rotate(BABYLON.Vector3.Up(), Math.atan2(robot.setSpeed.left - robot.setSpeed.right, width));
-            };
+                robot.onUpdate = (delta) => {
+                    const width = 10;
+                    robot.mesh.translate(BABYLON.Vector3.Forward(), (robot.setSpeed.left + robot.setSpeed.right) * delta);
+                    robot.mesh.rotate(BABYLON.Vector3.Up(), Math.atan2(robot.setSpeed.left - robot.setSpeed.right, width));
+                };
 
-            // Connect to RoboScape server to get commands
-            //robot.debug = debug('roboscapesim:robot:' + robot.mac);
-            robot.debug = console.log;
-            robot.socket = createSocket('udp4');
-            robot.socket.on('message', (msg) => msgHandler(robot, msg));
+                // Connect to RoboScape server to get commands
+                //robot.debug = debug('roboscapesim:robot:' + robot.mac);
+                robot.debug = console.log;
+                robot.socket = createSocket('udp4');
+                robot.socket.on('message', (msg) => msgHandler(robot, msg));
 
-            // Start heartbeat
-            robot.heartbeatInterval = setInterval(() => sendToServer(robot, 'I'), 1000);
+                // Start heartbeat
+                robot.heartbeatInterval = setInterval(() => sendToServer(robot, 'I'), 1000);
+            }
 
             // tell the client which entities it controls
             //this.instance.message(new Identity(rawEntity.nid, smoothEntity.nid), client);
@@ -257,8 +259,10 @@ const sendToServer = function(robot, msg) {
 };
 
 const settings = {
-    server: 'dev.netsblox.org',
-    port: 1970
+    //server: 'dev.netsblox.org',
+    server: 'localhost',
+    port: 1973
+    //port: 1970
 };
 
 

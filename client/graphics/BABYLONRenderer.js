@@ -3,8 +3,14 @@ import * as BABYLON from 'babylonjs';
 
 class BABYLONRenderer {
     constructor() {
-        this.engine = new BABYLON.Engine(document.getElementById('main-canvas'), true);
+        const canvas = document.getElementById('main-canvas');
+        this.engine = new BABYLON.Engine(canvas, true);
         this.engine.enableOfflineSupport = false;
+
+        canvas.addEventListener('resize', function(){
+            this.engine.resize();
+        });
+
         this.scene = new BABYLON.Scene(this.engine);
         this.scene.collisionsEnabled = true;
 

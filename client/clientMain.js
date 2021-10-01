@@ -1,6 +1,10 @@
 import GameClient from './GameClient';
 
 window.onload = function() {
+    window['startRoboScape']();
+};
+
+window['startRoboScape'] = function() {
     console.log('window loaded');
     const gameClient = new GameClient();
     let tick = 0;
