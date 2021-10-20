@@ -158,7 +158,7 @@ class Room {
         } else {
             return relevantBodies.map(body => {
                 // Only position/orientation for update
-                let bodyInfo = { label: body.label, pos: body.position, angle: body.angle };
+                let bodyInfo = { label: body.label, pos: body.position, angle: body.angle, vel: body.velocity, anglevel: body.angularVelocity };
 
                 // Add LED status if it exists
                 if (body.ledStatus !== undefined) {

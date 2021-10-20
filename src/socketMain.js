@@ -4,7 +4,7 @@ const debug = require('debug')('roboscape-sim:socketMain');
 const Room = require('./Room');
 
 const settings = {
-    updateRate: 20,
+    updateRate: 15,
     maxRobots: 5,
     maxRooms: 5
 };

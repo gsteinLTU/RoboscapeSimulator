@@ -32,10 +32,13 @@ function drawBody(label, frameTime) {
     let { x, y } = body.pos;
     let { height, width, image } = bodiesInfo[label];
     let angle = body.angle;
+
     // Extrapolate/Interpolate position and rotation
-    x += ((nextBodies[label].pos.x - x) * (frameTime - lastUpdateTime)) / Math.max(1, nextUpdateTime - lastUpdateTime);
-    y += ((nextBodies[label].pos.y - y) * (frameTime - lastUpdateTime)) / Math.max(1, nextUpdateTime - lastUpdateTime);
-    angle += ((nextBodies[label].angle - angle) * (frameTime - lastUpdateTime)) / Math.max(1, nextUpdateTime - lastUpdateTime);
+    let t = (frameTime - lastUpdateTime) / Math.max(1, nextUpdateTime - lastUpdateTime);
+    x = interpolate(x, nextBodies[label].pos.x, body.vel.x, nextBodies[label].vel.x, t);
+    y = interpolate(y, nextBodies[label].pos.y, body.vel.y, nextBodies[label].vel.y, t);
+    
+    angle += (nextBodies[label].angle - angle) * t;
     
     if (images[image] !== undefined) {
         let imageData = images[image];

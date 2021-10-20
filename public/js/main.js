@@ -42,22 +42,6 @@ images['omni_robot'].src = '/img/robots/omni_robot.png';
 images['omni_robot'].offsetAngle = Math.PI / 2;
 images['omni_robot'].offset = { left: 0, right: 0, top: 0, bottom: 0 };
 
-/**
- * Replace HTML characters with entities for safe display
- * Thanks to Ben Vinegar
- * @param {string} str String to be sanitized
- * @returns {string} str with risky characters replaced
- */
-function escapeHtml(str) {
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;')
-        .replace(/\//g, '&#x2F;');
-}
-
 // Populate available rooms list when received
 socket.on('availableRooms', data => {
     availableRooms = data.availableRooms;
