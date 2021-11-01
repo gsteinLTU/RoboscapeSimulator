@@ -14,8 +14,11 @@ public class Room : IDisposable
 
     public Room()
     {
+        Random random = new Random();
         SimInstance = new SimulationInstance();
-        Name = "Room";
+        Name = "Room" + random.Next(0, 1000000).ToString("X4");
+
+        Console.WriteLine("Room " + Name + " created.");
     }
 
     public void Dispose()

@@ -11,18 +11,19 @@ using SocketIOSharp.Common;
 using SocketIOSharp.Server;
 using SocketIOSharp.Server.Client;
 
-
 Console.WriteLine("Starting RoboScapeSimulator...");
 
 const int updateFPS = 15;
 const int simFPS = 90;
-
 
 JsonSerializer serializer = new();
 serializer.NullValueHandling = NullValueHandling.Ignore;
 
 Dictionary<string, Room> rooms = new();
 
+/// <summary>
+/// Send the available rooms and environments to a socket
+/// </summary>
 void sendAvailableRooms(SocketIOSocket socket)
 {
     using (var writer = new JTokenWriter())
@@ -37,21 +38,28 @@ void sendAvailableRooms(SocketIOSocket socket)
     }
 }
 
+/// <summary>
+/// Helper function to print a JToken
+/// </summary>
+void printJSON(JToken token)
+{
+    using (var writer = new StringWriter())
+    {
+        serializer.Serialize(writer, token);
+        Console.WriteLine(writer.ToString());
+    }
+}
+
 using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 {
-
-    Room newRoom = new();
-
-    rooms[newRoom.Name] = newRoom;
-
-
     // Socket.io setup
     server.OnConnection((SocketIOSocket socket) =>
     {
-
         String socketRoom = null;
+
         Console.WriteLine("Client connected!");
 
+        // Cleanup a bit on disconnect
         socket.On(SocketIOEvent.DISCONNECT, () =>
         {
             Console.WriteLine("Client disconnected!");
@@ -66,8 +74,28 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 
         socket.On("joinRoom", (JToken[] args) =>
         {
-            socketRoom = "Room";
-            Console.WriteLine(args);
+            // Remove from existing room
+            if (socketRoom != null)
+            {
+                rooms[socketRoom].activeSockets.Remove(socket);
+            }
+
+            // Create room if requested
+            if ((string)args[0]["roomID"] == "create")
+            {
+                Room newRoom = new();
+
+                rooms[newRoom.Name] = newRoom;
+
+                socketRoom = newRoom.Name;
+            }
+            else
+            {
+                // TODO: validation
+                socketRoom = (string)args[0]["roomID"];
+            }
+
+            // Setup updates for socket in new room
             rooms[socketRoom].activeSockets.Add(socket);
 
             using (var writer = new JTokenWriter())
