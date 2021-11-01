@@ -48,6 +48,29 @@ class SettingsManager
         }
     }
 
+    /// <summary>
+    /// The RoboScape port for the given server
+    /// </summary>
+    public static int MaxRooms
+    {
+        get
+        {
+            if (loadedSettings == null)
+            {
+                loadSettings();
+            }
+
+            if (loadedSettings?.MaxRooms <= 0)
+            {
+                return 64;
+            }
+
+            return loadedSettings.MaxRooms;
+        }
+    }
+
+
+
     static RoboScapeSimSettings loadedSettings;
 
     /// <summary>
@@ -72,4 +95,6 @@ public class RoboScapeSimSettings
 {
     public string RoboScapeHost { get; set; }
     public int RoboScapePort { get; set; }
+
+    public int MaxRooms { get; set; }
 }

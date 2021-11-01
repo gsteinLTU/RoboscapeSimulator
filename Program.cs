@@ -18,50 +18,63 @@ const int updateFPS = 15;
 const int simFPS = 90;
 
 
+JsonSerializer serializer = new();
+serializer.NullValueHandling = NullValueHandling.Ignore;
 
+Dictionary<string, Room> rooms = new();
+
+void sendAvailableRooms(SocketIOSocket socket)
+{
+    using (var writer = new JTokenWriter())
+    {
+        serializer.Serialize(writer, new Dictionary<string, object> { { "availableRooms", rooms.Keys }, { "canCreate", rooms.Count < SettingsManager.MaxRooms } });
+        socket.Emit("availableRooms", writer.Token);
+    }
+    using (var writer = new JTokenWriter())
+    {
+        serializer.Serialize(writer, Room.ListEnvironments());
+        socket.Emit("availableEnvironments", writer.Token);
+    }
+}
 
 using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 {
-    Dictionary<string, Room> rooms = new();
 
     Room newRoom = new();
 
     rooms[newRoom.Name] = newRoom;
 
-    JsonSerializer serializer = new();
-    serializer.NullValueHandling = NullValueHandling.Ignore;
 
     // Socket.io setup
     server.OnConnection((SocketIOSocket socket) =>
     {
-        String socketRoom = "Room";
-        rooms[socketRoom].activeSockets.Add(socket);
+
+        String socketRoom = null;
         Console.WriteLine("Client connected!");
-
-        // Send room info
-        socket.Emit("availableRooms", new String[] { });
-
-        using (var writer = new JTokenWriter())
-        {
-            serializer.Serialize(writer, rooms[socketRoom].SimInstance.GetBodies());
-            socket.Emit("fullUpdate", writer.Token);
-        }
-
-        socket.On("input", (data) =>
-        {
-            foreach (JToken token in data)
-            {
-                Console.Write(token + " ");
-            }
-
-            Console.WriteLine();
-            socket.Emit("echo", data);
-        });
 
         socket.On(SocketIOEvent.DISCONNECT, () =>
         {
             Console.WriteLine("Client disconnected!");
-            rooms[socketRoom].activeSockets.Remove(socket);
+            if (socketRoom != null)
+            {
+                rooms[socketRoom].activeSockets.Remove(socket);
+            }
+        });
+
+        // Send room info
+        sendAvailableRooms(socket);
+
+        socket.On("joinRoom", (JToken[] args) =>
+        {
+            socketRoom = "Room";
+            Console.WriteLine(args);
+            rooms[socketRoom].activeSockets.Add(socket);
+
+            using (var writer = new JTokenWriter())
+            {
+                serializer.Serialize(writer, rooms[socketRoom].SimInstance.GetBodies());
+                socket.Emit("fullUpdate", writer.Token);
+            }
         });
     });
 
