@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -19,7 +20,7 @@ const int simFPS = 90;
 JsonSerializer serializer = new();
 serializer.NullValueHandling = NullValueHandling.Ignore;
 
-Dictionary<string, Room> rooms = new();
+ConcurrentDictionary<string, Room> rooms = new();
 
 /// <summary>
 /// Send the available rooms and environments to a socket
@@ -48,6 +49,14 @@ void printJSON(JToken token)
         serializer.Serialize(writer, token);
         Console.WriteLine(writer.ToString());
     }
+}
+
+/// <summary>
+/// Helper function to print a JToken
+/// </summary>
+void printJSONArray(JToken[] tokens)
+{
+    Array.ForEach(tokens, printJSON);
 }
 
 using (SocketIOServer server = new(new SocketIOServerOption(9001)))
@@ -85,6 +94,11 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             {
                 Room newRoom = new();
 
+                if ((string)args[0]["namespace"] != null)
+                {
+                    newRoom.Name += "@" + (string)args[0]["namespace"];
+                }
+
                 rooms[newRoom.Name] = newRoom;
 
                 socketRoom = newRoom.Name;
@@ -97,6 +111,19 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 
             // Setup updates for socket in new room
             rooms[socketRoom].activeSockets.Add(socket);
+
+            using (var writer = new JTokenWriter())
+            {
+                serializer.Serialize(writer, socketRoom);
+                socket.Emit("roomJoined", writer.Token);
+                printJSON(writer.Token);
+            }
+
+            using (var writer = new JTokenWriter())
+            {
+                serializer.Serialize(writer, rooms[socketRoom].GetInfo());
+                socket.Emit("roomInfo", writer.Token);
+            }
 
             using (var writer = new JTokenWriter())
             {

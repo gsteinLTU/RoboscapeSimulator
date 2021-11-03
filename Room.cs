@@ -30,4 +30,12 @@ public class Room : IDisposable
     {
         return new List<Dictionary<string, object>> { new Dictionary<string, object> { { "name", "default" } } };
     }
+
+    public Dictionary<string, object> GetInfo()
+    {
+        return new Dictionary<string, object>()
+        {
+            {"background", ""}
+        };
+    }
 }
