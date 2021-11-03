@@ -27,16 +27,8 @@ ConcurrentDictionary<string, Room> rooms = new();
 /// </summary>
 void sendAvailableRooms(SocketIOSocket socket)
 {
-    using (var writer = new JTokenWriter())
-    {
-        serializer.Serialize(writer, new Dictionary<string, object> { { "availableRooms", rooms.Keys }, { "canCreate", rooms.Count < SettingsManager.MaxRooms } });
-        socket.Emit("availableRooms", writer.Token);
-    }
-    using (var writer = new JTokenWriter())
-    {
-        serializer.Serialize(writer, Room.ListEnvironments());
-        socket.Emit("availableEnvironments", writer.Token);
-    }
+    sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Keys }, { "canCreate", rooms.Count < SettingsManager.MaxRooms } });
+    sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
 }
 
 /// <summary>
@@ -57,6 +49,15 @@ void printJSON(JToken token)
 void printJSONArray(JToken[] tokens)
 {
     Array.ForEach(tokens, printJSON);
+}
+
+void sendAsJSON<T>(SocketIOSocket socket, string eventName, T data)
+{
+    using (var writer = new JTokenWriter())
+    {
+        serializer.Serialize(writer, data);
+        socket.Emit(eventName, writer.Token);
+    }
 }
 
 using (SocketIOServer server = new(new SocketIOServerOption(9001)))
@@ -112,24 +113,9 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             // Setup updates for socket in new room
             rooms[socketRoom].activeSockets.Add(socket);
 
-            using (var writer = new JTokenWriter())
-            {
-                serializer.Serialize(writer, socketRoom);
-                socket.Emit("roomJoined", writer.Token);
-                printJSON(writer.Token);
-            }
-
-            using (var writer = new JTokenWriter())
-            {
-                serializer.Serialize(writer, rooms[socketRoom].GetInfo());
-                socket.Emit("roomInfo", writer.Token);
-            }
-
-            using (var writer = new JTokenWriter())
-            {
-                serializer.Serialize(writer, rooms[socketRoom].SimInstance.GetBodies());
-                socket.Emit("fullUpdate", writer.Token);
-            }
+            sendAsJSON(socket, "roomJoined", socketRoom);
+            sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
+            sendAsJSON(socket, "fullUpdate", rooms[socketRoom].SimInstance.GetBodies());
         });
     });
 
