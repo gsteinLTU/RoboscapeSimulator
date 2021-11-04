@@ -86,43 +86,50 @@ public class SimulationInstance : IDisposable
         }
     }
 
-    public Dictionary<String, BodyInfo> GetBodies()
+    public Dictionary<String, BodyInfo> GetBodies(bool onlyAwake = false)
     {
         var output = new Dictionary<String, BodyInfo>();
 
-        foreach (var kvp in NamedStatics)
+        if (!onlyAwake)
         {
-            output.Add(kvp.Key, new BodyInfo
+            foreach (var kvp in NamedStatics)
             {
-                label = kvp.Key,
-                pos = {
+                output.Add(kvp.Key, new BodyInfo
+                {
+                    label = kvp.Key,
+                    pos = {
                     x = kvp.Value.Pose.Position.X,
                     y = kvp.Value.Pose.Position.Y,
                     z = kvp.Value.Pose.Position.Z
                 },
-                angle = kvp.Value.Pose.Orientation,
-                width = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
-                height = kvp.Value.BoundingBox.Max.Y - kvp.Value.BoundingBox.Min.Y,
-                depth = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
-            });
+                    angle = kvp.Value.Pose.Orientation,
+                    width = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
+                    height = kvp.Value.BoundingBox.Max.Y - kvp.Value.BoundingBox.Min.Y,
+                    depth = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z
+                });
+            }
         }
 
         foreach (var kvp in NamedBodies)
         {
-            output.Add(kvp.Key, new BodyInfo
+            if (!onlyAwake || kvp.Value.Awake)
             {
-                label = kvp.Key,
-                pos = {
+                output.Add(kvp.Key, new BodyInfo
+                {
+                    label = kvp.Key,
+                    pos = {
                     x = kvp.Value.Pose.Position.X,
                     y = kvp.Value.Pose.Position.Y,
                     z = kvp.Value.Pose.Position.Z
                 },
-                angle = kvp.Value.Pose.Orientation,
-                width = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
-                height = kvp.Value.BoundingBox.Max.Y - kvp.Value.BoundingBox.Min.Y,
-                depth = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
-                image = kvp.Key.Contains("robot") ? "parallax_robot" : null
-            });
+                    angle = kvp.Value.Pose.Orientation,
+                    width = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
+                    height = kvp.Value.BoundingBox.Max.Y - kvp.Value.BoundingBox.Min.Y,
+                    depth = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
+                    image = kvp.Key.Contains("robot") ? "parallax_robot" : null,
+                    vel = kvp.Value.Velocity.Linear
+                });
+            }
         }
 
         return output;
@@ -147,6 +154,7 @@ public struct BodyInfo
 [Serializable]
 public struct Vec3
 {
+    public static implicit operator Vec3(Vector3 vector3) => new Vec3() { x = vector3.X, y = vector3.Y, z = vector3.Z };
     public float x;
     public float y;
     public float z;
