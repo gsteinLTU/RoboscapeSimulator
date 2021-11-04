@@ -91,9 +91,10 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             }
 
             // Create room if requested
-            if ((string)args[0]["roomID"] == "create")
+            string roomID = (string)args[0]["roomID"];
+            if (roomID == "create")
             {
-                Room newRoom = new();
+                Room newRoom = new("", (string)args[0]["password"] ?? "");
 
                 if ((string)args[0]["namespace"] != null)
                 {
@@ -106,16 +107,30 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             }
             else
             {
-                // TODO: validation
-                socketRoom = (string)args[0]["roomID"];
+                // Joining existing room, make sure it exists first
+                if (rooms.ContainsKey(roomID))
+                {
+                    if (rooms[roomID].Password == "" || rooms[roomID].Password == (string)args[0]["password"])
+                    {
+                        socketRoom = (string)args[0]["roomID"];
+                    }
+                }
             }
 
-            // Setup updates for socket in new room
-            rooms[socketRoom].activeSockets.Add(socket);
-
-            sendAsJSON(socket, "roomJoined", socketRoom);
-            sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
-            sendAsJSON(socket, "fullUpdate", rooms[socketRoom].SimInstance.GetBodies());
+            if (socketRoom != null)
+            {
+                // Setup updates for socket in new room
+                rooms[socketRoom].activeSockets.Add(socket);
+                sendAsJSON(socket, "roomJoined", socketRoom);
+                sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
+                sendAsJSON(socket, "fullUpdate", rooms[socketRoom].SimInstance.GetBodies());
+            }
+            else
+            {
+                // Join failed
+                sendAsJSON(socket, "roomJoined", false);
+                Console.WriteLine("Failed attempt to join room " + roomID);
+            }
         });
     });
 
@@ -137,7 +152,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
         {
             using (var writer = new JTokenWriter())
             {
-                serializer.Serialize(writer, room.SimInstance.GetBodies());
+                serializer.Serialize(writer, room.SimInstance.GetBodies(true));
 
                 foreach (var socket in room.activeSockets)
                 {
