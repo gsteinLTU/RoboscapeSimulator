@@ -40,7 +40,7 @@ public class SimulationInstance : IDisposable
 
         // Demo robot
         var robot = new ParallaxRobot(this);
-        NamedBodies.Add("robot", robot.MainBodyReference);
+        NamedBodies.Add("robot_" + Robot.BytesToHexstring(robot.MacAddress, ""), robot.MainBodyReference);
         // NamedBodies.Add("wheelL", Simulation.Bodies.GetBodyReference(robot.LWheel));
         // NamedBodies.Add("wheelR", Simulation.Bodies.GetBodyReference(robot.RWheel));
         // NamedBodies.Add("wheelRear", Simulation.Bodies.GetBodyReference(robot.RearWheel));

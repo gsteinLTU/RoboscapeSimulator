@@ -65,6 +65,7 @@ abstract class Robot : IDisposable
         _initialPosition = bodyReference.Pose.Position;
         _initialOrientation = bodyReference.Pose.Orientation;
 
+        SetupRobot();
         time.Start();
     }
 
