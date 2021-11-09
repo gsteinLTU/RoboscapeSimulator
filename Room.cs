@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using SocketIOSharp.Server.Client;
 
 /// <summary>
@@ -27,7 +28,7 @@ public class Room : IDisposable
     /// </summary>
     public SimulationInstance SimInstance;
 
-    public Room(string name = "", string password = "")
+    public Room(string name = "", string password = "", string environment = "default")
     {
         SimInstance = new SimulationInstance();
 
@@ -58,7 +59,7 @@ public class Room : IDisposable
     /// <returns>Structure representing information about avaialble environment types</returns>
     public static List<Dictionary<string, object>> ListEnvironments()
     {
-        return new List<Dictionary<string, object>> { new Dictionary<string, object> { { "name", "default" } } };
+        return Environments.Select((environmentType) => new Dictionary<string, object> { { "name", environmentType.GetProperty("Name", BindingFlags.Static) } }).ToList();
     }
 
     /// <summary>
@@ -74,4 +75,9 @@ public class Room : IDisposable
     }
 
     public bool SkipNextUpdate = false;
+
+    internal static List<Type> Environments = new()
+    {
+        typeof(DefaultEnvironment)
+    };
 }

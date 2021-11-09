@@ -94,7 +94,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             string roomID = (string)args[0]["roomID"];
             if (roomID == "create")
             {
-                Room newRoom = new("", (string)args[0]["password"] ?? "");
+                Room newRoom = new("", (string)args[0]["password"] ?? "", "default");
 
                 if ((string)args[0]["namespace"] != null)
                 {

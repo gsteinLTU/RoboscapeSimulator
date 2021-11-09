@@ -14,10 +14,10 @@ using BepuUtilities.Memory;
 
 public class SimulationInstance : IDisposable
 {
-    Dictionary<string, StaticReference> NamedStatics = new();
-    Dictionary<string, BodyReference> NamedBodies = new();
+    internal Dictionary<string, StaticReference> NamedStatics = new();
+    internal Dictionary<string, BodyReference> NamedBodies = new();
 
-    List<Robot> Robots = new();
+    internal List<Robot> Robots = new();
 
     public Simulation Simulation;
 
@@ -33,37 +33,6 @@ public class SimulationInstance : IDisposable
         Properties = new CollidableProperty<BodyCollisionProperties>();
         BufferPool = new BufferPool();
         Simulation = Simulation.Create(BufferPool, new SimulationInstanceCallbacks() { Properties = Properties }, new SimulationInstanceIntegratorCallbacks(new Vector3(0, -10, 0)), new PositionFirstTimestepper());
-
-        // Ground
-        var groundHandle = Simulation.Statics.Add(new StaticDescription(new Vector3(0, 0, 0), new CollidableDescription(Simulation.Shapes.Add(new Box(200, 1, 200)), 0.1f)));
-        NamedStatics.Add("ground", Simulation.Statics.GetStaticReference(groundHandle));
-
-        // Demo robot
-        var robot = new ParallaxRobot(this);
-        NamedBodies.Add("robot_" + Robot.BytesToHexstring(robot.MacAddress, ""), robot.MainBodyReference);
-        // NamedBodies.Add("wheelL", Simulation.Bodies.GetBodyReference(robot.LWheel));
-        // NamedBodies.Add("wheelR", Simulation.Bodies.GetBodyReference(robot.RWheel));
-        // NamedBodies.Add("wheelRear", Simulation.Bodies.GetBodyReference(robot.RearWheel));
-
-        Robots.Add(robot);
-
-        int i = 2;
-
-        for (i = 2; i < 5; i++)
-        {
-            var cube = new Cube(this);
-            NamedBodies.Add("cube" + i, cube.GetMainBodyReference());
-        }
-
-        // var timer = new System.Timers.Timer(1000);
-
-        // timer.Elapsed += (source, e) =>
-        // {
-        //     var cube = new Cube(Simulation);
-        //     NamedBodies.Add("cube" + i++, cube.GetMainBodyReference());
-        // };
-
-        // timer.Start();
     }
 
     bool disposed;
