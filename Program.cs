@@ -14,8 +14,8 @@ using SocketIOSharp.Server.Client;
 
 Console.WriteLine("Starting RoboScapeSimulator...");
 
-const int updateFPS = 15;
-const int simFPS = 90;
+const int updateFPS = 10;
+const int simFPS = 60;
 
 JsonSerializer serializer = new();
 serializer.NullValueHandling = NullValueHandling.Ignore;
