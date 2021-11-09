@@ -150,6 +150,12 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     {
         foreach (Room room in rooms.Values)
         {
+            if (room.SkipNextUpdate)
+            {
+                room.SkipNextUpdate = false;
+                continue;
+            }
+
             using (var writer = new JTokenWriter())
             {
                 serializer.Serialize(writer, room.SimInstance.GetBodies(true));
@@ -166,7 +172,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     clientUpdateTimer.Start();
 
 
-    var clientFullUpdateTimer = new System.Timers.Timer(500d);
+    var clientFullUpdateTimer = new System.Timers.Timer(60000d);
 
     clientFullUpdateTimer.Elapsed += (source, e) =>
     {
@@ -178,6 +184,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
                 foreach (var socket in room.activeSockets)
                 {
                     socket.Emit("fullUpdate", writer.Token);
+                    room.SkipNextUpdate = true;
                 }
             }
         }

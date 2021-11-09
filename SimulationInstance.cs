@@ -86,9 +86,9 @@ public class SimulationInstance : IDisposable
         }
     }
 
-    public Dictionary<String, BodyInfo> GetBodies(bool onlyAwake = false)
+    public Dictionary<string, BodyInfo> GetBodies(bool onlyAwake = false)
     {
-        var output = new Dictionary<String, BodyInfo>();
+        var output = new Dictionary<string, BodyInfo>();
 
         if (!onlyAwake)
         {

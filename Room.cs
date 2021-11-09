@@ -72,4 +72,6 @@ public class Room : IDisposable
             {"background", ""}
         };
     }
+
+    public bool SkipNextUpdate = false;
 }
