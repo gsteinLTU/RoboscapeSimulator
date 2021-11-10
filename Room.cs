@@ -81,8 +81,14 @@ public class Room : IDisposable
         };
     }
 
+    /// <summary>
+    /// Do not send the next update for this room (if needed for optimization purposes)
+    /// </summary>
     public bool SkipNextUpdate = false;
 
+    /// <summary>
+    /// Available environment types
+    /// </summary>
     internal static List<Type> Environments = new()
     {
         typeof(DefaultEnvironment)
