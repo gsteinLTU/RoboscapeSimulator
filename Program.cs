@@ -2,10 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Timers;
-using EngineIOSharp.Common.Enum;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SocketIOSharp.Common;
@@ -27,38 +23,10 @@ ConcurrentDictionary<string, Room> rooms = new();
 /// </summary>
 void sendAvailableRooms(SocketIOSocket socket)
 {
-    sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Keys }, { "canCreate", rooms.Count < SettingsManager.MaxRooms } });
-    sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
+    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Keys }, { "canCreate", rooms.Count < SettingsManager.MaxRooms } });
+    Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
 }
 
-/// <summary>
-/// Helper function to print a JToken
-/// </summary>
-void printJSON(JToken token)
-{
-    using (var writer = new StringWriter())
-    {
-        serializer.Serialize(writer, token);
-        Console.WriteLine(writer.ToString());
-    }
-}
-
-/// <summary>
-/// Helper function to print a JToken
-/// </summary>
-void printJSONArray(JToken[] tokens)
-{
-    Array.ForEach(tokens, printJSON);
-}
-
-void sendAsJSON<T>(SocketIOSocket socket, string eventName, T data)
-{
-    using (var writer = new JTokenWriter())
-    {
-        serializer.Serialize(writer, data);
-        socket.Emit(eventName, writer.Token);
-    }
-}
 
 using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 {
@@ -121,14 +89,14 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             {
                 // Setup updates for socket in new room
                 rooms[socketRoom].activeSockets.Add(socket);
-                sendAsJSON(socket, "roomJoined", socketRoom);
-                sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
-                sendAsJSON(socket, "fullUpdate", rooms[socketRoom].SimInstance.GetBodies());
+                Utils.sendAsJSON(socket, "roomJoined", socketRoom);
+                Utils.sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
+                Utils.sendAsJSON(socket, "fullUpdate", rooms[socketRoom].SimInstance.GetBodies());
             }
             else
             {
                 // Join failed
-                sendAsJSON(socket, "roomJoined", false);
+                Utils.sendAsJSON(socket, "roomJoined", false);
                 Console.WriteLine("Failed attempt to join room " + roomID);
             }
         });

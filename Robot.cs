@@ -19,6 +19,11 @@ abstract class Robot : IDisposable
     internal Simulation simulation;
 
     /// <summary>
+    /// Reference to the room this robot is inside of
+    /// </summary>
+    internal Room room;
+
+    /// <summary>
     /// Position where robot was created
     /// </summary>
     internal Vector3 _initialPosition;
@@ -52,10 +57,11 @@ abstract class Robot : IDisposable
     /// <summary>
     /// Instantiate a Robot inside a given simulation instance
     /// </summary>
-    /// <param name="simulationInstance">SimulationInstance this Robot exists inside</param>
-    public Robot(SimulationInstance simulationInstance)
+    /// <param name="room">Room this Robot exists inside</param>
+    public Robot(Room room)
     {
-        simulation = simulationInstance.Simulation;
+        this.room = room;
+        simulation = room.SimInstance.Simulation;
         var rng = new Random();
         var box = new Box(0.35f, 0.28f, 0.15f);
         box.ComputeInertia(3, out var boxInertia);

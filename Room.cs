@@ -30,10 +30,11 @@ public class Room : IDisposable
 
     public Room(string name = "", string password = "", string environment = "default")
     {
+        Console.WriteLine($"Setting up room {name} with environment {environment}");
         SimInstance = new SimulationInstance();
 
         var env = Environments.Find((env) => (string)env.GetField("ID", BindingFlags.Public | BindingFlags.Static).GetValue(null) == environment) ?? Environments[0];
-        env.GetMethod("Setup", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object?[] { SimInstance });
+        env.GetMethod("Setup", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object?[] { this });
 
         // Give randomized default name
         if (name == "")
@@ -57,19 +58,6 @@ public class Room : IDisposable
     }
 
     /// <summary>
-    /// Lists the available environment types in a format sendable to the client as JSON
-    /// </summary>
-    /// <returns>Structure representing information about avaialble environment types</returns>
-    public static List<Dictionary<string, object>> ListEnvironments()
-    {
-        return Environments.Select(
-            (environmentType) => new Dictionary<string, object> {
-                { "Name", environmentType.GetField("Name", BindingFlags.Public | BindingFlags.Static).GetValue(null) },
-                { "ID", environmentType.GetField("ID", BindingFlags.Public | BindingFlags.Static).GetValue(null) }
-        }).ToList();
-    }
-
-    /// <summary>
     /// Collect information about the room's metadata in a format sendable to the client as JSON
     /// </summary>
     /// <returns>Structure containing room metadata</returns>
@@ -85,6 +73,27 @@ public class Room : IDisposable
     /// Do not send the next update for this room (if needed for optimization purposes)
     /// </summary>
     public bool SkipNextUpdate = false;
+
+    public void SendToClients(string eventName, params object[] args)
+    {
+        foreach (var socket in activeSockets)
+        {
+            Utils.sendAsJSON(socket, eventName, args);
+        }
+    }
+
+    /// <summary>
+    /// Lists the available environment types in a format sendable to the client as JSON
+    /// </summary>
+    /// <returns>Structure representing information about avaialble environment types</returns>
+    public static List<Dictionary<string, object>> ListEnvironments()
+    {
+        return Environments.Select(
+            (environmentType) => new Dictionary<string, object> {
+                { "Name", environmentType.GetField("Name", BindingFlags.Public | BindingFlags.Static).GetValue(null) },
+                { "ID", environmentType.GetField("ID", BindingFlags.Public | BindingFlags.Static).GetValue(null) }
+        }).ToList();
+    }
 
     /// <summary>
     /// Available environment types

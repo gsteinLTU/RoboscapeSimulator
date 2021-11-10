@@ -51,8 +51,7 @@ class ParallaxRobot : Robot
     /// </summary>
     private DriveState driveState = DriveState.SetSpeed;
 
-    // Start is called before the first frame update
-    public ParallaxRobot(SimulationInstance simulationInstance) : base(simulationInstance)
+    public ParallaxRobot(Room room) : base(room)
     {
         CreateHandlers();
 
@@ -161,16 +160,16 @@ class ParallaxRobot : Robot
         });
 
         // Setup collisions
-        ref var bodyProperties = ref simulationInstance.Properties.Allocate(bodyReference.Handle);
+        ref var bodyProperties = ref room.SimInstance.Properties.Allocate(bodyReference.Handle);
         bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 1) };
 
-        ref var lwheelProperties = ref simulationInstance.Properties.Allocate(LWheel);
+        ref var lwheelProperties = ref room.SimInstance.Properties.Allocate(LWheel);
         lwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 1), Friction = 1 };
 
-        ref var rwheelProperties = ref simulationInstance.Properties.Allocate(RWheel);
+        ref var rwheelProperties = ref room.SimInstance.Properties.Allocate(RWheel);
         rwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 1), Friction = 1 };
 
-        ref var rearWheelProperties = ref simulationInstance.Properties.Allocate(RearWheel);
+        ref var rearWheelProperties = ref room.SimInstance.Properties.Allocate(RearWheel);
         rearWheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 1), Friction = 0.5f };
 
         SubgroupCollisionFilter.DisableCollision(ref lwheelProperties.Filter, ref bodyProperties.Filter);
@@ -292,6 +291,7 @@ class ParallaxRobot : Robot
         var tone = BitConverter.ToInt16(msg, 3);
 
         // TODO: Send beep to client
+        room.SendToClients("beep", new BeepData() { Robot = BytesToHexstring(MacAddress, ""), Duration = duration, Frequency = tone });
 
         Console.WriteLine($"Beep {duration} {tone}");
     }
@@ -390,5 +390,12 @@ class ParallaxRobot : Robot
     public void Dispose()
     {
         base.Dispose();
+    }
+
+    internal struct BeepData
+    {
+        public string Robot;
+        public short Duration;
+        public short Frequency;
     }
 }
