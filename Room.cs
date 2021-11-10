@@ -32,6 +32,9 @@ public class Room : IDisposable
     {
         SimInstance = new SimulationInstance();
 
+        var env = Environments.Find((env) => (string)env.GetField("ID", BindingFlags.Public | BindingFlags.Static).GetValue(null) == environment) ?? Environments[0];
+        env.GetMethod("Setup", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object?[] { SimInstance });
+
         // Give randomized default name
         if (name == "")
         {
@@ -59,7 +62,11 @@ public class Room : IDisposable
     /// <returns>Structure representing information about avaialble environment types</returns>
     public static List<Dictionary<string, object>> ListEnvironments()
     {
-        return Environments.Select((environmentType) => new Dictionary<string, object> { { "name", environmentType.GetProperty("Name", BindingFlags.Static) } }).ToList();
+        return Environments.Select(
+            (environmentType) => new Dictionary<string, object> {
+                { "Name", environmentType.GetField("Name", BindingFlags.Public | BindingFlags.Static).GetValue(null) },
+                { "ID", environmentType.GetField("ID", BindingFlags.Public | BindingFlags.Static).GetValue(null) }
+        }).ToList();
     }
 
     /// <summary>

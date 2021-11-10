@@ -4,9 +4,9 @@ using BepuPhysics.Collidables;
 
 class DefaultEnvironment : EnvironmentConfiguration
 {
-    public new string Name = "Default";
-    public new string ID = "default";
-    public new string Description = "The default environment";
+    public static new string Name = "Default";
+    public static new string ID = "default";
+    public static new string Description = "The default environment";
 
     public new static void Setup(ref SimulationInstance sim)
     {
