@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Timers;
 using BepuPhysics;
 using BepuPhysics.Collidables;
@@ -14,7 +11,14 @@ using BepuUtilities.Memory;
 
 public class SimulationInstance : IDisposable
 {
+    /// <summary>
+    /// References to static bodies in the scene
+    /// </summary>
     internal Dictionary<string, StaticReference> NamedStatics = new();
+
+    /// <summary>
+    /// References to moving bodies in the scene
+    /// </summary>
     internal Dictionary<string, BodyReference> NamedBodies = new();
 
     internal List<Robot> Robots = new();
@@ -46,6 +50,19 @@ public class SimulationInstance : IDisposable
         }
     }
 
+    /// <summary>
+    /// Resets all resettable objects in the environment
+    /// </summary>
+    public void Reset()
+    {
+        // TODO: enable other resettable objects
+        Robots.ForEach(robot => robot.Reset());
+    }
+
+    /// <summary>
+    /// Update the simulation
+    /// </summary>
+    /// <param name="dt">Delta time in s</param>
     public void Update(float dt)
     {
         Simulation.Timestep(dt);

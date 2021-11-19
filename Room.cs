@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using Newtonsoft.Json.Linq;
 using SocketIOSharp.Server.Client;
 
 /// <summary>
@@ -69,6 +69,7 @@ public class Room : IDisposable
         };
     }
 
+
     /// <summary>
     /// Do not send the next update for this room (if needed for optimization purposes)
     /// </summary>
@@ -80,6 +81,29 @@ public class Room : IDisposable
         {
             Utils.sendAsJSON(socket, eventName, args);
         }
+    }
+
+    internal void AddSocket(SocketIOSocket socket)
+    {
+        activeSockets.Add(socket);
+        socket.On("resetRobot", handleResetRobot);
+    }
+
+    private void handleResetRobot(JToken[] args)
+    {
+        string robotID = args[0].ToString();
+
+        Robot? robot = SimInstance.Robots.Find(r => r.ID == robotID);
+        if (robot != null)
+        {
+            robot.Reset();
+        }
+    }
+
+    internal void RemoveSocket(SocketIOSocket socket)
+    {
+        activeSockets.Remove(socket);
+        socket.Off("resetRobot", handleResetRobot);
     }
 
     /// <summary>
@@ -102,9 +126,4 @@ public class Room : IDisposable
     {
         new DefaultEnvironment()
     };
-
-    internal void AddSocket(SocketIOSocket socket)
-    {
-        activeSockets.Add(socket);
-    }
 }

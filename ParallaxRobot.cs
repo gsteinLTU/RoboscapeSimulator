@@ -19,6 +19,9 @@ class ParallaxRobot : Robot
     public ConstraintHandle RMotor;
     public ConstraintHandle RHinge;
     public BodyHandle RearWheel;
+    private RigidPose rWheelPose;
+    private RigidPose lWheelPose;
+    private RigidPose rearWheelPose;
 
     private float leftSpeed = 0;
     private float rightSpeed = 0;
@@ -64,7 +67,7 @@ class ParallaxRobot : Robot
         var rearWheelShapeIndex = simulation.Shapes.Add(rearWheelShape);
 
         var lWheelOffset = new RigidPose(new Vector3(-0.25f, -0.3f, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
-        RigidPose.MultiplyWithoutOverlap(lWheelOffset, bodyReference.Pose, out var lWheelPose);
+        RigidPose.MultiplyWithoutOverlap(lWheelOffset, bodyReference.Pose, out lWheelPose);
 
         LWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
             lWheelPose,
@@ -104,7 +107,8 @@ class ParallaxRobot : Robot
         });
 
         var rWheelOffset = new RigidPose(new Vector3(0.25f, -0.3f, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
-        RigidPose.MultiplyWithoutOverlap(rWheelOffset, bodyReference.Pose, out var rWheelPose);
+
+        RigidPose.MultiplyWithoutOverlap(rWheelOffset, bodyReference.Pose, out rWheelPose);
 
         RWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
             rWheelPose,
@@ -146,7 +150,7 @@ class ParallaxRobot : Robot
         });
 
         var rearWheelOffset = new RigidPose(new Vector3(0, -0.3f, -0.15f));
-        RigidPose.MultiplyWithoutOverlap(rearWheelOffset, bodyReference.Pose, out var rearWheelPose);
+        RigidPose.MultiplyWithoutOverlap(rearWheelOffset, bodyReference.Pose, out rearWheelPose);
 
         RearWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
             rearWheelPose,
@@ -390,6 +394,51 @@ class ParallaxRobot : Robot
     public void Dispose()
     {
         base.Dispose();
+    }
+
+    public override void Reset()
+    {
+        base.Reset();
+
+        leftSpeed = 0;
+        rightSpeed = 0;
+        leftTicks = 0;
+        rightTicks = 0;
+        leftDistance = 0;
+        rightDistance = 0;
+        driveState = DriveState.SetSpeed;
+
+        simulation.Solver.ApplyDescription(LMotor, new AngularAxisMotor
+        {
+            LocalAxisA = new Vector3(0, 1, 0),
+            Settings = new MotorSettings(3, 1e-6f),
+            TargetVelocity = 0
+        });
+        simulation.Solver.ApplyDescription(RMotor, new AngularAxisMotor
+        {
+            LocalAxisA = new Vector3(0, -1, 0),
+            Settings = new MotorSettings(3, 1e-6f),
+            TargetVelocity = 0
+        });
+
+        // Reset wheels as well
+        BodyReference rWheelBody = simulation.Bodies.GetBodyReference(RWheel);
+        rWheelBody.Pose.Position = rWheelPose.Position;
+        rWheelBody.Pose.Orientation = rWheelPose.Orientation;
+        rWheelBody.Velocity.Linear = new Vector3();
+        rWheelBody.Velocity.Angular = new Vector3();
+
+        BodyReference lWheelBody = simulation.Bodies.GetBodyReference(LWheel);
+        lWheelBody.Pose.Position = lWheelPose.Position;
+        lWheelBody.Pose.Orientation = lWheelPose.Orientation;
+        lWheelBody.Velocity.Linear = new Vector3();
+        lWheelBody.Velocity.Angular = new Vector3();
+
+        BodyReference rearWheelBody = simulation.Bodies.GetBodyReference(RearWheel);
+        rearWheelBody.Pose.Position = rearWheelPose.Position;
+        rearWheelBody.Pose.Orientation = rearWheelPose.Orientation;
+        rearWheelBody.Velocity.Linear = new Vector3();
+        rearWheelBody.Velocity.Angular = new Vector3();
     }
 
     internal struct BeepData

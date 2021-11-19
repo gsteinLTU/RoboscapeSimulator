@@ -52,7 +52,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             Console.WriteLine("Client disconnected!");
             if (socketRoom != null)
             {
-                rooms[socketRoom].activeSockets.Remove(socket);
+                rooms[socketRoom].RemoveSocket(socket);
             }
         });
 
@@ -64,7 +64,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             // Remove from existing room
             if (socketRoom != null)
             {
-                rooms[socketRoom].activeSockets.Remove(socket);
+                rooms[socketRoom].RemoveSocket(socket);
             }
 
             // Create room if requested

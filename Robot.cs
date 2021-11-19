@@ -90,6 +90,21 @@ abstract class Robot : IDisposable
     /// </summary>
     public byte[] MacAddress;
 
+    private string _id = null;
+
+    public string ID
+    {
+        get
+        {
+            if (_id == null)
+            {
+                _id = BytesToHexstring(MacAddress, "");
+            }
+
+            return _id;
+        }
+    }
+
     /// <summary>
     /// Threshold to reject messages sent too quickly, allows for DoS cybersecurity example, set to 0 to disable
     /// </summary>
@@ -280,12 +295,14 @@ abstract class Robot : IDisposable
         socket.Close();
     }
 
-    public void Reset()
+    public virtual void Reset()
     {
         // Put robot in initial position
         // Later scenarios may provide more complex handling for this
         bodyReference.Pose.Position = _initialPosition;
         bodyReference.Pose.Orientation = _initialOrientation;
+        bodyReference.Velocity.Linear = new Vector3();
+        bodyReference.Velocity.Angular = new Vector3();
 
         time.Restart();
         SendRoboScapeMessage(new byte[] { (byte)'I' });
