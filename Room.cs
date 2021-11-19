@@ -33,8 +33,8 @@ public class Room : IDisposable
         Console.WriteLine($"Setting up room {name} with environment {environment}");
         SimInstance = new SimulationInstance();
 
-        var env = Environments.Find((env) => (string)env.GetField("ID", BindingFlags.Public | BindingFlags.Static).GetValue(null) == environment) ?? Environments[0];
-        env.GetMethod("Setup", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object?[] { this });
+        var env = Environments.Find((env) => env.ID == environment) ?? Environments[0];
+        env.Setup(this);
 
         // Give randomized default name
         if (name == "")
@@ -90,16 +90,21 @@ public class Room : IDisposable
     {
         return Environments.Select(
             (environmentType) => new Dictionary<string, object> {
-                { "Name", environmentType.GetField("Name", BindingFlags.Public | BindingFlags.Static).GetValue(null) },
-                { "ID", environmentType.GetField("ID", BindingFlags.Public | BindingFlags.Static).GetValue(null) }
+                { "Name", environmentType.Name },
+                { "ID", environmentType.ID }
         }).ToList();
     }
 
     /// <summary>
     /// Available environment types
     /// </summary>
-    internal static List<Type> Environments = new()
+    internal static List<EnvironmentConfiguration> Environments = new()
     {
-        typeof(DefaultEnvironment)
+        new DefaultEnvironment()
     };
+
+    internal void AddSocket(SocketIOSocket socket)
+    {
+        activeSockets.Add(socket);
+    }
 }

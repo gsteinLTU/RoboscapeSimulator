@@ -4,11 +4,14 @@ using BepuPhysics.Collidables;
 
 class DefaultEnvironment : EnvironmentConfiguration
 {
-    public static new string Name = "Default";
-    public static new string ID = "default";
-    public static new string Description = "The default environment";
+    public DefaultEnvironment()
+    {
+        Name = "Default";
+        ID = "default";
+        Description = "The default environment";
+    }
 
-    public new static void Setup(Room room)
+    public override void Setup(Room room)
     {
         Console.WriteLine("Setting up default environment");
 

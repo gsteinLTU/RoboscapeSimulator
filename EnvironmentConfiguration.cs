@@ -6,21 +6,21 @@ abstract class EnvironmentConfiguration
     /// <summary>
     /// Displayed name of this environment
     /// </summary>
-    public static string Name;
+    public string Name;
 
     /// <summary>
     /// Identifying value for this environment
     /// </summary>
-    public static string ID;
+    public string ID;
 
     /// <summary>
     /// Descriptive text for this environment
     /// </summary>
-    public static string Description;
+    public string Description;
 
     /// <summary>
-    /// Configures <paramref name="sim"/> to run this environment
+    /// Configures <paramref name="room"/> to run this environment
     /// </summary>
-    /// <param name="sim">SimulationInstance to apply changes to</param>
-    public static void Setup(SimulationInstance sim) { }
+    /// <param name="room">Room to apply changes to</param>
+    public virtual void Setup(Room room) { }
 }

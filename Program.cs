@@ -10,12 +10,22 @@ using SocketIOSharp.Server.Client;
 
 Console.WriteLine("Starting RoboScapeSimulator...");
 
+/// <summary>
+/// Frequency to send update messages to users
+/// </summary>
 const int updateFPS = 10;
+
+/// <summary>
+/// Frequency to run simulation at
+/// </summary>
 const int simFPS = 60;
 
 JsonSerializer serializer = new();
 serializer.NullValueHandling = NullValueHandling.Ignore;
 
+/// <summary>
+/// Mapping of room IDs to Room objects
+/// </summary>
 ConcurrentDictionary<string, Room> rooms = new();
 
 /// <summary>
@@ -27,13 +37,12 @@ void sendAvailableRooms(SocketIOSocket socket)
     Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
 }
 
-
 using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 {
     // Socket.io setup
     server.OnConnection((SocketIOSocket socket) =>
     {
-        String socketRoom = null;
+        string socketRoom = null;
 
         Console.WriteLine("Client connected!");
 
@@ -87,8 +96,8 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 
             if (socketRoom != null)
             {
-                // Setup updates for socket in new room
-                rooms[socketRoom].activeSockets.Add(socket);
+                // Setup updates for socket in new room 
+                rooms[socketRoom].AddSocket(socket);
                 Utils.sendAsJSON(socket, "roomJoined", socketRoom);
                 Utils.sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
                 Utils.sendAsJSON(socket, "fullUpdate", rooms[socketRoom].SimInstance.GetBodies());
