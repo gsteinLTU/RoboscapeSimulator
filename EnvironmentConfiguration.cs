@@ -6,17 +6,17 @@ abstract class EnvironmentConfiguration
     /// <summary>
     /// Displayed name of this environment
     /// </summary>
-    public string Name;
+    public string Name = "";
 
     /// <summary>
     /// Identifying value for this environment
     /// </summary>
-    public string ID;
+    public string ID = "";
 
     /// <summary>
     /// Descriptive text for this environment
     /// </summary>
-    public string Description;
+    public string Description = "";
 
     /// <summary>
     /// Configures <paramref name="room"/> to run this environment

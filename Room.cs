@@ -28,6 +28,11 @@ public class Room : IDisposable
     /// </summary>
     public SimulationInstance SimInstance;
 
+    /// <summary>
+    /// Username/ID of this Room's creator
+    /// </summary>
+    public string? Creator;
+
     public Room(string name = "", string password = "", string environment = "default")
     {
         Console.WriteLine($"Setting up room {name} with environment {environment}");

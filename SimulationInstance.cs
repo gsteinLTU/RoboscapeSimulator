@@ -134,7 +134,7 @@ public struct BodyInfo
     public float width;
     public float height;
     public float depth;
-    public string image;
+    public string? image;
 }
 
 [Serializable]

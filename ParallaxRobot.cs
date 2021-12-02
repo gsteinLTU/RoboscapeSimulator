@@ -391,7 +391,7 @@ class ParallaxRobot : Robot
         rightSpeed = 0;
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
         base.Dispose();
     }

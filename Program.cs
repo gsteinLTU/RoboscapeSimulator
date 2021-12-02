@@ -37,12 +37,23 @@ void sendAvailableRooms(SocketIOSocket socket)
     Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
 }
 
+
+/// <summary>
+/// Send the rooms created  and environments to a socket
+/// </summary>
+void sendUserRooms(SocketIOSocket socket, string user)
+{
+    var userRooms = rooms.Where(pair => pair.Value.Creator == user).ToDictionary(pair => pair);
+    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", userRooms.Keys }, { "canCreate", userRooms.Count < SettingsManager.MaxRooms } });
+    Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
+}
+
 using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 {
     // Socket.io setup
     server.OnConnection((SocketIOSocket socket) =>
     {
-        string socketRoom = null;
+        string? socketRoom = null;
 
         Console.WriteLine("Client connected!");
 

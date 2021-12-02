@@ -17,13 +17,7 @@ class SettingsManager
                 loadSettings();
             }
 
-            if (loadedSettings?.RoboScapeHost == null)
-            {
-                return "editor.netsblox.org";
-            }
-
-
-            return loadedSettings.RoboScapeHost;
+            return (loadedSettings?.RoboScapeHost) ?? DefaultSettings.RoboScapeHost;
         }
     }
 
@@ -39,12 +33,7 @@ class SettingsManager
                 loadSettings();
             }
 
-            if (loadedSettings?.RoboScapePort <= 0)
-            {
-                return 1973;
-            }
-
-            return loadedSettings.RoboScapePort;
+            return (loadedSettings ?? DefaultSettings).RoboScapePort;
         }
     }
 
@@ -60,18 +49,11 @@ class SettingsManager
                 loadSettings();
             }
 
-            if (loadedSettings?.MaxRooms <= 0)
-            {
-                return 64;
-            }
-
-            return loadedSettings.MaxRooms;
+            return (loadedSettings ?? DefaultSettings).RoboScapePort;
         }
     }
 
-
-
-    static RoboScapeSimSettings loadedSettings;
+    static RoboScapeSimSettings? loadedSettings;
 
     /// <summary>
     /// Loads the configuration in appsettings.json
@@ -84,8 +66,33 @@ class SettingsManager
 
         var section = config.GetSection(nameof(RoboScapeSimSettings));
         loadedSettings = section.Get<RoboScapeSimSettings>();
+
+        // Validate
+        if (loadedSettings == null)
+        {
+            loadedSettings = DefaultSettings;
+        }
+
+        if (string.IsNullOrWhiteSpace(loadedSettings.RoboScapeHost))
+        {
+            loadedSettings.RoboScapeHost = DefaultSettings.RoboScapeHost;
+        }
+
+        if (loadedSettings.RoboScapePort <= 0)
+        {
+            loadedSettings.RoboScapePort = DefaultSettings.RoboScapePort;
+        }
     }
 
+    /// <summary>
+    /// Default RoboScapeSimSettings to use when none is loaded externally
+    /// </summary>
+    readonly static RoboScapeSimSettings DefaultSettings = new()
+    {
+        RoboScapeHost = "editor.netsblox.org",
+        RoboScapePort = 1973,
+        MaxRooms = 64
+    };
 }
 
 /// <summary>
@@ -93,8 +100,7 @@ class SettingsManager
 /// </summary>
 public class RoboScapeSimSettings
 {
-    public string RoboScapeHost { get; set; }
+    public string? RoboScapeHost { get; set; }
     public int RoboScapePort { get; set; }
-
     public int MaxRooms { get; set; }
 }

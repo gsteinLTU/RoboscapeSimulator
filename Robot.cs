@@ -83,7 +83,7 @@ abstract class Robot : IDisposable
     /// <summary>
     /// Socket used to talk to server for this Robot
     /// </summary>
-    internal UdpClient socket = null;
+    internal UdpClient? socket = null;
 
     /// <summary>
     /// Simulated MAC address of this Robot, used for identification with server
@@ -258,7 +258,7 @@ abstract class Robot : IDisposable
 
         if (socket?.Available > 0)
         {
-            IPEndPoint remoteEP = null;
+            IPEndPoint? remoteEP = null;
             var msg = socket.Receive(ref remoteEP);
 
             Console.WriteLine($"Message from {remoteEP.Address}: {BytesToHexstring(msg)}");
