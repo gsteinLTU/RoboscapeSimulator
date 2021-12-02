@@ -262,6 +262,7 @@ abstract class Robot : IDisposable
             var msg = socket.Receive(ref remoteEP);
 
             Console.WriteLine($"Message from {remoteEP.Address}: {BytesToHexstring(msg)}");
+            room.LastInteractionTime = DateTime.Now;
 
             // Pass message to handler, if exists
             char messageCode = (char)msg[0];

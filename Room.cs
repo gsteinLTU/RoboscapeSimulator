@@ -33,6 +33,26 @@ public class Room : IDisposable
     /// </summary>
     public string? Creator;
 
+    /// <summary>
+    /// Time (in seconds) without interaction this room will stay alive for, default 1 hour
+    /// </summary>
+    public float Timeout = 60 * 15;
+
+    /// <summary>
+    /// Previous time this Room was interacted with
+    /// </summary>
+    private DateTime lastInteractionTime;
+
+    /// <summary>
+    /// When going inactive, how long should this room be kept in "suspended animation" until deletion
+    /// </summary>
+    public float MaxHibernateTime = 60 * 60 * 24;
+
+    /// <summary>
+    /// Is the Room currently suspended
+    /// </summary>
+    public bool Hibernating = false;
+
     public Room(string name = "", string password = "", string environment = "default")
     {
         Console.WriteLine($"Setting up room {name} with environment {environment}");
@@ -53,6 +73,8 @@ public class Room : IDisposable
         }
 
         Password = password;
+
+        LastInteractionTime = DateTime.Now;
 
         Console.WriteLine("Room " + Name + " created.");
     }
@@ -90,6 +112,7 @@ public class Room : IDisposable
 
     internal void AddSocket(SocketIOSocket socket)
     {
+        LastInteractionTime = DateTime.Now;
         activeSockets.Add(socket);
         socket.On("resetRobot", handleResetRobot);
     }
@@ -107,8 +130,9 @@ public class Room : IDisposable
 
     internal void RemoveSocket(SocketIOSocket socket)
     {
-        activeSockets.Remove(socket);
         socket.Off("resetRobot", handleResetRobot);
+        socket.Emit("roomLeft");
+        activeSockets.Remove(socket);
     }
 
     /// <summary>
@@ -131,4 +155,43 @@ public class Room : IDisposable
     {
         new DefaultEnvironment()
     };
+
+    public DateTime LastInteractionTime
+    {
+        get => lastInteractionTime;
+        set
+        {
+            lastInteractionTime = value;
+
+            // Wake up if sleeping
+            Hibernating = false;
+        }
+    }
+
+    /// <summary>
+    /// Update the state of the Room and its simulation
+    /// </summary>
+    /// <param name="dt">Delta time between updates</param>
+    internal void Update(float dt)
+    {
+        if (Hibernating) return;
+
+        // Check if too much time has passed
+        if ((DateTime.Now - LastInteractionTime).TotalSeconds > Timeout)
+        {
+            // Go to sleep
+            Hibernating = true;
+
+            // Kick all users
+            while (activeSockets.Count > 0)
+            {
+                RemoveSocket(activeSockets[0]);
+            }
+
+            Console.WriteLine($"Room {Name} is now hibernating");
+            return;
+        }
+
+        SimInstance.Update(dt);
+    }
 }

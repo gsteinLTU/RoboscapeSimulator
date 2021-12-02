@@ -87,6 +87,9 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
                 if ((string)args[0]["namespace"] != null)
                 {
                     newRoom.Name += "@" + (string)args[0]["namespace"];
+
+                    // For current NetsBlox implementation, namespace is username of creating user
+                    newRoom.Creator = (string)args[0]["namespace"];
                 }
 
                 rooms[newRoom.Name] = newRoom;
@@ -100,6 +103,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
                 {
                     if (rooms[roomID].Password == "" || rooms[roomID].Password == (string)args[0]["password"])
                     {
+                        rooms[roomID].Hibernating = false;
                         socketRoom = (string)args[0]["roomID"];
                     }
                 }
@@ -196,7 +200,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     {
         foreach (Room room in rooms.Values)
         {
-            room.SimInstance.Update((float)stopwatch.Elapsed.TotalSeconds);
+            room.Update((float)stopwatch.Elapsed.TotalSeconds);
         }
         stopwatch.Restart();
         Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));
