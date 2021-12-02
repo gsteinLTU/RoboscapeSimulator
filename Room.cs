@@ -34,7 +34,7 @@ public class Room : IDisposable
     public string? Creator;
 
     /// <summary>
-    /// Time (in seconds) without interaction this room will stay alive for, default 1 hour
+    /// Time (in seconds) without interaction this room will stay alive for, default 15 minutes
     /// </summary>
     public float Timeout = 60 * 15;
 
