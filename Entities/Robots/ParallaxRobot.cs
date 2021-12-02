@@ -316,23 +316,35 @@ class ParallaxRobot : Robot
         Console.WriteLine($"Set LED {which} {status}");
     }
 
-    public void OnGetRange(byte[] msg)
+    unsafe public void OnGetRange(byte[] msg)
     {
         const short MAX_RANGE = 300;
         short distance = MAX_RANGE;
 
-        // if (Physics.Raycast(new Ray(UltrasonicSensor.position, UltrasonicSensor.forward), out RaycastHit hitInfo, 5, ~LayerMask.GetMask("UI", "Ignore Raycast", "RobotGhost")))
-        // {
-        //     // Convert to cm
-        //     distance = Math.Min(MAX_RANGE, (short)(hitInfo.distance * 100));
-        // }
+        int intersectionCount = 0;
+        simulation.BufferPool.Take(1, out Buffer<RayHit> results);
+        HitHandler hitHandler = new()
+        {
+            Hits = results,
+            IntersectionCount = &intersectionCount
+        };
+        simulation.RayCast(bodyReference.Pose.Position + Vector3.Transform(new Vector3(0, 0.05f, 0.15f), bodyReference.Pose.Orientation),
+                           Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation),
+                           (float)MAX_RANGE / 100f, ref hitHandler);
 
-        // // Create response message
-        // byte[] messageBytes = new byte[3];
-        // messageBytes[0] = (byte)'R';
-        // BitConverter.GetBytes(distance).CopyTo(messageBytes, 1);
+        Console.WriteLine(intersectionCount);
 
-        // SendRoboScapeMessage(messageBytes);
+        if (intersectionCount > 0)
+        {
+            distance = Math.Min((short)(hitHandler.Hits[0].T * 100), MAX_RANGE);
+        }
+
+        // Create response message
+        byte[] messageBytes = new byte[3];
+        messageBytes[0] = (byte)'R';
+        BitConverter.GetBytes(distance).CopyTo(messageBytes, 1);
+
+        SendRoboScapeMessage(messageBytes);
 
         Console.WriteLine($"Get Range {distance}");
     }
@@ -373,7 +385,6 @@ class ParallaxRobot : Robot
 
     #endregion
 
-
     public void OnButtonPress(bool status)
     {
         // Create response message
@@ -385,10 +396,14 @@ class ParallaxRobot : Robot
         Console.WriteLine($"Button Sent");
     }
 
+    /// <summary>
+    /// Set requested speed values to zero
+    /// </summary>
     public void ResetSpeed()
     {
         leftSpeed = 0;
         rightSpeed = 0;
+        driveState = DriveState.SetSpeed;
     }
 
     public new void Dispose()
@@ -396,17 +411,18 @@ class ParallaxRobot : Robot
         base.Dispose();
     }
 
+    /// <summary>
+    /// Reset the Robot's position and movement
+    /// </summary>
     public override void Reset()
     {
         base.Reset();
 
-        leftSpeed = 0;
-        rightSpeed = 0;
+        ResetSpeed();
         leftTicks = 0;
         rightTicks = 0;
         leftDistance = 0;
         rightDistance = 0;
-        driveState = DriveState.SetSpeed;
 
         simulation.Solver.ApplyDescription(LMotor, new AngularAxisMotor
         {
@@ -441,6 +457,9 @@ class ParallaxRobot : Robot
         rearWheelBody.Velocity.Angular = new Vector3();
     }
 
+    /// <summary>
+    /// Information for a beep message
+    /// </summary>
     internal struct BeepData
     {
         public string Robot;
