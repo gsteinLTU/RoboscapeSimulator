@@ -185,6 +185,23 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     clientFullUpdateTimer.Start();
 
 
+    var cleanDeadRoomsTimer = new System.Timers.Timer(600000d);
+
+    cleanDeadRoomsTimer.Elapsed += (source, e) =>
+    {
+        // If room is Hibernating and past its TTL, remove it
+        var oldRooms = rooms.Where(pair => pair.Value.Hibernating && (DateTime.Now - pair.Value.LastInteractionTime).TotalSeconds > pair.Value.MaxHibernateTime).ToList();
+
+        if (oldRooms.Count > 0)
+        {
+            Console.WriteLine($"Removing {oldRooms.Count} old rooms");
+            oldRooms.ForEach(pair => rooms.TryRemove(pair));
+        }
+    };
+
+    cleanDeadRoomsTimer.Start();
+
+
     // string line;
     //
     // while (!(line = Console.ReadLine())?.Trim()?.ToLower()?.Equals("/exit") ?? false)
