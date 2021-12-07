@@ -110,11 +110,16 @@ public class Room : IDisposable
         }
     }
 
+    /// <summary>
+    /// Adds a socket to active list and sets up message listeners
+    /// </summary>
+    /// <param name="socket">Socket to add to active sockets list</param>
     internal void AddSocket(SocketIOSocket socket)
     {
         LastInteractionTime = DateTime.Now;
         activeSockets.Add(socket);
         socket.On("resetRobot", handleResetRobot);
+        socket.On("robotButton", handleRobotButton);
     }
 
     private void handleResetRobot(JToken[] args)
@@ -128,9 +133,25 @@ public class Room : IDisposable
         }
     }
 
+    private void handleRobotButton(JToken[] args)
+    {
+        string robotID = args[0].ToString();
+
+        Robot? robot = SimInstance.Robots.Find(r => r.ID == robotID);
+        if (robot is ParallaxRobot parallaxRobot)
+        {
+            parallaxRobot.OnButtonPress((bool)args[1]);
+        }
+    }
+
+    /// <summary>
+    /// Removes a socket from active list and removes message listeners
+    /// </summary>
+    /// <param name="socket">Socket to remove from active sockets list</param>
     internal void RemoveSocket(SocketIOSocket socket)
     {
         socket.Off("resetRobot", handleResetRobot);
+        socket.Off("robotButton", handleRobotButton);
         socket.Emit("roomLeft");
         activeSockets.Remove(socket);
     }
