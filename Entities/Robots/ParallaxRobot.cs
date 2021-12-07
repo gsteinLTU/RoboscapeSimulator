@@ -387,27 +387,6 @@ class ParallaxRobot : Robot
         Console.WriteLine($"Get Ticks {leftTicks} {rightTicks}");
     }
 
-    public void OnWhisker(Object sender, EventArgs e)
-    {
-        // Create response message
-        // byte[] messageBytes = new byte[2];
-        // messageBytes[0] = (byte)'W';
-        // messageBytes[1] = 0;
-
-        // if (!LeftWhisker.IsTriggered)
-        // {
-        //     messageBytes[1] |= 0x2;
-        // }
-
-        // if (!RightWhisker.IsTriggered)
-        // {
-        //     messageBytes[1] |= 0x1;
-        // }
-
-        // SendRoboScapeMessage(messageBytes);
-        // Console.WriteLine($"Whiskers Sent {LeftWhisker.IsTriggered} {RightWhisker.IsTriggered}");
-    }
-
     #endregion
 
     public void OnButtonPress(bool status)

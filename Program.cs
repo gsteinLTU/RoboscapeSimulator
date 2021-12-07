@@ -93,7 +93,6 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
                 }
 
                 rooms[newRoom.Name] = newRoom;
-
                 socketRoom = newRoom.Name;
             }
             else
@@ -133,8 +132,6 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 
     Console.WriteLine("Server started");
 
-    //Console.WriteLine("Input /exit to exit program.");
-
     // Client update loops
     var clientUpdateTimer = new System.Timers.Timer(1000d / updateFPS);
 
@@ -148,14 +145,12 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
                 continue;
             }
 
-            using (var writer = new JTokenWriter())
-            {
-                serializer.Serialize(writer, room.SimInstance.GetBodies(true));
+            using var writer = new JTokenWriter();
+            serializer.Serialize(writer, room.SimInstance.GetBodies(true));
 
-                foreach (var socket in room.activeSockets)
-                {
-                    socket.Emit("update", writer.Token);
-                }
+            foreach (var socket in room.activeSockets)
+            {
+                socket.Emit("update", writer.Token);
             }
         }
 
@@ -184,7 +179,6 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 
     clientFullUpdateTimer.Start();
 
-
     var cleanDeadRoomsTimer = new System.Timers.Timer(600000d);
 
     cleanDeadRoomsTimer.Elapsed += (source, e) =>
@@ -200,14 +194,6 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     };
 
     cleanDeadRoomsTimer.Start();
-
-
-    // string line;
-    //
-    // while (!(line = Console.ReadLine())?.Trim()?.ToLower()?.Equals("/exit") ?? false)
-    // {
-    //     server.Emit("echo", line);
-    // }
 
     var fpsSpan = TimeSpan.FromSeconds(1d / simFPS);
     Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));
