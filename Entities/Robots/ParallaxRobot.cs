@@ -54,6 +54,11 @@ class ParallaxRobot : Robot
     /// </summary>
     private DriveState driveState = DriveState.SetSpeed;
 
+    private bool whiskerL = false;
+
+    private bool whiskerR = false;
+
+
     public ParallaxRobot(Room room) : base(room)
     {
         CreateHandlers();
@@ -222,6 +227,28 @@ class ParallaxRobot : Robot
                 rightSpeed = 0;
             }
         }
+
+        unsafe
+        {
+            // Do whisker tests
+            var whiskerTestL = Utils.QuickRayCast(simulation, bodyReference.Pose.Position + Vector3.Transform(new Vector3(-0.05f, 0.05f, 0.15f), bodyReference.Pose.Orientation),
+                           Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation), 10);
+            var whiskerTestR = Utils.QuickRayCast(simulation, bodyReference.Pose.Position + Vector3.Transform(new Vector3(0.05f, 0.05f, 0.15f), bodyReference.Pose.Orientation),
+                           Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation), 10);
+
+            if (whiskerTestL != whiskerL || whiskerTestR != whiskerR)
+            {
+                whiskerL = whiskerTestL;
+                whiskerR = whiskerTestR;
+
+                // Send update to server
+                byte[] messageBytes = new byte[2];
+                messageBytes[0] = (byte)'W';
+                messageBytes[1] = (byte)((whiskerR ? 0 : 1) | ((byte)(whiskerL ? 0 : 1) << 1));
+
+                SendRoboScapeMessage(messageBytes);
+            }
+        }
     }
 
 
@@ -331,8 +358,6 @@ class ParallaxRobot : Robot
         simulation.RayCast(bodyReference.Pose.Position + Vector3.Transform(new Vector3(0, 0.05f, 0.15f), bodyReference.Pose.Orientation),
                            Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation),
                            (float)MAX_RANGE / 100f, ref hitHandler);
-
-        Console.WriteLine(intersectionCount);
 
         if (intersectionCount > 0)
         {

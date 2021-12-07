@@ -47,6 +47,22 @@ public static class Utils
             socket.Emit(eventName, writer.Token);
         }
     }
+
+    public unsafe static bool QuickRayCast(Simulation simulation, Vector3 origin, Vector3 direction, float maxRange = 300)
+    {
+        int intersectionCount = 0;
+        simulation.BufferPool.Take(1, out Buffer<RayHit> results);
+
+        HitHandler hitHandler = new()
+        {
+            Hits = results,
+            IntersectionCount = &intersectionCount
+        };
+
+        simulation.RayCast(origin, direction, maxRange / 100f, ref hitHandler);
+        simulation.BufferPool.Return(ref results);
+        return intersectionCount > 0;
+    }
 }
 
 public struct RayHit
