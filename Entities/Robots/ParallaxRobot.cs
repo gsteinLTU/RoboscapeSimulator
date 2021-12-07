@@ -231,10 +231,11 @@ class ParallaxRobot : Robot
         unsafe
         {
             // Do whisker tests
+            const int whiskerRange = 11;
             var whiskerTestL = Utils.QuickRayCast(simulation, bodyReference.Pose.Position + Vector3.Transform(new Vector3(-0.05f, 0.05f, 0.15f), bodyReference.Pose.Orientation),
-                           Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation), 10);
+                           Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation), whiskerRange);
             var whiskerTestR = Utils.QuickRayCast(simulation, bodyReference.Pose.Position + Vector3.Transform(new Vector3(0.05f, 0.05f, 0.15f), bodyReference.Pose.Orientation),
-                           Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation), 10);
+                           Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation), whiskerRange);
 
             if (whiskerTestL != whiskerL || whiskerTestR != whiskerR)
             {
