@@ -230,7 +230,9 @@ abstract class Robot : IDisposable
             messageBytes.CopyTo(finalMessageBytes, 10);
         }
 
+#if DEBUG
         Console.WriteLine(BytesToHexstring(finalMessageBytes));
+#endif
 
         socket.SendAsync(finalMessageBytes, finalMessageBytes.Length);
     }
@@ -261,7 +263,10 @@ abstract class Robot : IDisposable
             IPEndPoint? remoteEP = null;
             var msg = socket.Receive(ref remoteEP);
 
+#if DEBUG
             Console.WriteLine($"Message from {remoteEP.Address}: {BytesToHexstring(msg)}");
+#endif
+
             room.LastInteractionTime = DateTime.Now;
 
             // Pass message to handler, if exists
