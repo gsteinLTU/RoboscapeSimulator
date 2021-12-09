@@ -43,8 +43,8 @@ void sendAvailableRooms(SocketIOSocket socket)
 /// </summary>
 void sendUserRooms(SocketIOSocket socket, string user)
 {
-    var userRooms = rooms.Where(pair => pair.Value.Creator == user).ToDictionary(pair => pair);
-    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", userRooms.Keys }, { "canCreate", userRooms.Count < SettingsManager.MaxRooms } });
+    var userRooms = rooms.Where(pair => pair.Value.Creator == user).Select(pair => pair.Key).ToList();
+    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", userRooms }, { "canCreate", userRooms.Count < SettingsManager.MaxRooms } });
     Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
 }
 
@@ -68,7 +68,13 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
         });
 
         // Send room info
-        sendAvailableRooms(socket);
+        socket.On("getRooms", (JToken[] args) =>
+        {
+            var user = (string)args[0];
+            Console.WriteLine("init " + user);
+            sendUserRooms(socket, user);
+            Console.WriteLine("init2 " + user);
+        });
 
         socket.On("joinRoom", (JToken[] args) =>
         {
@@ -82,6 +88,13 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             string roomID = (string)args[0]["roomID"];
             if (roomID == "create")
             {
+                // Verify we have capacity
+                if (rooms.Count(r => !r.Value.Hibernating) > SettingsManager.MaxRooms)
+                {
+                    socket.Emit("error", "Failed to create room: insufficient resources");
+                    return;
+                }
+
                 Room newRoom = new("", (string)args[0]["password"] ?? "", "default");
 
                 if ((string)args[0]["namespace"] != null)
