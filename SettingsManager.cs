@@ -33,7 +33,7 @@ class SettingsManager
                 loadSettings();
             }
 
-            return (loadedSettings ?? DefaultSettings).RoboScapePort;
+            return (loadedSettings ?? DefaultSettings).RoboScapePort.GetValueOrDefault((int)DefaultSettings.RoboScapePort);
         }
     }
 
@@ -49,7 +49,7 @@ class SettingsManager
                 loadSettings();
             }
 
-            return (loadedSettings ?? DefaultSettings).RoboScapePort;
+            return (loadedSettings ?? DefaultSettings).MaxRooms.GetValueOrDefault((int)DefaultSettings.MaxRooms);
         }
     }
 
@@ -78,9 +78,14 @@ class SettingsManager
             loadedSettings.RoboScapeHost = DefaultSettings.RoboScapeHost;
         }
 
-        if (loadedSettings.RoboScapePort <= 0)
+        if (loadedSettings.RoboScapePort == null || loadedSettings.RoboScapePort <= 0)
         {
             loadedSettings.RoboScapePort = DefaultSettings.RoboScapePort;
+        }
+
+        if (loadedSettings.MaxRooms == null)
+        {
+            loadedSettings.MaxRooms = DefaultSettings.MaxRooms;
         }
     }
 
@@ -101,6 +106,6 @@ class SettingsManager
 public class RoboScapeSimSettings
 {
     public string? RoboScapeHost { get; set; }
-    public int RoboScapePort { get; set; }
-    public int MaxRooms { get; set; }
+    public int? RoboScapePort { get; set; }
+    public int? MaxRooms { get; set; }
 }

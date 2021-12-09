@@ -33,7 +33,7 @@ ConcurrentDictionary<string, Room> rooms = new();
 /// </summary>
 void sendAvailableRooms(SocketIOSocket socket)
 {
-    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Keys }, { "canCreate", rooms.Count < SettingsManager.MaxRooms } });
+    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Keys }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
     Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
 }
 
@@ -44,7 +44,7 @@ void sendAvailableRooms(SocketIOSocket socket)
 void sendUserRooms(SocketIOSocket socket, string user)
 {
     var userRooms = rooms.Where(pair => pair.Value.Creator == user).Select(pair => pair.Key).ToList();
-    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", userRooms }, { "canCreate", userRooms.Count < SettingsManager.MaxRooms } });
+    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", userRooms }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
     Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
 }
 
@@ -89,7 +89,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             if (roomID == "create")
             {
                 // Verify we have capacity
-                if (rooms.Count(r => !r.Value.Hibernating) > SettingsManager.MaxRooms)
+                if (rooms.Count(r => !r.Value.Hibernating) >= SettingsManager.MaxRooms)
                 {
                     socket.Emit("error", "Failed to create room: insufficient resources");
                     return;
