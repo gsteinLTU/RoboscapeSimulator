@@ -95,7 +95,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
                     return;
                 }
 
-                Room newRoom = new("", (string)args[0]["password"] ?? "", "default");
+                Room newRoom = new("", (string)args[0]["password"] ?? "", (string)args[0]["env"] ?? "default");
 
                 if ((string)args[0]["namespace"] != null)
                 {

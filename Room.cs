@@ -174,7 +174,8 @@ public class Room : IDisposable
     /// </summary>
     internal static List<EnvironmentConfiguration> Environments = new()
     {
-        new DefaultEnvironment()
+        new DefaultEnvironment(),
+        new DemoEnvironment()
     };
 
     public DateTime LastInteractionTime
