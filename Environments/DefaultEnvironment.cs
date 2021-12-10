@@ -16,8 +16,8 @@ class DefaultEnvironment : EnvironmentConfiguration
         Console.WriteLine("Setting up default environment");
 
         // Ground
-        var groundHandle = room.SimInstance.Simulation.Statics.Add(new StaticDescription(new Vector3(0, 0, 0), new CollidableDescription(room.SimInstance.Simulation.Shapes.Add(new Box(200, 1, 200)), 0.1f)));
-        room.SimInstance.NamedStatics.Add("ground", room.SimInstance.Simulation.Statics.GetStaticReference(groundHandle));
+        var ground = new Ground(room);
+        room.SimInstance.NamedStatics.Add("ground", ground.StaticReference);
 
         // Demo robot
         var robot = new ParallaxRobot(room);
@@ -32,7 +32,7 @@ class DefaultEnvironment : EnvironmentConfiguration
 
         for (i = 2; i < 5; i++)
         {
-            var cube = new Cube(room.SimInstance);
+            var cube = new Cube(room);
             room.SimInstance.NamedBodies.Add("cube" + i, cube.GetMainBodyReference());
         }
     }
