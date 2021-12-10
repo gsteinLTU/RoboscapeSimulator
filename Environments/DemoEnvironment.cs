@@ -20,7 +20,7 @@ class DemoEnvironment : EnvironmentConfiguration
         room.SimInstance.NamedStatics.Add("ground", ground.StaticReference);
 
         // Walls
-        float wallsize = 10;
+        float wallsize = 15;
 
         var wall1 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, -wallsize / 2), Quaternion.Identity, true);
         room.SimInstance.NamedBodies.Add("wall1", wall1.GetMainBodyReference());
