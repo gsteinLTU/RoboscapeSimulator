@@ -20,16 +20,18 @@ class DemoEnvironment : EnvironmentConfiguration
         room.SimInstance.NamedStatics.Add("ground", ground.StaticReference);
 
         // Walls
-        var wall1 = new Cube(room, 10, 1, 1, new Vector3(0, 0.5f, -5), Quaternion.Identity, true);
+        float wallsize = 10;
+
+        var wall1 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, -wallsize / 2), Quaternion.Identity, true);
         room.SimInstance.NamedBodies.Add("wall1", wall1.GetMainBodyReference());
 
-        var wall2 = new Cube(room, 10, 1, 1, new Vector3(0, 0.5f, 5), Quaternion.Identity, true);
+        var wall2 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, wallsize / 2), Quaternion.Identity, true);
         room.SimInstance.NamedBodies.Add("wall2", wall2.GetMainBodyReference());
 
-        var wall3 = new Cube(room, 1, 1, 10.5f, new Vector3(-5, 0.5f, 0), Quaternion.Identity, true);
+        var wall3 = new Cube(room, 1, 1, wallsize + 1, new Vector3(-wallsize / 2, 0.5f, 0), Quaternion.Identity, true);
         room.SimInstance.NamedBodies.Add("wall3", wall3.GetMainBodyReference());
 
-        var wall4 = new Cube(room, 1, 1, 10.5f, new Vector3(5, 0.5f, 0), Quaternion.Identity, true);
+        var wall4 = new Cube(room, 1, 1, wallsize + 1, new Vector3(wallsize / 2, 0.5f, 0), Quaternion.Identity, true);
         room.SimInstance.NamedBodies.Add("wall4", wall4.GetMainBodyReference());
 
         // Demo robots
