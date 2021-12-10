@@ -308,7 +308,9 @@ class ParallaxRobot : Robot
 
         driveState = DriveState.SetSpeed;
 
+#if DEBUG
         Console.WriteLine($"Set Speed {leftSpeed} {rightSpeed}");
+#endif
     }
 
     public void OnBeep(byte[] msg)
@@ -325,7 +327,9 @@ class ParallaxRobot : Robot
         // TODO: Send beep to client
         room.SendToClients("beep", new BeepData() { Robot = BytesToHexstring(MacAddress, ""), Duration = duration, Frequency = tone });
 
+#if DEBUG
         Console.WriteLine($"Beep {duration} {tone}");
+#endif
     }
 
     public void OnSetLED(byte[] msg)
@@ -341,7 +345,9 @@ class ParallaxRobot : Robot
         var which = msg[1];
         var status = msg[2];
 
+#if DEBUG
         Console.WriteLine($"Set LED {which} {status}");
+#endif
     }
 
     unsafe public void OnGetRange(byte[] msg)
@@ -372,7 +378,9 @@ class ParallaxRobot : Robot
 
         SendRoboScapeMessage(messageBytes);
 
+#if DEBUG
         Console.WriteLine($"Get Range {distance}");
+#endif
     }
 
     public void OnGetTicks(byte[] msg)
