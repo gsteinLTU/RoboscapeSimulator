@@ -92,7 +92,8 @@ public class Room : IDisposable
     {
         return new Dictionary<string, object>()
         {
-            {"background", ""}
+            {"background", ""},
+            {"time", SimInstance.Time}
         };
     }
 

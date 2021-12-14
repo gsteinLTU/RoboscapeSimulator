@@ -28,26 +28,6 @@ serializer.NullValueHandling = NullValueHandling.Ignore;
 /// </summary>
 ConcurrentDictionary<string, Room> rooms = new();
 
-/// <summary>
-/// Send the available rooms and environments to a socket
-/// </summary>
-void sendAvailableRooms(SocketIOSocket socket)
-{
-    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Keys }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
-    Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
-}
-
-
-/// <summary>
-/// Send the rooms created  and environments to a socket
-/// </summary>
-void sendUserRooms(SocketIOSocket socket, string user)
-{
-    var userRooms = rooms.Where(pair => pair.Value.Creator == user).Select(pair => pair.Key).ToList();
-    Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", userRooms }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
-    Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
-}
-
 using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 {
     // Socket.io setup
@@ -72,7 +52,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
         {
             var user = (string)args[0];
             Console.WriteLine("init " + user);
-            sendUserRooms(socket, user);
+            Messages.SendUserRooms(socket, user, rooms);
             Console.WriteLine("init2 " + user);
         });
 
@@ -127,7 +107,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
                 rooms[socketRoom].AddSocket(socket);
                 Utils.sendAsJSON(socket, "roomJoined", socketRoom);
                 Utils.sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
-                Utils.sendAsJSON(socket, "fullUpdate", rooms[socketRoom].SimInstance.GetBodies());
+                Messages.SendUpdate(socket, rooms[socketRoom], true);
             }
             else
             {
@@ -158,12 +138,9 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
                 continue;
             }
 
-            using var writer = new JTokenWriter();
-            serializer.Serialize(writer, room.SimInstance.GetBodies(true));
-
             foreach (var socket in room.activeSockets)
             {
-                socket.Emit("update", writer.Token);
+                Messages.SendUpdate(socket, room);
             }
         }
 
@@ -178,14 +155,11 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     {
         foreach (Room room in rooms.Values)
         {
-            using (var writer = new JTokenWriter())
+            using var writer = new JTokenWriter();
+            serializer.Serialize(writer, room.SimInstance.GetBodies());
+            foreach (var socket in room.activeSockets)
             {
-                serializer.Serialize(writer, room.SimInstance.GetBodies());
-                foreach (var socket in room.activeSockets)
-                {
-                    socket.Emit("fullUpdate", writer.Token);
-                    room.SkipNextUpdate = true;
-                }
+                Messages.SendUpdate(socket, room, true);
             }
         }
     };

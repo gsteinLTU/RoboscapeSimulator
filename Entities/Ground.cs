@@ -15,7 +15,7 @@ class Ground
     public Ground(Room room, float xsize = 200, float zsize = 100, Vector3? position = null, float thickness = 0.1f)
     {
         var simulationInstance = room.SimInstance;
-        var groundHandle = simulationInstance.Simulation.Statics.Add(new StaticDescription(position ?? new Vector3(0, 0, 0), new CollidableDescription(simulationInstance.Simulation.Shapes.Add(new Box(xsize, thickness, zsize)), 0.1f)));
+        var groundHandle = simulationInstance.Simulation.Statics.Add(new StaticDescription(position ?? new Vector3(0, -thickness / 2, 0), new CollidableDescription(simulationInstance.Simulation.Shapes.Add(new Box(xsize, thickness, zsize)), 0.1f)));
         StaticReference = simulationInstance.Simulation.Statics.GetStaticReference(groundHandle);
     }
 }

@@ -32,6 +32,11 @@ public class SimulationInstance : IDisposable
 
     internal CollidableProperty<BodyCollisionProperties> Properties = new();
 
+    /// <summary>
+    /// Time elapsed in this simulation
+    /// </summary>
+    public float Time = 0;
+
     public SimulationInstance()
     {
         Properties = new CollidableProperty<BodyCollisionProperties>();
@@ -65,6 +70,7 @@ public class SimulationInstance : IDisposable
     /// <param name="dt">Delta time in s</param>
     public void Update(float dt)
     {
+        Time += dt;
         Simulation.Timestep(dt);
         foreach (var robot in Robots)
         {
@@ -72,9 +78,9 @@ public class SimulationInstance : IDisposable
         }
     }
 
-    public Dictionary<string, BodyInfo> GetBodies(bool onlyAwake = false)
+    public Dictionary<string, object> GetBodies(bool onlyAwake = false)
     {
-        var output = new Dictionary<string, BodyInfo>();
+        var output = new Dictionary<string, object>();
 
         if (!onlyAwake)
         {
