@@ -58,63 +58,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 
         socket.On("joinRoom", (JToken[] args) =>
         {
-            // Remove from existing room
-            if (socketRoom != null)
-            {
-                rooms[socketRoom].RemoveSocket(socket);
-            }
-
-            // Create room if requested
-            string roomID = (string)args[0]["roomID"];
-            if (roomID == "create")
-            {
-                // Verify we have capacity
-                if (rooms.Count(r => !r.Value.Hibernating) >= SettingsManager.MaxRooms)
-                {
-                    socket.Emit("error", "Failed to create room: insufficient resources");
-                    return;
-                }
-
-                Room newRoom = new("", (string)args[0]["password"] ?? "", (string)args[0]["env"] ?? "default");
-
-                if ((string)args[0]["namespace"] != null)
-                {
-                    newRoom.Name += "@" + (string)args[0]["namespace"];
-
-                    // For current NetsBlox implementation, namespace is username of creating user
-                    newRoom.Creator = (string)args[0]["namespace"];
-                }
-
-                rooms[newRoom.Name] = newRoom;
-                socketRoom = newRoom.Name;
-            }
-            else
-            {
-                // Joining existing room, make sure it exists first
-                if (rooms.ContainsKey(roomID))
-                {
-                    if (rooms[roomID].Password == "" || rooms[roomID].Password == (string)args[0]["password"])
-                    {
-                        rooms[roomID].Hibernating = false;
-                        socketRoom = (string)args[0]["roomID"];
-                    }
-                }
-            }
-
-            if (socketRoom != null)
-            {
-                // Setup updates for socket in new room 
-                rooms[socketRoom].AddSocket(socket);
-                Utils.sendAsJSON(socket, "roomJoined", socketRoom);
-                Utils.sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
-                Messages.SendUpdate(socket, rooms[socketRoom], true);
-            }
-            else
-            {
-                // Join failed
-                Utils.sendAsJSON(socket, "roomJoined", false);
-                Console.WriteLine("Failed attempt to join room " + roomID);
-            }
+            Messages.HandleJoinRoom(args, socket, rooms, ref socketRoom);
         });
     });
 
@@ -126,61 +70,9 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     Console.WriteLine("Server started");
 
     // Client update loops
-    var clientUpdateTimer = new System.Timers.Timer(1000d / updateFPS);
-
-    clientUpdateTimer.Elapsed += (source, e) =>
-    {
-        foreach (Room room in rooms.Values)
-        {
-            if (room.SkipNextUpdate)
-            {
-                room.SkipNextUpdate = false;
-                continue;
-            }
-
-            foreach (var socket in room.activeSockets)
-            {
-                Messages.SendUpdate(socket, room);
-            }
-        }
-
-    };
-
-    clientUpdateTimer.Start();
-
-
-    var clientFullUpdateTimer = new System.Timers.Timer(60000d);
-
-    clientFullUpdateTimer.Elapsed += (source, e) =>
-    {
-        foreach (Room room in rooms.Values)
-        {
-            using var writer = new JTokenWriter();
-            serializer.Serialize(writer, room.SimInstance.GetBodies());
-            foreach (var socket in room.activeSockets)
-            {
-                Messages.SendUpdate(socket, room, true);
-            }
-        }
-    };
-
-    clientFullUpdateTimer.Start();
-
-    var cleanDeadRoomsTimer = new System.Timers.Timer(600000d);
-
-    cleanDeadRoomsTimer.Elapsed += (source, e) =>
-    {
-        // If room is Hibernating and past its TTL, remove it
-        var oldRooms = rooms.Where(pair => pair.Value.Hibernating && (DateTime.Now - pair.Value.LastInteractionTime).TotalSeconds > pair.Value.MaxHibernateTime).ToList();
-
-        if (oldRooms.Count > 0)
-        {
-            Console.WriteLine($"Removing {oldRooms.Count} old rooms");
-            oldRooms.ForEach(pair => rooms.TryRemove(pair));
-        }
-    };
-
-    cleanDeadRoomsTimer.Start();
+    var clientUpdateTimer = Timers.CreateClientUpdateTimer(updateFPS, rooms);
+    var clientFullUpdateTimer = Timers.CreateClientFullUpdateTimer(rooms, serializer);
+    var cleanDeadRoomsTimer = Timers.CreateCleanDeadRoomsTimer(rooms);
 
     var fpsSpan = TimeSpan.FromSeconds(1d / simFPS);
     Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));
