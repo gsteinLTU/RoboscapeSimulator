@@ -36,7 +36,7 @@ public class Room : IDisposable
     /// <summary>
     /// Time (in seconds) without interaction this room will stay alive for, default 15 minutes
     /// </summary>
-    public float Timeout = 60 * 15;
+    public float Timeout = 60 * 30;
 
     /// <summary>
     /// Previous time this Room was interacted with

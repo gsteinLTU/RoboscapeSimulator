@@ -1,6 +1,4 @@
 using System.Numerics;
-using BepuPhysics;
-using BepuPhysics.Collidables;
 
 class DemoEnvironment : EnvironmentConfiguration
 {
@@ -51,7 +49,7 @@ class DemoEnvironment : EnvironmentConfiguration
 
         for (int i = 0; i < 3; i++)
         {
-            var cube = new Cube(room);
+            var cube = new Cube(room, visualInfo: "#B85");
             room.SimInstance.NamedBodies.Add(cube.Name, cube.GetMainBodyReference());
             room.SimInstance.Entities.Add(cube);
         }
