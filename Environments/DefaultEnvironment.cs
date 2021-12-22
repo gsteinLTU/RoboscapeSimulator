@@ -17,7 +17,8 @@ class DefaultEnvironment : EnvironmentConfiguration
 
         // Ground
         var ground = new Ground(room);
-        room.SimInstance.NamedStatics.Add("ground", ground.StaticReference);
+        room.SimInstance.NamedStatics.Add(ground.Name, ground.StaticReference);
+        room.SimInstance.Entities.Add(ground);
 
         // Demo robot
         var robot = new ParallaxRobot(room);
@@ -25,15 +26,13 @@ class DefaultEnvironment : EnvironmentConfiguration
         // NamedBodies.Add("wheelL", Simulation.Bodies.GetBodyReference(robot.LWheel));
         // NamedBodies.Add("wheelR", Simulation.Bodies.GetBodyReference(robot.RWheel));
         // NamedBodies.Add("wheelRear", Simulation.Bodies.GetBodyReference(robot.RearWheel));
+        room.SimInstance.Entities.Add(robot);
 
-        room.SimInstance.Robots.Add(robot);
-
-        int i = 2;
-
-        for (i = 2; i < 5; i++)
+        for (int i = 0; i < 3; i++)
         {
             var cube = new Cube(room);
-            room.SimInstance.NamedBodies.Add("cube" + i, cube.GetMainBodyReference());
+            room.SimInstance.NamedBodies.Add(cube.Name, cube.GetMainBodyReference());
+            room.SimInstance.Entities.Add(cube);
         }
     }
 }

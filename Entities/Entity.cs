@@ -2,6 +2,8 @@ public abstract class Entity : IDisposable
 {
     public virtual void Update(float dt) { }
 
+    public string Name = "entity";
+
     private bool disposedValue;
 
     protected virtual void Dispose(bool disposing)

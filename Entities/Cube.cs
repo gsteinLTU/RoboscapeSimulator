@@ -11,6 +11,8 @@ using BepuPhysics.Constraints;
 /// </summary>
 class Cube : Entity
 {
+    private static uint ID = 0;
+
     /// <summary>
     /// The reference to this object's body in the simulation
     /// </summary>
@@ -26,8 +28,11 @@ class Cube : Entity
     /// <param name="initialPosition">Initial location of the Cube, or null for a random location</param>
     /// <param name="initialOrientation">Initial orientation of the Cube, or null for a random yaw</param>
     /// <param name="isKinematic">Whether this object should be movable</param>
-    public Cube(Room room, float width = 1, float height = 1, float depth = 1, Vector3? initialPosition = null, Quaternion? initialOrientation = null, bool isKinematic = false)
+    /// <param name="visualInfo">Visual description string for the Cube</param>
+    public Cube(Room room, float width = 1, float height = 1, float depth = 1, Vector3? initialPosition = null, Quaternion? initialOrientation = null, bool isKinematic = false, string visualInfo = "#888")
     {
+        Name = $"cube_{ID++}:{visualInfo}";
+        Console.WriteLine(Name);
         var simulationInstance = room.SimInstance;
         var rng = new Random();
         var box = new Box(width, height, depth);
@@ -48,7 +53,6 @@ class Cube : Entity
 
         ref var bodyProperties = ref simulationInstance.Properties.Allocate(bodyReference.Handle);
         bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 0) };
-
     }
 
     public BodyReference GetMainBodyReference()
