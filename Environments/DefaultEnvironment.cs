@@ -30,7 +30,7 @@ class DefaultEnvironment : EnvironmentConfiguration
 
         for (int i = 0; i < 3; i++)
         {
-            var cube = new Cube(room);
+            var cube = new Cube(room, visualInfo: "#A74");
             room.SimInstance.NamedBodies.Add(cube.Name, cube.GetMainBodyReference());
             room.SimInstance.Entities.Add(cube);
         }
