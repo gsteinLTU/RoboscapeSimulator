@@ -59,7 +59,7 @@ class ParallaxRobot : Robot
     private bool whiskerR = false;
 
 
-    public ParallaxRobot(Room room) : base(room)
+    public ParallaxRobot(Room room, Vector3? position = null, Quaternion? rotation = null) : base(room, position, rotation)
     {
         CreateHandlers();
 

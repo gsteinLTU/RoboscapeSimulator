@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Timers;
 using BepuPhysics;
@@ -23,7 +24,7 @@ public class SimulationInstance : IDisposable
 
     internal List<Entity> Entities = new();
 
-    internal List<Robot> Robots => (List<Robot>)Entities.Where(e => e is Robot);
+    internal IEnumerable<Robot> Robots => Entities.Where(e => e is Robot).Cast<Robot>();
 
     public Simulation Simulation;
 

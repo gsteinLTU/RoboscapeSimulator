@@ -58,16 +58,30 @@ abstract class Robot : Entity, IResettable
     /// Instantiate a Robot inside a given simulation instance
     /// </summary>
     /// <param name="room">Room this Robot exists inside</param>
-    public Robot(Room room)
+    public Robot(Room room, Vector3? position = null, Quaternion? rotation = null)
     {
         this.room = room;
         simulation = room.SimInstance.Simulation;
         var rng = new Random();
         var box = new Box(0.35f, 0.28f, 0.15f);
         box.ComputeInertia(3, out var boxInertia);
-        var bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new Vector3(rng.Next(-5, 5), 0.4f, rng.Next(-5, 5)), boxInertia, new CollidableDescription(simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
+        if (position == null)
+        {
+            position = new Vector3(rng.Next(-5, 5), 0.4f, rng.Next(-5, 5));
+        }
+
+        var bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(position.GetValueOrDefault(), boxInertia, new CollidableDescription(simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
         bodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
-        // bodyReference.Pose.Orientation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
+
+        if (rotation == null)
+        {
+            bodyReference.Pose.Orientation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
+        }
+        else
+        {
+            bodyReference.Pose.Orientation = rotation.GetValueOrDefault();
+        }
+
         _initialPosition = bodyReference.Pose.Position;
         _initialOrientation = bodyReference.Pose.Orientation;
 

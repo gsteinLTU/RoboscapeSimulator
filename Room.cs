@@ -127,10 +127,15 @@ public class Room : IDisposable
     {
         string robotID = args[0].ToString();
 
-        Robot? robot = SimInstance.Robots.Find(r => r.ID == robotID);
+        Console.WriteLine(SimInstance.Robots.Count());
+        Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
         if (robot != null)
         {
             robot.Reset();
+        }
+        else
+        {
+            Console.WriteLine("Attempt to reset unknown robot " + robot);
         }
     }
 
@@ -138,7 +143,7 @@ public class Room : IDisposable
     {
         string robotID = args[0].ToString();
 
-        Robot? robot = SimInstance.Robots.Find(r => r.ID == robotID);
+        Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
         if (robot is ParallaxRobot parallaxRobot)
         {
             parallaxRobot.OnButtonPress((bool)args[1]);
