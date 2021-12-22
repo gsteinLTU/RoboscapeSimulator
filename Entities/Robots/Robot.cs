@@ -11,7 +11,7 @@ using BepuPhysics.Collidables;
 /// <summary>
 /// Base class for any RoboScape robot, subclasses must implement actuators/sensors
 /// </summary>
-abstract class Robot : IDisposable
+abstract class Robot : Entity, IResettable
 {
     /// <summary>
     /// Reference to the simulation this robot is inside of
@@ -243,7 +243,7 @@ abstract class Robot : IDisposable
     }
 
     // Update is called once per frame
-    public virtual void Update(float dt)
+    public override void Update(float dt)
     {
         // Setup robots
         if (socket == null)

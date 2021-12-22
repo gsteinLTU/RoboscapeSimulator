@@ -9,7 +9,7 @@ using BepuPhysics.Constraints;
 /// <summary>
 /// A box-shaped object
 /// </summary>
-class Cube
+class Cube : Entity
 {
     /// <summary>
     /// The reference to this object's body in the simulation

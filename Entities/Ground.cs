@@ -5,7 +5,7 @@ using BepuPhysics.Collidables;
 /// <summary>
 /// A static planar surface
 /// </summary>
-class Ground
+class Ground : Entity
 {
     /// <summary>
     /// The reference to this object in the simulation

@@ -21,7 +21,9 @@ public class SimulationInstance : IDisposable
     /// </summary>
     internal Dictionary<string, BodyReference> NamedBodies = new();
 
-    internal List<Robot> Robots = new();
+    internal List<Entity> Entities = new();
+
+    internal List<Robot> Robots => (List<Robot>)Entities.Where(e => e is Robot);
 
     public Simulation Simulation;
 
@@ -60,8 +62,7 @@ public class SimulationInstance : IDisposable
     /// </summary>
     public void Reset()
     {
-        // TODO: enable other resettable objects
-        Robots.ForEach(robot => robot.Reset());
+        ((List<IResettable>)Entities.Where(e => e is IResettable)).ForEach(e => e.Reset());
     }
 
     /// <summary>
