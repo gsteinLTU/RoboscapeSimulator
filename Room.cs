@@ -126,8 +126,6 @@ public class Room : IDisposable
     private void handleResetRobot(JToken[] args)
     {
         string robotID = args[0].ToString();
-
-        Console.WriteLine(SimInstance.Robots.Count());
         Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
         if (robot != null)
         {
