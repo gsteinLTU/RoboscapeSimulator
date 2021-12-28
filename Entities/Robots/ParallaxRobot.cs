@@ -63,15 +63,19 @@ class ParallaxRobot : Robot
     {
         CreateHandlers();
 
-        var wheelShape = new Cylinder(0.12f, .025f);
+        var wheelShape = new Cylinder(0.03f, .01f);
         wheelShape.ComputeInertia(0.25f, out var wheelInertia);
         var wheelShapeIndex = simulation.Shapes.Add(wheelShape);
 
-        var rearWheelShape = new Sphere(0.05f);
+        var rearWheelShape = new Sphere(0.01f);
         rearWheelShape.ComputeInertia(0.25f, out var rearWheelInertia);
         var rearWheelShapeIndex = simulation.Shapes.Add(rearWheelShape);
 
-        var lWheelOffset = new RigidPose(new Vector3(-0.25f, -0.3f, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
+        float wheelDistX = 0.05f;
+        float wheelDistY = -0.025f;
+        float wheelDistZ = 0.025f;
+
+        var lWheelOffset = new RigidPose(new Vector3(-wheelDistX, wheelDistY, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
         RigidPose.MultiplyWithoutOverlap(lWheelOffset, bodyReference.Pose, out lWheelPose);
 
         LWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
@@ -96,7 +100,7 @@ class ParallaxRobot : Robot
         {
             LocalPlaneNormal = new Vector3(0, -1, 0),
             TargetOffset = 0.05f,
-            LocalOffsetA = new Vector3(-0.1f, -0.0f, 0.05f),
+            LocalOffsetA = new Vector3(-wheelDistX, wheelDistY, wheelDistZ),
             LocalOffsetB = default,
             ServoSettings = ServoSettings.Default,
             SpringSettings = new SpringSettings(5, 1)
@@ -105,13 +109,13 @@ class ParallaxRobot : Robot
         simulation.Solver.Add(bodyReference.Handle, LWheel, new PointOnLineServo
         {
             LocalDirection = new Vector3(0, -1, 0),
-            LocalOffsetA = new Vector3(-0.1f, -0.0f, 0.05f),
+            LocalOffsetA = new Vector3(-wheelDistX, wheelDistY, wheelDistZ),
             LocalOffsetB = default,
             ServoSettings = ServoSettings.Default,
             SpringSettings = new SpringSettings(30, 1)
         });
 
-        var rWheelOffset = new RigidPose(new Vector3(0.25f, -0.3f, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
+        var rWheelOffset = new RigidPose(new Vector3(wheelDistX, wheelDistY, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
 
         RigidPose.MultiplyWithoutOverlap(rWheelOffset, bodyReference.Pose, out rWheelPose);
 
@@ -138,7 +142,7 @@ class ParallaxRobot : Robot
         {
             LocalPlaneNormal = new Vector3(0, -1, 0),
             TargetOffset = 0.05f,
-            LocalOffsetA = new Vector3(0.1f, -0.0f, 0.05f),
+            LocalOffsetA = new Vector3(wheelDistX, wheelDistY, wheelDistZ),
             LocalOffsetB = default,
             ServoSettings = ServoSettings.Default,
             SpringSettings = new SpringSettings(5, 1)
@@ -148,13 +152,13 @@ class ParallaxRobot : Robot
         simulation.Solver.Add(bodyReference.Handle, RWheel, new PointOnLineServo
         {
             LocalDirection = new Vector3(0, -1, 0),
-            LocalOffsetA = new Vector3(0.1f, -0.0f, 0.05f),
+            LocalOffsetA = new Vector3(wheelDistX, wheelDistY, wheelDistZ),
             LocalOffsetB = default,
             ServoSettings = ServoSettings.Default,
             SpringSettings = new SpringSettings(30, 1)
         });
 
-        var rearWheelOffset = new RigidPose(new Vector3(0, -0.3f, -0.15f));
+        var rearWheelOffset = new RigidPose(new Vector3(0, -0.04f, -0.03f));
         RigidPose.MultiplyWithoutOverlap(rearWheelOffset, bodyReference.Pose, out rearWheelPose);
 
         RearWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
@@ -163,7 +167,7 @@ class ParallaxRobot : Robot
 
         simulation.Solver.Add(bodyReference.Handle, RearWheel, new BallSocket
         {
-            LocalOffsetA = new Vector3(0, -0.1f, -0.15f),
+            LocalOffsetA = new Vector3(0, -0.06f, -0.08f),
             LocalOffsetB = new Vector3(0, 0, 0),
             SpringSettings = new SpringSettings(30, 1)
         });

@@ -58,13 +58,25 @@ abstract class Robot : Entity, IResettable
     /// Instantiate a Robot inside a given simulation instance
     /// </summary>
     /// <param name="room">Room this Robot exists inside</param>
-    public Robot(Room room, Vector3? position = null, Quaternion? rotation = null)
+    public Robot(Room room, Vector3? position = null, Quaternion? rotation = null, Vector3? size = null, float mass = 2)
     {
         this.room = room;
         simulation = room.SimInstance.Simulation;
         var rng = new Random();
-        var box = new Box(0.35f, 0.28f, 0.15f);
-        box.ComputeInertia(3, out var boxInertia);
+
+        Box box;
+
+        if (size == null)
+        {
+            box = new Box(0.25f, 0.1f, 0.15f);
+        }
+        else
+        {
+            var tempSize = size.GetValueOrDefault();
+            box = new Box(tempSize.Z, tempSize.Y, tempSize.X);
+        }
+
+        box.ComputeInertia(mass, out var boxInertia);
         if (position == null)
         {
             position = new Vector3(rng.Next(-5, 5), 0.4f, rng.Next(-5, 5));
