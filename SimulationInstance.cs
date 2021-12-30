@@ -97,9 +97,9 @@ public class SimulationInstance : IDisposable
                     z = kvp.Value.Pose.Position.Z
                 },
                     angle = kvp.Value.Pose.Orientation,
-                    width = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
+                    width = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
                     height = kvp.Value.BoundingBox.Max.Y - kvp.Value.BoundingBox.Min.Y,
-                    depth = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
+                    depth = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
                     image = kvp.Key.Contains(':') ? kvp.Key.Split(':').Last() : null
                 });
             }
@@ -118,9 +118,9 @@ public class SimulationInstance : IDisposable
                     z = kvp.Value.Pose.Position.Z
                 },
                     angle = kvp.Value.Pose.Orientation,
-                    width = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
+                    width = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
                     height = kvp.Value.BoundingBox.Max.Y - kvp.Value.BoundingBox.Min.Y,
-                    depth = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
+                    depth = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
                     image = kvp.Key.StartsWith("robot") ? "parallax_robot" : (kvp.Key.Contains(':') ? kvp.Key.Split(':').Last() : null),
                     vel = kvp.Value.Velocity.Linear
                 });

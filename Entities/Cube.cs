@@ -29,23 +29,31 @@ class Cube : Entity
     /// <param name="initialOrientation">Initial orientation of the Cube, or null for a random yaw</param>
     /// <param name="isKinematic">Whether this object should be movable</param>
     /// <param name="visualInfo">Visual description string for the Cube</param>
-    public Cube(Room room, float width = 1, float height = 1, float depth = 1, Vector3? initialPosition = null, Quaternion? initialOrientation = null, bool isKinematic = false, string visualInfo = "#888")
+    public Cube(Room room, float width = 1, float height = 1, float depth = 1, Vector3? initialPosition = null, Quaternion? initialOrientation = null, bool isKinematic = false, string visualInfo = "#888", string? nameOverride = null)
     {
-        Name = $"cube_{ID++}:{visualInfo}";
-        Console.WriteLine(Name);
+        if (nameOverride == null)
+        {
+            Name = $"cube_{ID++}:{visualInfo}";
+        }
+        else
+        {
+            Name = nameOverride + ":" + visualInfo;
+        }
+
         var simulationInstance = room.SimInstance;
         var rng = new Random();
         var box = new Box(width, height, depth);
         box.ComputeInertia(2, out var boxInertia);
 
         BodyHandle bodyHandle;
+        Vector3 position = initialPosition ?? new Vector3(rng.Next(-5, 5), rng.Next(3, 5), rng.Next(-5, 5));
         if (isKinematic)
         {
-            bodyHandle = simulationInstance.Simulation.Bodies.Add(BodyDescription.CreateKinematic(initialPosition ?? new Vector3(rng.Next(-5, 5), rng.Next(3, 5), rng.Next(-5, 5)), new CollidableDescription(simulationInstance.Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0.01f)));
+            bodyHandle = simulationInstance.Simulation.Bodies.Add(BodyDescription.CreateKinematic(position, new CollidableDescription(simulationInstance.Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0.01f)));
         }
         else
         {
-            bodyHandle = simulationInstance.Simulation.Bodies.Add(BodyDescription.CreateDynamic(initialPosition ?? new Vector3(rng.Next(-5, 5), rng.Next(3, 5), rng.Next(-5, 5)), boxInertia, new CollidableDescription(simulationInstance.Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0.01f)));
+            bodyHandle = simulationInstance.Simulation.Bodies.Add(BodyDescription.CreateDynamic(position, boxInertia, new CollidableDescription(simulationInstance.Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0.01f)));
         }
 
         bodyReference = simulationInstance.Simulation.Bodies.GetBodyReference(bodyHandle);
@@ -53,6 +61,9 @@ class Cube : Entity
 
         ref var bodyProperties = ref simulationInstance.Properties.Allocate(bodyReference.Handle);
         bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 0) };
+
+        room.SimInstance.NamedBodies.Add(Name, GetMainBodyReference());
+        room.SimInstance.Entities.Add(this);
     }
 
     public BodyReference GetMainBodyReference()

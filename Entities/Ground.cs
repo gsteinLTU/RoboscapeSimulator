@@ -20,5 +20,8 @@ class Ground : Entity
         var simulationInstance = room.SimInstance;
         var groundHandle = simulationInstance.Simulation.Statics.Add(new StaticDescription(position ?? new Vector3(0, -thickness / 2, 0), new CollidableDescription(simulationInstance.Simulation.Shapes.Add(new Box(xsize, thickness, zsize)), 0.1f)));
         StaticReference = simulationInstance.Simulation.Statics.GetStaticReference(groundHandle);
+
+        room.SimInstance.NamedStatics.Add(Name, StaticReference);
+        room.SimInstance.Entities.Add(this);
     }
 }

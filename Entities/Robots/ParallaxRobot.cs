@@ -59,7 +59,7 @@ class ParallaxRobot : Robot
     private bool whiskerR = false;
 
 
-    public ParallaxRobot(Room room, Vector3? position = null, Quaternion? rotation = null) : base(room, position, rotation)
+    public ParallaxRobot(Room room, Vector3? position = null, Quaternion? rotation = null, bool debug = false) : base(room, position, rotation)
     {
         CreateHandlers();
 
@@ -191,6 +191,13 @@ class ParallaxRobot : Robot
         SubgroupCollisionFilter.DisableCollision(ref rearWheelProperties.Filter, ref rwheelProperties.Filter);
         SubgroupCollisionFilter.DisableCollision(ref rearWheelProperties.Filter, ref lwheelProperties.Filter);
         SubgroupCollisionFilter.DisableCollision(ref rwheelProperties.Filter, ref lwheelProperties.Filter);
+
+        if (debug)
+        {
+            room.SimInstance.NamedBodies.Add("wheelL", room.SimInstance.Simulation.Bodies.GetBodyReference(LWheel));
+            room.SimInstance.NamedBodies.Add("wheelR", room.SimInstance.Simulation.Bodies.GetBodyReference(RWheel));
+            room.SimInstance.NamedBodies.Add("wheelRear", room.SimInstance.Simulation.Bodies.GetBodyReference(RearWheel));
+        }
     }
 
     public override void Update(float dt)

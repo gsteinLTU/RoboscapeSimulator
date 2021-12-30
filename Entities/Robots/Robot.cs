@@ -99,6 +99,9 @@ abstract class Robot : Entity, IResettable
 
         SetupRobot();
         time.Start();
+
+        room.SimInstance.NamedBodies.Add("robot_" + BytesToHexstring(MacAddress, ""), MainBodyReference);
+        room.SimInstance.Entities.Add(this);
     }
 
     /// <summary>
