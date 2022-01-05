@@ -62,7 +62,7 @@ class SettingsManager
     {
         var config = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json").Build();
+                .AddJsonFile("appsettings.json").AddEnvironmentVariables().Build();
 
         var section = config.GetSection(nameof(RoboScapeSimSettings));
         loadedSettings = section.Get<RoboScapeSimSettings>();
