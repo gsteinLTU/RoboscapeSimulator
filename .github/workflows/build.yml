@@ -23,12 +23,19 @@ jobs:
       run: dotnet test --no-build --verbosity normal --filter "Category!=LongRunning"
     - name: Build
       run: dotnet publish --no-restore -c Release
-    - name: docker build
-      run: docker build -t gstein17/roboscapeonlineserver-dotnet .
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
     - name: docker login
       run: docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-    - name: docker push
-      run: docker push gstein17/roboscapeonlineserver-dotnet
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: gstein17/roboscapeonlineserver-dotnet:latest
