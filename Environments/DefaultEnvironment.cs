@@ -19,7 +19,7 @@ class DefaultEnvironment : EnvironmentConfiguration
 
         for (int i = 0; i < 3; i++)
         {
-            var cube = new Cube(room, visualInfo: "#B85");
+            var cube = new Cube(room, visualInfo: "crate.png");
         }
     }
 }
