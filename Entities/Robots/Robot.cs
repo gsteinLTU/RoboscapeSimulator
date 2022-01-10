@@ -58,7 +58,7 @@ abstract class Robot : Entity, IResettable
     /// Instantiate a Robot inside a given simulation instance
     /// </summary>
     /// <param name="room">Room this Robot exists inside</param>
-    public Robot(Room room, Vector3? position = null, Quaternion? rotation = null, Vector3? size = null, float mass = 2)
+    public Robot(Room room, Vector3? position = null, Quaternion? rotation = null, Vector3? size = null, float mass = 2, string visualInfo = "")
     {
         this.room = room;
         simulation = room.SimInstance.Simulation;
@@ -100,7 +100,7 @@ abstract class Robot : Entity, IResettable
         SetupRobot();
         time.Start();
 
-        room.SimInstance.NamedBodies.Add("robot_" + BytesToHexstring(MacAddress, ""), MainBodyReference);
+        room.SimInstance.NamedBodies.Add("robot_" + BytesToHexstring(MacAddress, "") + ":" + visualInfo, MainBodyReference);
         room.SimInstance.Entities.Add(this);
     }
 

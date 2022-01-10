@@ -121,7 +121,7 @@ public class SimulationInstance : IDisposable
                     width = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
                     height = kvp.Value.BoundingBox.Max.Y - kvp.Value.BoundingBox.Min.Y,
                     depth = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
-                    image = kvp.Key.StartsWith("robot") ? "parallax_robot" : (kvp.Key.Contains(':') ? kvp.Key.Split(':').Last() : null),
+                    image = kvp.Key.Contains(':') ? kvp.Key.Split(':').Last() : null,
                     vel = kvp.Value.Velocity.Linear
                 });
             }
