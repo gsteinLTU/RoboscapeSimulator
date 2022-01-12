@@ -9,6 +9,8 @@ using BepuPhysics.CollisionDetection;
 using BepuPhysics.Constraints;
 using BepuUtilities;
 using BepuUtilities.Memory;
+using RoboScapeSimulator.Entities;
+using RoboScapeSimulator.Entities.Robots;
 
 public class SimulationInstance : IDisposable
 {

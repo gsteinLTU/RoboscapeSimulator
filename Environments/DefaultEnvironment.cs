@@ -1,3 +1,6 @@
+using RoboScapeSimulator.Entities;
+using RoboScapeSimulator.Entities.Robots;
+
 class DefaultEnvironment : EnvironmentConfiguration
 {
     public DefaultEnvironment()

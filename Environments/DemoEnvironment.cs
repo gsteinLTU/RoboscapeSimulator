@@ -1,4 +1,6 @@
 using System.Numerics;
+using RoboScapeSimulator.Entities;
+using RoboScapeSimulator.Entities.Robots;
 
 class DemoEnvironment : EnvironmentConfiguration
 {
