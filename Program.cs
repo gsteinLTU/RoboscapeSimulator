@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using IoTScape;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SocketIOSharp.Common;
@@ -27,6 +28,8 @@ serializer.NullValueHandling = NullValueHandling.Ignore;
 /// Mapping of room IDs to Room objects
 /// </summary>
 ConcurrentDictionary<string, Room> rooms = new();
+
+IoTScapeManager ioTScapeManager = new IoTScapeManager();
 
 using (SocketIOServer server = new(new SocketIOServerOption(9001)))
 {
@@ -84,6 +87,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
         {
             room.Update((float)stopwatch.Elapsed.TotalSeconds);
         }
+        ioTScapeManager.Update((float)stopwatch.Elapsed.TotalSeconds);
         stopwatch.Restart();
         Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));
     }

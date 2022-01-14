@@ -180,7 +180,8 @@ public class Room : IDisposable
     internal static List<EnvironmentConfiguration> Environments = new()
     {
         new DefaultEnvironment(),
-        new DemoEnvironment()
+        new DemoEnvironment(),
+        new IoTScapeExampleEnvironment()
     };
 
     public DateTime LastInteractionTime

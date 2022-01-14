@@ -18,7 +18,7 @@ class DefaultEnvironment : EnvironmentConfiguration
         var ground = new Ground(room);
 
         // Demo robot
-        var robot = new ParallaxRobot(room, debug: false);
+        var robot = new ParallaxRobot(room, debug: false, visualInfo: "car4.gltf");
 
         for (int i = 0; i < 3; i++)
         {

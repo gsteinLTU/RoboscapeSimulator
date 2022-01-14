@@ -37,8 +37,25 @@ class SettingsManager
         }
     }
 
+
     /// <summary>
-    /// The RoboScape port for the given server
+    /// The IoTScape port for the given server
+    /// </summary>
+    public static int IoTScapePort
+    {
+        get
+        {
+            if (loadedSettings == null)
+            {
+                loadSettings();
+            }
+
+            return (loadedSettings ?? DefaultSettings).IoTScapePort.GetValueOrDefault((int)DefaultSettings.IoTScapePort);
+        }
+    }
+
+    /// <summary>
+    /// The maximum number of rooms allowed for the server instance
     /// </summary>
     public static int MaxRooms
     {
@@ -96,6 +113,7 @@ class SettingsManager
     {
         RoboScapeHost = "editor.netsblox.org",
         RoboScapePort = 1973,
+        IoTScapePort = 1975,
         MaxRooms = 64
     };
 }
@@ -107,5 +125,6 @@ public class RoboScapeSimSettings
 {
     public string? RoboScapeHost { get; set; }
     public int? RoboScapePort { get; set; }
+    public int? IoTScapePort { get; set; }
     public int? MaxRooms { get; set; }
 }
