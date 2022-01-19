@@ -87,9 +87,8 @@ class IoTScapeExampleEnvironment : EnvironmentConfiguration
             }
 
             Console.WriteLine($"Moving to {x}, {y}, {z}");
-            BepuPhysics.BodyReference bodyReference = cube.GetMainBodyReference();
-            bodyReference.Pose.Position = new Vector3(x, y, z);
-            bodyReference.Awake = true;
+            cube.BodyReference.Pose.Position = new Vector3(x, y, z);
+            cube.BodyReference.Awake = true;
 
             // Needs to be set by IoTScape methods to keep room active
             room.LastInteractionTime = DateTime.Now;

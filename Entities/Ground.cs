@@ -7,13 +7,8 @@ namespace RoboScapeSimulator.Entities
     /// <summary>
     /// A static planar surface
     /// </summary>
-    class Ground : Entity
+    class Ground : StaticEntity
     {
-        /// <summary>
-        /// The reference to this object in the simulation
-        /// </summary>
-        public StaticReference StaticReference;
-
         private static uint ID = 0;
 
         public Ground(Room room, float xsize = 200, float zsize = 100, Vector3? position = null, float thickness = 0.1f, string visualInfo = "#333")

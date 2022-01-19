@@ -13,7 +13,7 @@ namespace RoboScapeSimulator.Entities.Robots
     /// <summary>
     /// Base class for any RoboScape robot, subclasses must implement actuators/sensors
     /// </summary>
-    abstract class Robot : Entity, IResettable
+    abstract class Robot : DynamicEntity, IResettable
     {
         /// <summary>
         /// Reference to the simulation this robot is inside of
@@ -34,22 +34,6 @@ namespace RoboScapeSimulator.Entities.Robots
         /// Orientation where robot was created
         /// </summary>
         internal Quaternion _initialOrientation;
-
-        /// <summary>
-        /// Reference to main body of robot in physics engine
-        /// </summary>
-        internal BodyReference bodyReference;
-
-        /// <summary>
-        /// Reference to main body of robot in physics engine
-        /// </summary>
-        public BodyReference MainBodyReference
-        {
-            get
-            {
-                return bodyReference;
-            }
-        }
 
         /// <summary>
         /// Stopwatch for keeping track of this Robot's lifetime
@@ -85,24 +69,24 @@ namespace RoboScapeSimulator.Entities.Robots
             }
 
             var bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(position.GetValueOrDefault(), boxInertia, new CollidableDescription(simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
-            bodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
+            BodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
 
             if (rotation == null)
             {
-                bodyReference.Pose.Orientation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
+                BodyReference.Pose.Orientation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
             }
             else
             {
-                bodyReference.Pose.Orientation = rotation.GetValueOrDefault();
+                BodyReference.Pose.Orientation = rotation.GetValueOrDefault();
             }
 
-            _initialPosition = bodyReference.Pose.Position;
-            _initialOrientation = bodyReference.Pose.Orientation;
+            _initialPosition = BodyReference.Pose.Position;
+            _initialOrientation = BodyReference.Pose.Orientation;
 
             SetupRobot();
             time.Start();
 
-            room.SimInstance.NamedBodies.Add("robot_" + BytesToHexstring(MacAddress, "") + ":" + visualInfo, MainBodyReference);
+            room.SimInstance.NamedBodies.Add("robot_" + BytesToHexstring(MacAddress, "") + ":" + visualInfo, BodyReference);
             room.SimInstance.Entities.Add(this);
         }
 
@@ -338,10 +322,10 @@ namespace RoboScapeSimulator.Entities.Robots
         {
             // Put robot in initial position
             // Later scenarios may provide more complex handling for this
-            bodyReference.Pose.Position = _initialPosition;
-            bodyReference.Pose.Orientation = _initialOrientation;
-            bodyReference.Velocity.Linear = new Vector3();
-            bodyReference.Velocity.Angular = new Vector3();
+            BodyReference.Pose.Position = _initialPosition;
+            BodyReference.Pose.Orientation = _initialOrientation;
+            BodyReference.Velocity.Linear = new Vector3();
+            BodyReference.Velocity.Angular = new Vector3();
 
             time.Restart();
             SendRoboScapeMessage(new byte[] { (byte)'I' });

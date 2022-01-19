@@ -77,27 +77,27 @@ namespace RoboScapeSimulator.Entities.Robots
             float wheelDistZ = 0.025f;
 
             var lWheelOffset = new RigidPose(new Vector3(-wheelDistX, wheelDistY, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
-            RigidPose.MultiplyWithoutOverlap(lWheelOffset, bodyReference.Pose, out lWheelPose);
+            RigidPose.MultiplyWithoutOverlap(lWheelOffset, BodyReference.Pose, out lWheelPose);
 
             LWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
                 lWheelPose,
                 wheelInertia, new CollidableDescription(wheelShapeIndex, 0.1f), new BodyActivityDescription(0.01f)));
 
-            LMotor = simulation.Solver.Add(LWheel, bodyReference.Handle, new AngularAxisMotor
+            LMotor = simulation.Solver.Add(LWheel, BodyReference.Handle, new AngularAxisMotor
             {
                 LocalAxisA = new Vector3(0, 1, 0),
                 Settings = default,
                 TargetVelocity = default
             });
 
-            LHinge = simulation.Solver.Add(bodyReference.Handle, LWheel, new AngularHinge
+            LHinge = simulation.Solver.Add(BodyReference.Handle, LWheel, new AngularHinge
             {
                 LocalHingeAxisA = new Vector3(1, 0, 0),
                 LocalHingeAxisB = new Vector3(0, 1, 0),
                 SpringSettings = new SpringSettings(30, 1)
             });
 
-            simulation.Solver.Add(bodyReference.Handle, LWheel, new LinearAxisServo
+            simulation.Solver.Add(BodyReference.Handle, LWheel, new LinearAxisServo
             {
                 LocalPlaneNormal = new Vector3(0, -1, 0),
                 TargetOffset = 0.05f,
@@ -107,7 +107,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 SpringSettings = new SpringSettings(5, 1)
             });
 
-            simulation.Solver.Add(bodyReference.Handle, LWheel, new PointOnLineServo
+            simulation.Solver.Add(BodyReference.Handle, LWheel, new PointOnLineServo
             {
                 LocalDirection = new Vector3(0, -1, 0),
                 LocalOffsetA = new Vector3(-wheelDistX, wheelDistY, wheelDistZ),
@@ -118,20 +118,20 @@ namespace RoboScapeSimulator.Entities.Robots
 
             var rWheelOffset = new RigidPose(new Vector3(wheelDistX, wheelDistY, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
 
-            RigidPose.MultiplyWithoutOverlap(rWheelOffset, bodyReference.Pose, out rWheelPose);
+            RigidPose.MultiplyWithoutOverlap(rWheelOffset, BodyReference.Pose, out rWheelPose);
 
             RWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
                 rWheelPose,
                 wheelInertia, new CollidableDescription(wheelShapeIndex, 0.1f), new BodyActivityDescription(0.01f)));
 
-            RMotor = simulation.Solver.Add(RWheel, bodyReference.Handle, new AngularAxisMotor
+            RMotor = simulation.Solver.Add(RWheel, BodyReference.Handle, new AngularAxisMotor
             {
                 LocalAxisA = new Vector3(0, -1, 0),
                 Settings = default,
                 TargetVelocity = default
             });
 
-            RHinge = simulation.Solver.Add(bodyReference.Handle, RWheel, new AngularHinge
+            RHinge = simulation.Solver.Add(BodyReference.Handle, RWheel, new AngularHinge
             {
                 LocalHingeAxisA = new Vector3(-1, 0, 0),
                 LocalHingeAxisB = new Vector3(0, 1, 0),
@@ -139,7 +139,7 @@ namespace RoboScapeSimulator.Entities.Robots
             });
 
 
-            simulation.Solver.Add(bodyReference.Handle, RWheel, new LinearAxisServo
+            simulation.Solver.Add(BodyReference.Handle, RWheel, new LinearAxisServo
             {
                 LocalPlaneNormal = new Vector3(0, -1, 0),
                 TargetOffset = 0.05f,
@@ -150,7 +150,7 @@ namespace RoboScapeSimulator.Entities.Robots
             });
 
 
-            simulation.Solver.Add(bodyReference.Handle, RWheel, new PointOnLineServo
+            simulation.Solver.Add(BodyReference.Handle, RWheel, new PointOnLineServo
             {
                 LocalDirection = new Vector3(0, -1, 0),
                 LocalOffsetA = new Vector3(wheelDistX, wheelDistY, wheelDistZ),
@@ -160,13 +160,13 @@ namespace RoboScapeSimulator.Entities.Robots
             });
 
             var rearWheelOffset = new RigidPose(new Vector3(0, -0.04f, -0.03f));
-            RigidPose.MultiplyWithoutOverlap(rearWheelOffset, bodyReference.Pose, out rearWheelPose);
+            RigidPose.MultiplyWithoutOverlap(rearWheelOffset, BodyReference.Pose, out rearWheelPose);
 
             RearWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
                 rearWheelPose,
                 wheelInertia, new CollidableDescription(rearWheelShapeIndex, 0.1f), new BodyActivityDescription(0.01f)));
 
-            simulation.Solver.Add(bodyReference.Handle, RearWheel, new BallSocket
+            simulation.Solver.Add(BodyReference.Handle, RearWheel, new BallSocket
             {
                 LocalOffsetA = new Vector3(0, -0.06f, -0.08f),
                 LocalOffsetB = new Vector3(0, 0, 0),
@@ -174,17 +174,17 @@ namespace RoboScapeSimulator.Entities.Robots
             });
 
             // Setup collisions
-            ref var bodyProperties = ref room.SimInstance.Properties.Allocate(bodyReference.Handle);
-            bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 1) };
+            ref var bodyProperties = ref room.SimInstance.Properties.Allocate(BodyReference.Handle);
+            bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 1) };
 
             ref var lwheelProperties = ref room.SimInstance.Properties.Allocate(LWheel);
-            lwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 1), Friction = 1 };
+            lwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 1), Friction = 1 };
 
             ref var rwheelProperties = ref room.SimInstance.Properties.Allocate(RWheel);
-            rwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 1), Friction = 1 };
+            rwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 1), Friction = 1 };
 
             ref var rearWheelProperties = ref room.SimInstance.Properties.Allocate(RearWheel);
-            rearWheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 1), Friction = 0.5f };
+            rearWheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 1), Friction = 0.5f };
 
             SubgroupCollisionFilter.DisableCollision(ref lwheelProperties.Filter, ref bodyProperties.Filter);
             SubgroupCollisionFilter.DisableCollision(ref rwheelProperties.Filter, ref bodyProperties.Filter);
@@ -244,10 +244,10 @@ namespace RoboScapeSimulator.Entities.Robots
             {
                 // Do whisker tests
                 const int whiskerRange = 11;
-                var whiskerTestL = Utils.QuickRayCast(simulation, bodyReference.Pose.Position + Vector3.Transform(new Vector3(-0.05f, 0.05f, 0.15f), bodyReference.Pose.Orientation),
-                               Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation), whiskerRange);
-                var whiskerTestR = Utils.QuickRayCast(simulation, bodyReference.Pose.Position + Vector3.Transform(new Vector3(0.05f, 0.05f, 0.15f), bodyReference.Pose.Orientation),
-                               Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation), whiskerRange);
+                var whiskerTestL = Utils.QuickRayCast(simulation, BodyReference.Pose.Position + Vector3.Transform(new Vector3(-0.05f, 0.05f, 0.15f), BodyReference.Pose.Orientation),
+                               Vector3.Transform(new Vector3(0, 0, 1), BodyReference.Pose.Orientation), whiskerRange);
+                var whiskerTestR = Utils.QuickRayCast(simulation, BodyReference.Pose.Position + Vector3.Transform(new Vector3(0.05f, 0.05f, 0.15f), BodyReference.Pose.Orientation),
+                               Vector3.Transform(new Vector3(0, 0, 1), BodyReference.Pose.Orientation), whiskerRange);
 
                 if (whiskerTestL != whiskerL || whiskerTestR != whiskerR)
                 {
@@ -374,8 +374,8 @@ namespace RoboScapeSimulator.Entities.Robots
                 Hits = results,
                 IntersectionCount = &intersectionCount
             };
-            simulation.RayCast(bodyReference.Pose.Position + Vector3.Transform(new Vector3(0, 0.05f, 0.15f), bodyReference.Pose.Orientation),
-                               Vector3.Transform(new Vector3(0, 0, 1), bodyReference.Pose.Orientation),
+            simulation.RayCast(BodyReference.Pose.Position + Vector3.Transform(new Vector3(0, 0.05f, 0.15f), BodyReference.Pose.Orientation),
+                               Vector3.Transform(new Vector3(0, 0, 1), BodyReference.Pose.Orientation),
                                (float)MAX_RANGE / 100f, ref hitHandler);
 
             if (intersectionCount > 0)

@@ -7,14 +7,9 @@ namespace RoboScapeSimulator.Entities
     /// <summary>
     /// A box-shaped object
     /// </summary>
-    class Cube : Entity
+    class Cube : DynamicEntity
     {
         private static uint ID = 0;
-
-        /// <summary>
-        /// The reference to this object's body in the simulation
-        /// </summary>
-        BodyReference bodyReference;
 
         /// <summary>
         /// Create a new Cube
@@ -54,19 +49,14 @@ namespace RoboScapeSimulator.Entities
                 bodyHandle = simulationInstance.Simulation.Bodies.Add(BodyDescription.CreateDynamic(position, boxInertia, new CollidableDescription(simulationInstance.Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0.01f)));
             }
 
-            bodyReference = simulationInstance.Simulation.Bodies.GetBodyReference(bodyHandle);
-            bodyReference.Pose.Orientation = initialOrientation ?? Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
+            BodyReference = simulationInstance.Simulation.Bodies.GetBodyReference(bodyHandle);
+            BodyReference.Pose.Orientation = initialOrientation ?? Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
 
-            ref var bodyProperties = ref simulationInstance.Properties.Allocate(bodyReference.Handle);
-            bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(bodyReference.Handle.Value, 0) };
+            ref var bodyProperties = ref simulationInstance.Properties.Allocate(BodyReference.Handle);
+            bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 0) };
 
-            room.SimInstance.NamedBodies.Add(Name, GetMainBodyReference());
+            room.SimInstance.NamedBodies.Add(Name, BodyReference);
             room.SimInstance.Entities.Add(this);
-        }
-
-        public BodyReference GetMainBodyReference()
-        {
-            return bodyReference;
         }
     }
 }
