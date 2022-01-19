@@ -11,6 +11,7 @@ class IoTScapeExampleEnvironment : EnvironmentConfiguration
         ID = "iotscape1";
         Description = "The demo environment";
     }
+    IoTScapeObject? cubeObject;
 
     public override void Setup(Room room)
     {
@@ -66,7 +67,7 @@ class IoTScapeExampleEnvironment : EnvironmentConfiguration
             },
             new Dictionary<string, IoTScapeEventDescription>());
 
-        IoTScapeObject cubeObject = new(exampleService);
+        cubeObject = new(exampleService, "");
         cubeObject.Methods["move"] = (string[] args) =>
         {
             float x = 0, y = 0, z = 0;
@@ -90,11 +91,27 @@ class IoTScapeExampleEnvironment : EnvironmentConfiguration
             bodyReference.Pose.Position = new Vector3(x, y, z);
             bodyReference.Awake = true;
 
+            // Needs to be set by IoTScape methods to keep room active
             room.LastInteractionTime = DateTime.Now;
 
             return Array.Empty<string>();
         };
 
-        IoTScapeManager.Manager.Register(cubeObject);
+        IoTScapeManager.Manager?.Register(cubeObject);
+
+        room.OnHibernateStart += (sender, e) =>
+        {
+            IoTScapeManager.Manager?.Unregister(cubeObject);
+        };
+
+        room.OnHibernateEnd += (sender, e) =>
+        {
+            IoTScapeManager.Manager?.Register(cubeObject);
+        };
+
+        room.OnRoomClose += (sender, e) =>
+        {
+            IoTScapeManager.Manager?.Unregister(cubeObject);
+        };
     }
 }

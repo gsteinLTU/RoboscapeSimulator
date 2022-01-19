@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,16 +13,16 @@ namespace IoTScape
 {
     public class IoTScapeManager
     {
-        public static IoTScapeManager Manager;
+        public static IoTScapeManager? Manager;
+
         private IPAddress hostIpAddress;
 
         private Socket _socket;
 
         private int idprefix;
-        private int lastid = 0;
 
-        private Dictionary<string, IoTScapeObject> objects = new Dictionary<string, IoTScapeObject>();
-        private Dictionary<string, int> lastIDs = new Dictionary<string, int>();
+        private ConcurrentDictionary<string, IoTScapeObject> objects = new();
+        private ConcurrentDictionary<string, int> lastIDs = new();
 
         private EndPoint hostEndPoint;
         // Wait time in seconds.
@@ -67,50 +68,78 @@ namespace IoTScape
         /// <returns>ID of IoTScapeObject</returns>
         public string Register(IoTScapeObject o)
         {
+            if (IsRegistered(o))
+            {
+                Console.WriteLine("IoTScapeObject " + o.Definition.name + ":" + o.Definition.id + " already registered.");
+                return o.Definition.id ?? "";
+            }
+
             int newID;
             string newIDString;
             string deviceIDPrefix = o.IDOverride.Length > 0 ? o.IDOverride : idprefix.ToString("x4");
 
-            string fullDeviceType = o.Definition.name;
-
-            // Allow custom IDs to have their own numeric ids
-            if (o.IDOverride.Length > 0)
+            if (string.IsNullOrWhiteSpace(o.Definition.id))
             {
-                fullDeviceType += ":" + o.IDOverride;
+                string fullDeviceType = o.Definition.name;
+
+                // Allow custom IDs to have their own numeric ids
+                if (o.IDOverride.Length > 0)
+                {
+                    fullDeviceType += ":" + o.IDOverride;
+                }
+
+                // Allow device types to have their own numeric ids
+                if (o.DeviceTypeID.Length > 1)
+                {
+                    fullDeviceType += ":" + o.DeviceTypeID;
+                }
+
+                if (!lastIDs.ContainsKey(fullDeviceType))
+                {
+                    lastIDs.TryAdd(fullDeviceType, 0);
+                }
+
+                newID = lastIDs[fullDeviceType]++;
+
+                // Assign IDs
+                newIDString = deviceIDPrefix;
+
+                if (o.DeviceTypeID != "")
+                {
+                    newIDString += "_" + o.DeviceTypeID;
+                }
+
+                // Custom ID with no collision skips numeric suffix
+                if (!(o.IDOverride.Length > 0 && newID == 0))
+                {
+                    newIDString += "_" + newID.ToString("x4");
+                }
+
+                o.Definition.id = newIDString;
             }
 
-            // Allow device types to have their own numeric ids
-            if (o.DeviceTypeID.Length > 1)
-            {
-                fullDeviceType += ":" + o.DeviceTypeID;
-            }
-
-            if (!lastIDs.ContainsKey(fullDeviceType))
-            {
-                lastIDs.Add(fullDeviceType, 0);
-            }
-
-            newID = lastIDs[fullDeviceType]++;
-
-            // Assign IDs
-            newIDString = deviceIDPrefix;
-
-            if (o.DeviceTypeID != "")
-            {
-                newIDString += "_" + o.DeviceTypeID;
-            }
-
-            // Custom ID with no collision skips numeric suffix
-            if (!(o.IDOverride.Length > 0 && newID == 0))
-            {
-                newIDString += "_" + (newID).ToString("x4");
-            }
-
-            o.Definition.id = newIDString;
-            objects.Add(o.Definition.name + ":" + newIDString, o);
+            objects.TryAdd(o.Definition.name + ":" + o.Definition.id, o);
             announce(o);
 
-            return newIDString;
+            return o.Definition.id;
+        }
+
+        /// <summary>
+        /// Unregister an IoTScapeObject
+        /// </summary>
+        /// <param name="o">IoTScapeObject to register</param>
+        /// <returns>ID of IoTScapeObject</returns>
+        public void Unregister(IoTScapeObject o)
+        {
+            if (IsRegistered(o))
+            {
+                objects.TryRemove(o.Definition.name + ":" + o.Definition.id, out var _);
+            }
+        }
+
+        public bool IsRegistered(IoTScapeObject o)
+        {
+            return objects.ContainsKey(o.Definition.name + ":" + o.Definition.id);
         }
 
         // Update is called once per frame
@@ -134,7 +163,7 @@ namespace IoTScape
                     var device = objects[request.service + ":" + request.device];
 
                     // Call function if valid
-                    if (device.Methods.ContainsKey(request.function))
+                    if (request.function != null && device.Methods.ContainsKey(request.function))
                     {
                         string[] result = device.Methods[request.function].Invoke(request.ParamsList.ToArray());
                         SendResponse(request, result);
@@ -189,56 +218,56 @@ namespace IoTScape
     public class IoTScapeEventDescription
     {
         [JsonProperty(PropertyName = "params")]
-        public List<string> paramsList = new List<string>();
+        public List<string> paramsList = new();
     }
 
     [Serializable]
     public class IoTScapeServiceDescription
     {
-        public string description;
-        public string externalDocumentation;
-        public string termsOfService;
-        public string contact;
-        public string license;
-        public string version;
+        public string? description;
+        public string? externalDocumentation;
+        public string? termsOfService;
+        public string? contact;
+        public string? license;
+        public string? version;
     }
 
     [Serializable]
     public class IoTScapeMethodDescription
     {
-        public string documentation;
+        public string? documentation;
 
         [JsonProperty(PropertyName = "params")]
-        public List<IoTScapeMethodParams> paramsList = new List<IoTScapeMethodParams>();
-        public IoTScapeMethodReturns returns;
+        public List<IoTScapeMethodParams> paramsList = new();
+        public IoTScapeMethodReturns returns = new();
     }
 
     [Serializable]
     public class IoTScapeMethodParams
     {
-        public string name;
-        public string documentation;
-        public string type;
+        public string name = "param";
+        public string? documentation;
+        public string type = "string";
         public bool optional;
     }
 
     [Serializable]
     public class IoTScapeMethodReturns
     {
-        public string documentation;
-        public List<string> type = new List<string>();
+        public string? documentation;
+        public List<string> type = new();
     }
 
     [Serializable]
     public class IoTScapeRequest
     {
-        public string id;
-        public string service;
-        public string device;
-        public string function;
+        public string id = "";
+        public string service = "";
+        public string device = "";
+        public string? function;
 
         [JsonProperty(PropertyName = "params")]
-        public List<String> ParamsList = new List<string>();
+        public List<string> ParamsList = new();
 
         public override string ToString()
         {
@@ -249,22 +278,21 @@ namespace IoTScape
     [Serializable]
     public class IoTScapeResponse
     {
-        public string id;
-        public string request;
-        public string service;
-        public List<string> response;
+        public string id = "";
+        public string request = "";
+        public string service = "";
+        public List<string>? response;
 
         [JsonProperty(PropertyName = "event")]
-        public IoTScapeEventResponse EventResponse;
+        public IoTScapeEventResponse? EventResponse;
 
-        public string error;
-
+        public string? error;
     }
 
     [Serializable]
     public class IoTScapeEventResponse
     {
-        public string type;
-        public string[] args;
+        public string? type;
+        public string[]? args;
     }
 }

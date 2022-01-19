@@ -3,15 +3,15 @@ namespace IoTScape
     [Serializable]
     public class IoTScapeServiceDefinition
     {
-        public string name;
+        public string name = "";
         public IoTScapeServiceDescription service;
-        public string id;
+        public string id = "";
         public Dictionary<string, IoTScapeMethodDescription> methods = new();
         public Dictionary<string, IoTScapeEventDescription> events = new();
 
         public IoTScapeServiceDefinition()
         {
-
+            service = new IoTScapeServiceDescription();
         }
 
         public IoTScapeServiceDefinition(IoTScapeServiceDefinition other)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Newtonsoft.Json.Linq;
 using RoboScapeSimulator.Entities.Robots;
 using SocketIOSharp.Server.Client;
@@ -50,20 +51,78 @@ public class Room : IDisposable
     public float MaxHibernateTime = 60 * 60 * 24;
 
     /// <summary>
+    /// Event called when this Room enters the hibernating state
+    /// </summary>
+    public event EventHandler? OnHibernateStart;
+
+    /// <summary>
+    /// Event called when this Room resumes if currently hibernating
+    /// </summary>
+    public event EventHandler? OnHibernateEnd;
+
+    /// <summary>
+    /// Event called when this room is destroyed
+    /// </summary>
+    public event EventHandler? OnRoomClose;
+
+
+    private bool hibernating = false;
+
+    /// <summary>
     /// Is the Room currently suspended
     /// </summary>
-    public bool Hibernating = false;
+    public bool Hibernating
+    {
+        get => hibernating; set
+        {
+            if (hibernating != value)
+            {
+                // Fire appropriate event
+                if (hibernating)
+                {
+                    OnHibernateEnd?.Invoke(this, EventArgs.Empty);
+                }
+                else
+                {
+                    OnHibernateStart?.Invoke(this, EventArgs.Empty);
+                }
 
+                hibernating = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// The EnvironmentConfiguration used to setup this Room
+    /// </summary>
+    readonly EnvironmentConfiguration? environmentConfiguration;
+
+    /// <summary>
+    /// Instantiate a Room
+    /// </summary>
+    /// <param name="name">Name of this Room, leave empty to be assigned a random name</param>
+    /// <param name="password">Password to restrict entry to this Room with</param>
+    /// <param name="environment">ID of EnvironmentConfiguration to setup this Room with</param>
     public Room(string name = "", string password = "", string environment = "default")
     {
         Console.WriteLine($"Setting up room {name} with environment {environment}");
         SimInstance = new SimulationInstance();
 
+        // Find requested environment (or use default)
         var env = Environments.Find((env) => env.ID == environment) ?? Environments[0];
-        env.Setup(this);
+
+        // Create instance of requested environment
+        environmentConfiguration = (EnvironmentConfiguration?)env.GetType()?.GetConstructor(Array.Empty<Type>())?.Invoke(null);
+
+        if (environmentConfiguration == null)
+        {
+            environmentConfiguration = new DefaultEnvironment();
+        }
+
+        environmentConfiguration.Setup(this);
 
         // Give randomized default name
-        if (name == "")
+        if (string.IsNullOrWhiteSpace(name))
         {
             Random random = new();
             Name = "Room" + random.Next(0, 1000000).ToString("X4");
@@ -82,6 +141,7 @@ public class Room : IDisposable
 
     public void Dispose()
     {
+        OnRoomClose?.Invoke(this, EventArgs.Empty);
         GC.SuppressFinalize(this);
     }
 

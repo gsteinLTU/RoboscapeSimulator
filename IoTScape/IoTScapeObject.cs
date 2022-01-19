@@ -23,7 +23,7 @@ namespace IoTScape
         {
             Definition = new IoTScapeServiceDefinition(definition)
             {
-                id = id ?? Guid.NewGuid().ToString().Substring(6)
+                id = id ?? Guid.NewGuid().ToString()[^6..]
             };
 
             // Populate Methods list
@@ -68,7 +68,7 @@ namespace IoTScape
                 }
             };
 
-            IoTScapeManager.Manager.SendToServer(eventResponse);
+            IoTScapeManager.Manager?.SendToServer(eventResponse);
         }
 
         /// <summary>

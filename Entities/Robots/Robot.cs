@@ -54,7 +54,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <summary>
         /// Stopwatch for keeping track of this Robot's lifetime
         /// </summary>
-        internal Stopwatch time = new Stopwatch();
+        internal Stopwatch time = new();
 
         /// <summary>
         /// Instantiate a Robot inside a given simulation instance
@@ -119,9 +119,9 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <summary>
         /// Simulated MAC address of this Robot, used for identification with server
         /// </summary>
-        public byte[] MacAddress;
+        public byte[] MacAddress = Array.Empty<byte>();
 
-        private string _id = null;
+        private string? _id = null;
 
         public string ID
         {
@@ -149,7 +149,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <summary>
         /// Message types to not enforce minimum times for
         /// </summary>
-        private char[] nonDelayedMessages = { 'n', 'L', 'I' };
+        private readonly char[] nonDelayedMessages = { 'n', 'L', 'I' };
 
         /// <summary>
         /// Time previous heartbeat message was sent
@@ -159,7 +159,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <summary>
         /// Methods to use as handlers for message types received by this robot
         /// </summary>
-        private Dictionary<char, Action<byte[]>> messageHandlers = new();
+        private readonly Dictionary<char, Action<byte[]>> messageHandlers = new();
 
         /// <summary>
         /// Add a message handler for a certain message type
@@ -208,7 +208,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <returns>6 random bytes</returns>
         public static byte[] GenerateRandomMAC()
         {
-            Random rng = new Random();
+            Random rng = new();
 
             byte[] result = new byte[6];
 
@@ -265,7 +265,7 @@ namespace RoboScapeSimulator.Entities.Robots
             Console.WriteLine(BytesToHexstring(finalMessageBytes));
 #endif
 
-            socket.SendAsync(finalMessageBytes, finalMessageBytes.Length);
+            socket?.SendAsync(finalMessageBytes, finalMessageBytes.Length);
         }
 
         public static string BytesToHexstring(byte[] bytes, string separator = " ")
@@ -324,12 +324,14 @@ namespace RoboScapeSimulator.Entities.Robots
             }
         }
 
-        public void Dispose()
+        public new void Dispose()
         {
             //GameManager.Instance.LiveRobots.Remove(gameObject);
 
             // Clean up and remove robot object
-            socket.Close();
+            socket?.Close();
+
+            base.Dispose();
         }
 
         public virtual void Reset()

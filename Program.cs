@@ -36,7 +36,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     // Socket.io setup
     server.OnConnection((SocketIOSocket socket) =>
     {
-        string? socketRoom = null;
+        string socketRoom = "";
 
         Console.WriteLine("Client connected!");
 

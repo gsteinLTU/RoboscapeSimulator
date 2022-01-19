@@ -1,5 +1,3 @@
-
-using System.Collections.Concurrent;
 using Newtonsoft.Json.Linq;
 using SocketIOSharp.Server.Client;
 
@@ -41,7 +39,7 @@ internal static class Messages
     internal static void HandleJoinRoom(JToken[] args, SocketIOSocket socket, IDictionary<string, Room> rooms, ref string socketRoom)
     {
         // Remove from existing room
-        if (socketRoom != null)
+        if (!string.IsNullOrWhiteSpace(socketRoom))
         {
             rooms[socketRoom].RemoveSocket(socket);
         }
@@ -83,13 +81,13 @@ internal static class Messages
             }
         }
 
-        if (socketRoom != null)
+        if (!string.IsNullOrWhiteSpace(socketRoom))
         {
             // Setup updates for socket in new room 
             rooms[socketRoom].AddSocket(socket);
             Utils.sendAsJSON(socket, "roomJoined", socketRoom);
             Utils.sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
-            Messages.SendUpdate(socket, rooms[socketRoom], true);
+            SendUpdate(socket, rooms[socketRoom], true);
         }
         else
         {

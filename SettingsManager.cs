@@ -17,7 +17,7 @@ class SettingsManager
                 loadSettings();
             }
 
-            return (loadedSettings?.RoboScapeHost) ?? DefaultSettings.RoboScapeHost;
+            return (loadedSettings?.RoboScapeHost) ?? DefaultSettings.RoboScapeHost ?? "";
         }
     }
 
@@ -33,7 +33,7 @@ class SettingsManager
                 loadSettings();
             }
 
-            return (loadedSettings ?? DefaultSettings).RoboScapePort.GetValueOrDefault((int)DefaultSettings.RoboScapePort);
+            return loadedSettings?.RoboScapePort ?? DefaultSettings.RoboScapePort ?? 0;
         }
     }
 
@@ -50,7 +50,7 @@ class SettingsManager
                 loadSettings();
             }
 
-            return (loadedSettings ?? DefaultSettings).IoTScapePort.GetValueOrDefault((int)DefaultSettings.IoTScapePort);
+            return loadedSettings?.IoTScapePort ?? DefaultSettings.IoTScapePort ?? 0;
         }
     }
 
@@ -66,7 +66,7 @@ class SettingsManager
                 loadSettings();
             }
 
-            return (loadedSettings ?? DefaultSettings).MaxRooms.GetValueOrDefault((int)DefaultSettings.MaxRooms);
+            return loadedSettings?.MaxRooms ?? DefaultSettings.MaxRooms ?? 0;
         }
     }
 
