@@ -1,5 +1,5 @@
-
 using BepuPhysics;
+using Newtonsoft.Json;
 
 namespace RoboScapeSimulator.Entities
 {
@@ -18,6 +18,8 @@ namespace RoboScapeSimulator.Entities
         /// The name of this Entity
         /// </summary>
         public string Name = "entity";
+
+        public VisualInfo VisualInfo = VisualInfo.DefaultCube;
 
         private bool disposedValue;
 
@@ -49,6 +51,29 @@ namespace RoboScapeSimulator.Entities
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+
+    }
+
+    /// <summary>
+    /// Stores information used to display an Entity
+    /// </summary>
+    [Serializable]
+    public struct VisualInfo
+    {
+        [JsonProperty("model")]
+        public string ModelName = "";
+
+        [JsonProperty("color")]
+        public string Color = "#fff";
+
+        [JsonProperty("image")]
+        public string Image = "";
+
+        /// <summary>
+        /// Empty VisualInfo to display a default white cube in the client
+        /// </summary>
+        public static readonly VisualInfo DefaultCube = new() { };
     }
 
     /// <summary>

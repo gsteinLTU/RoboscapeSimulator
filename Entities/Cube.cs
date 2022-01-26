@@ -22,16 +22,18 @@ namespace RoboScapeSimulator.Entities
         /// <param name="initialOrientation">Initial orientation of the Cube, or null for a random yaw</param>
         /// <param name="isKinematic">Whether this object should be movable</param>
         /// <param name="visualInfo">Visual description string for the Cube</param>
-        public Cube(Room room, float width = 1, float height = 1, float depth = 1, Vector3? initialPosition = null, Quaternion? initialOrientation = null, bool isKinematic = false, string visualInfo = "#888", string? nameOverride = null)
+        public Cube(Room room, float width = 1, float height = 1, float depth = 1, Vector3? initialPosition = null, Quaternion? initialOrientation = null, bool isKinematic = false, VisualInfo visualInfo = default, string? nameOverride = null)
         {
             if (nameOverride == null)
             {
-                Name = $"cube_{ID++}:{visualInfo}";
+                Name = $"cube_{ID++}";
             }
             else
             {
-                Name = nameOverride + ":" + visualInfo;
+                Name = $"{nameOverride}_{ID++}";
             }
+
+            VisualInfo = visualInfo;
 
             var simulationInstance = room.SimInstance;
             var rng = new Random();

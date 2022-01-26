@@ -15,14 +15,14 @@ class DefaultEnvironment : EnvironmentConfiguration
         Console.WriteLine("Setting up default environment");
 
         // Ground
-        var ground = new Ground(room);
+        var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
         // Demo robot
-        var robot = new ParallaxRobot(room, debug: false, visualInfo: "car4.gltf");
+        var robot = new ParallaxRobot(room, debug: false, visualInfo: new VisualInfo() { ModelName = "car4.gltf" });
 
         for (int i = 0; i < 3; i++)
         {
-            var cube = new Cube(room, visualInfo: "crate.png");
+            var cube = new Cube(room, visualInfo: new VisualInfo() { Image = "crate.png" });
         }
     }
 }

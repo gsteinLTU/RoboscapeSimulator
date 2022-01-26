@@ -18,7 +18,7 @@ class IoTScapeExampleEnvironment : EnvironmentConfiguration
         Console.WriteLine("Setting up IoTScape Example environment");
 
         // Ground
-        var ground = new Ground(room);
+        var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
         // Walls
         float wallsize = 15;
@@ -30,7 +30,7 @@ class IoTScapeExampleEnvironment : EnvironmentConfiguration
         // Demo robot
         var robot = new ParallaxRobot(room, debug: false);
 
-        var cube = new Cube(room, visualInfo: "#B85", isKinematic: true);
+        var cube = new Cube(room, visualInfo: new VisualInfo() { Color = "#B85" }, isKinematic: true);
 
         IoTScapeServiceDefinition exampleService = new(
             "MoveCube",

@@ -16,7 +16,7 @@ class DemoEnvironment : EnvironmentConfiguration
         Console.WriteLine("Setting up demo 2021 environment");
 
         // Ground
-        var ground = new Ground(room);
+        var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
         // Walls
         float wallsize = 15;
@@ -31,7 +31,7 @@ class DemoEnvironment : EnvironmentConfiguration
 
         for (int i = 0; i < 3; i++)
         {
-            var cube = new Cube(room, visualInfo: "#B85");
+            var cube = new Cube(room, visualInfo: new VisualInfo() { Color = "#B85" });
         }
     }
 }

@@ -82,49 +82,50 @@ public class SimulationInstance : IDisposable
         }
     }
 
+    /// <summary>
+    /// Get a Dictionary of bodies in the simulation
+    /// </summary>
+    /// <param name="onlyAwake">Should only dynamic, non-sleeping objects be returned?</param>
+    /// <returns>Dictionary with entity name as key, BodyInfo as value</returns>
     public Dictionary<string, object> GetBodies(bool onlyAwake = false)
     {
         var output = new Dictionary<string, object>();
 
-        if (!onlyAwake)
+        foreach (var entity in Entities)
         {
-            foreach (var kvp in NamedStatics)
+            if (!onlyAwake && entity is StaticEntity staticEntity)
             {
-                output.Add(kvp.Key, new BodyInfo
+                output.Add(entity.Name, new BodyInfo
                 {
-                    label = kvp.Key,
+                    label = entity.Name,
                     pos = {
-                    x = kvp.Value.Pose.Position.X,
-                    y = kvp.Value.Pose.Position.Y,
-                    z = kvp.Value.Pose.Position.Z
-                },
-                    angle = kvp.Value.Pose.Orientation,
-                    width = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
-                    height = kvp.Value.BoundingBox.Max.Y - kvp.Value.BoundingBox.Min.Y,
-                    depth = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
-                    image = kvp.Key.Contains(':') ? kvp.Key.Split(':').Last() : null
+                        x = staticEntity.StaticReference.Pose.Position.X,
+                        y = staticEntity.StaticReference.Pose.Position.Y,
+                        z = staticEntity.StaticReference.Pose.Position.Z
+                    },
+                    angle = staticEntity.StaticReference.Pose.Orientation,
+                    width = staticEntity.StaticReference.BoundingBox.Max.X - staticEntity.StaticReference.BoundingBox.Min.X,
+                    height = staticEntity.StaticReference.BoundingBox.Max.Y - staticEntity.StaticReference.BoundingBox.Min.Y,
+                    depth = staticEntity.StaticReference.BoundingBox.Max.Z - staticEntity.StaticReference.BoundingBox.Min.Z,
+                    visualInfo = staticEntity.VisualInfo
                 });
             }
-        }
-
-        foreach (var kvp in NamedBodies)
-        {
-            if (!onlyAwake || kvp.Value.Awake)
+            else if (entity is DynamicEntity dynamicEntity && (!onlyAwake || dynamicEntity.BodyReference.Awake))
             {
-                output.Add(kvp.Key, new BodyInfo
+                output.Add(entity.Name, new BodyInfo
                 {
-                    label = kvp.Key,
+                    label = entity.Name,
                     pos = {
-                    x = kvp.Value.Pose.Position.X,
-                    y = kvp.Value.Pose.Position.Y,
-                    z = kvp.Value.Pose.Position.Z
-                },
-                    angle = kvp.Value.Pose.Orientation,
-                    width = kvp.Value.BoundingBox.Max.X - kvp.Value.BoundingBox.Min.X,
-                    height = kvp.Value.BoundingBox.Max.Y - kvp.Value.BoundingBox.Min.Y,
-                    depth = kvp.Value.BoundingBox.Max.Z - kvp.Value.BoundingBox.Min.Z,
-                    image = kvp.Key.Contains(':') ? kvp.Key.Split(':').Last() : null,
-                    vel = kvp.Value.Velocity.Linear
+                        x = dynamicEntity.BodyReference.Pose.Position.X,
+                        y = dynamicEntity.BodyReference.Pose.Position.Y,
+                        z = dynamicEntity.BodyReference.Pose.Position.Z
+                    },
+                    angle = dynamicEntity.BodyReference.Pose.Orientation,
+                    width = dynamicEntity.BodyReference.BoundingBox.Max.X - dynamicEntity.BodyReference.BoundingBox.Min.X,
+                    height = dynamicEntity.BodyReference.BoundingBox.Max.Y - dynamicEntity.BodyReference.BoundingBox.Min.Y,
+                    depth = dynamicEntity.BodyReference.BoundingBox.Max.Z - dynamicEntity.BodyReference.BoundingBox.Min.Z,
+                    visualInfo = entity.VisualInfo,
+                    vel = dynamicEntity.BodyReference.Velocity.Linear
                 });
             }
         }
@@ -145,7 +146,7 @@ public struct BodyInfo
     public float width;
     public float height;
     public float depth;
-    public string? image;
+    public VisualInfo? visualInfo;
 }
 
 [Serializable]

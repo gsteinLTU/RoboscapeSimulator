@@ -44,13 +44,25 @@ namespace RoboScapeSimulator.Entities.Robots
         /// Instantiate a Robot inside a given simulation instance
         /// </summary>
         /// <param name="room">Room this Robot exists inside</param>
-        public Robot(Room room, Vector3? position = null, Quaternion? rotation = null, Vector3? size = null, float mass = 2, string visualInfo = "")
+        public Robot(Room room, Vector3? position = null, Quaternion? rotation = null, Vector3? size = null, float mass = 2, VisualInfo? visualInfo = null)
         {
             this.room = room;
             simulation = room.SimInstance.Simulation;
             var rng = new Random();
 
             Box box;
+
+            if (visualInfo != null)
+            {
+                VisualInfo = (VisualInfo)visualInfo;
+            }
+            else
+            {
+                VisualInfo = new VisualInfo()
+                {
+                    ModelName = "parallax_robot.gltf"
+                };
+            }
 
             if (size == null)
             {
@@ -86,7 +98,8 @@ namespace RoboScapeSimulator.Entities.Robots
             SetupRobot();
             time.Start();
 
-            room.SimInstance.NamedBodies.Add("robot_" + BytesToHexstring(MacAddress, "") + ":" + visualInfo, BodyReference);
+            room.SimInstance.NamedBodies.Add("robot_" + BytesToHexstring(MacAddress, ""), BodyReference);
+            Name = "robot_" + BytesToHexstring(MacAddress, "");
             room.SimInstance.Entities.Add(this);
         }
 

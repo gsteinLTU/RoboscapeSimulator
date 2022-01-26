@@ -60,7 +60,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
         private bool whiskerR = false;
 
-        public ParallaxRobot(Room room, Vector3? position = null, Quaternion? rotation = null, bool debug = false, string visualInfo = "parallax_robot.gltf") : base(room, position, rotation, visualInfo: visualInfo)
+        public ParallaxRobot(Room room, Vector3? position = null, Quaternion? rotation = null, bool debug = false, VisualInfo? visualInfo = null) : base(room, position, rotation, visualInfo: visualInfo)
         {
             CreateHandlers();
 
