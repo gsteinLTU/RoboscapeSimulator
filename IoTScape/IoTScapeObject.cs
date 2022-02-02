@@ -18,6 +18,8 @@ namespace IoTScape
 
         public bool ShouldRegister = true;
 
+        internal Room? _room;
+
         // Start is called before the first frame update
         public IoTScapeObject(IoTScapeServiceDefinition definition, string? id = null)
         {
@@ -44,7 +46,7 @@ namespace IoTScape
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        private String[] heartbeat(String[] args)
+        private string[] heartbeat(string[] args)
         {
             return new[] { "true" };
         }
@@ -78,6 +80,28 @@ namespace IoTScape
         public void SendEvent(string EventType)
         {
             SendEvent(EventType, new string[] { });
+        }
+
+        public void Setup(Room room)
+        {
+            _room = room;
+
+            IoTScapeManager.Manager?.Register(this);
+
+            room.OnHibernateStart += (sender, e) =>
+            {
+                IoTScapeManager.Manager?.Unregister(this);
+            };
+
+            room.OnHibernateEnd += (sender, e) =>
+            {
+                IoTScapeManager.Manager?.Register(this);
+            };
+
+            room.OnRoomClose += (sender, e) =>
+            {
+                IoTScapeManager.Manager?.Unregister(this);
+            };
         }
     }
 

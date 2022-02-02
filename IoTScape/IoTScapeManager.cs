@@ -166,6 +166,14 @@ namespace IoTScape
                     if (request.function != null && device.Methods.ContainsKey(request.function))
                     {
                         string[] result = device.Methods[request.function].Invoke(request.ParamsList.ToArray());
+
+
+                        // Keep room active if received non-heartbeat IoTScape message
+                        if (request.function != "heartbeat" && device._room != null)
+                        {
+                            device._room.LastInteractionTime = DateTime.Now;
+                        }
+
                         SendResponse(request, result);
                     }
                 }
