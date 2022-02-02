@@ -64,6 +64,10 @@ namespace RoboScapeSimulator.Entities
         [JsonProperty("model")]
         public string ModelName = "";
 
+
+        [JsonProperty("modelScale")]
+        public float ModelScale = 1;
+
         [JsonProperty("color")]
         public string Color = "#fff";
 

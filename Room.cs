@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 using Newtonsoft.Json.Linq;
 using RoboScapeSimulator.Entities.Robots;
 using SocketIOSharp.Server.Client;
@@ -241,7 +238,8 @@ public class Room : IDisposable
     {
         new DefaultEnvironment(),
         new DemoEnvironment(),
-        new IoTScapeExampleEnvironment()
+        new IoTScapeExampleEnvironment(),
+        new IoTScapeExampleEnvironment2()
     };
 
     public DateTime LastInteractionTime
