@@ -97,8 +97,6 @@ class IoTScapeExampleEnvironment : EnvironmentConfiguration
 
         cubeObject.Setup(room);
 
-
-
         IoTScapeServiceDefinition locationSensorService = new(
             "TransformSensor",
             new IoTScapeServiceDescription() { version = "1" },
@@ -158,8 +156,7 @@ class IoTScapeExampleEnvironment : EnvironmentConfiguration
             return new string[] { (yaw * 180.0f / MathF.PI).ToString() };
         };
 
+        locationSensor.IDOverride = robot.ID;
         locationSensor.Setup(room);
-
-
     }
 }
