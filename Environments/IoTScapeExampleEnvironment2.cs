@@ -59,7 +59,7 @@ class IoTScapeExampleEnvironment2 : EnvironmentConfiguration
         var targetBody = barrel.BodyReference;
         var targetIntensity = 100;
 
-        radiationSensor = new(radiationSensorDefinition, "");
+        radiationSensor = new(radiationSensorDefinition, robot.ID);
         radiationSensor.Methods["getIntensity"] = (string[] args) =>
         {
             float intensity = 0;
