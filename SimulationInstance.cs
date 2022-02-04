@@ -121,9 +121,9 @@ public class SimulationInstance : IDisposable
                         z = dynamicEntity.BodyReference.Pose.Position.Z
                     },
                     angle = dynamicEntity.BodyReference.Pose.Orientation,
-                    width = dynamicEntity.BodyReference.BoundingBox.Max.X - dynamicEntity.BodyReference.BoundingBox.Min.X,
-                    height = dynamicEntity.BodyReference.BoundingBox.Max.Y - dynamicEntity.BodyReference.BoundingBox.Min.Y,
-                    depth = dynamicEntity.BodyReference.BoundingBox.Max.Z - dynamicEntity.BodyReference.BoundingBox.Min.Z,
+                    width = dynamicEntity.Width,
+                    height = dynamicEntity.Height,
+                    depth = dynamicEntity.Depth,
                     visualInfo = entity.VisualInfo,
                     vel = dynamicEntity.BodyReference.Velocity.Linear
                 });

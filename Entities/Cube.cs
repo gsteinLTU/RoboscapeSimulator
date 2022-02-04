@@ -35,6 +35,10 @@ namespace RoboScapeSimulator.Entities
 
             VisualInfo = visualInfo;
 
+            Width = width;
+            Height = height;
+            Depth = depth;
+
             var simulationInstance = room.SimInstance;
             var rng = new Random();
             var box = new Box(width, height, depth);

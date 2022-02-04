@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Numerics;
@@ -82,6 +79,10 @@ namespace RoboScapeSimulator.Entities.Robots
 
             var bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(position.GetValueOrDefault(), boxInertia, new CollidableDescription(simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
             BodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
+
+            Width = BodyReference.BoundingBox.Max.X - BodyReference.BoundingBox.Min.X;
+            Height = BodyReference.BoundingBox.Max.Y - BodyReference.BoundingBox.Min.Y;
+            Depth = BodyReference.BoundingBox.Max.Z - BodyReference.BoundingBox.Min.Z;
 
             if (rotation == null)
             {

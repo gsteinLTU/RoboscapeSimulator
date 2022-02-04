@@ -109,5 +109,11 @@ namespace RoboScapeSimulator.Entities
         /// The reference to this object's body in the simulation
         /// </summary>
         public BodyReference BodyReference;
+
+        public float Width = 1;
+
+        public float Height = 1;
+
+        public float Depth = 1;
     }
 }
