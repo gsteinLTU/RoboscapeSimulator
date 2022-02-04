@@ -11,6 +11,11 @@ class DemoEnvironment : EnvironmentConfiguration
         Description = "The demo environment";
     }
 
+    public override object Clone()
+    {
+        return new DemoEnvironment();
+    }
+
     public override void Setup(Room room)
     {
         Console.WriteLine("Setting up demo 2021 environment");

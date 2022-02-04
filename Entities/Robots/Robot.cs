@@ -41,7 +41,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// Instantiate a Robot inside a given simulation instance
         /// </summary>
         /// <param name="room">Room this Robot exists inside</param>
-        public Robot(Room room, Vector3? position = null, Quaternion? rotation = null, Vector3? size = null, float mass = 2, VisualInfo? visualInfo = null)
+        public Robot(Room room, Vector3? position = null, Quaternion? rotation = null, Vector3? size = null, float mass = 2, VisualInfo? visualInfo = null, float spawnHeight = 0.4f)
         {
             this.room = room;
             simulation = room.SimInstance.Simulation;
@@ -72,12 +72,8 @@ namespace RoboScapeSimulator.Entities.Robots
             }
 
             box.ComputeInertia(mass, out var boxInertia);
-            if (position == null)
-            {
-                position = new Vector3(rng.Next(-5, 5), 0.4f, rng.Next(-5, 5));
-            }
 
-            var bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(position.GetValueOrDefault(), boxInertia, new CollidableDescription(simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
+            var bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(position ?? new Vector3(rng.Next(-5, 5), spawnHeight, rng.Next(-5, 5)), boxInertia, new CollidableDescription(simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
             BodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
 
             Width = BodyReference.BoundingBox.Max.X - BodyReference.BoundingBox.Min.X;
@@ -147,7 +143,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <summary>
         /// Message types to not enforce minimum times for
         /// </summary>
-        private readonly char[] nonDelayedMessages = { 'n', 'L', 'I' };
+        private readonly char[] nonDelayedMessages = { 'n', 'L', 'I', 'R', 'T' };
 
         /// <summary>
         /// Time previous heartbeat message was sent

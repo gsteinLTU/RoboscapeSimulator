@@ -1,7 +1,8 @@
+using System;
 /// <summary>
 /// Base class for environment types
 /// </summary>
-abstract class EnvironmentConfiguration
+abstract class EnvironmentConfiguration : ICloneable
 {
     /// <summary>
     /// Displayed name of this environment
@@ -17,6 +18,8 @@ abstract class EnvironmentConfiguration
     /// Descriptive text for this environment
     /// </summary>
     public string Description = "";
+
+    public abstract object Clone();
 
     /// <summary>
     /// Configures <paramref name="room"/> to run this environment

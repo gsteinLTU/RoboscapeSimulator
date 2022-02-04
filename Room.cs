@@ -106,10 +106,14 @@ public class Room : IDisposable
         SimInstance = new SimulationInstance();
 
         // Find requested environment (or use default)
+        if (!Environments.Any((env) => env.ID == environment))
+        {
+            Console.WriteLine($"Environment {environment} not found");
+        }
         var env = Environments.Find((env) => env.ID == environment) ?? Environments[0];
 
         // Create instance of requested environment
-        environmentConfiguration = (EnvironmentConfiguration?)env.GetType()?.GetConstructor(Array.Empty<Type>())?.Invoke(null);
+        environmentConfiguration = (EnvironmentConfiguration?)env.Clone();
 
         if (environmentConfiguration == null)
         {
@@ -239,7 +243,10 @@ public class Room : IDisposable
         new DefaultEnvironment(),
         new DemoEnvironment(),
         new IoTScapeExampleEnvironment(),
-        new IoTScapeExampleEnvironment2()
+        new IoTScapeExampleEnvironment2(),
+        new TableEnvironment(),
+        new TableEnvironment(3, 2),
+        new WallEnvironment()
     };
 
     public DateTime LastInteractionTime

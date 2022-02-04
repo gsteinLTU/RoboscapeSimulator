@@ -60,7 +60,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
         private bool whiskerR = false;
 
-        public ParallaxRobot(Room room, Vector3? position = null, Quaternion? rotation = null, bool debug = false, VisualInfo? visualInfo = null) : base(room, position, rotation, visualInfo: visualInfo)
+        public ParallaxRobot(Room room, Vector3? position = null, Quaternion? rotation = null, bool debug = false, VisualInfo? visualInfo = null, float spawnHeight = 0.4f) : base(room, position, rotation, visualInfo: visualInfo, spawnHeight: spawnHeight)
         {
             CreateHandlers();
 
@@ -277,10 +277,6 @@ namespace RoboScapeSimulator.Entities.Robots
             AddHandler('L', OnSetLED);
             AddHandler('R', OnGetRange);
             AddHandler('T', OnGetTicks);
-
-            // Setup whisker event handlers
-            // LeftWhisker.OnStatusChanged += OnWhisker;
-            // RightWhisker.OnStatusChanged += OnWhisker;
         }
 
         #region Command Handlers

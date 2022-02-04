@@ -10,6 +10,11 @@ class DefaultEnvironment : EnvironmentConfiguration
         Description = "The default environment";
     }
 
+    public override object Clone()
+    {
+        return new DefaultEnvironment();
+    }
+
     public override void Setup(Room room)
     {
         Console.WriteLine("Setting up default environment");

@@ -17,6 +17,11 @@ class IoTScapeExampleEnvironment2 : EnvironmentConfiguration
 
     TransformSensor? locationSensor;
 
+    public override object Clone()
+    {
+        return new IoTScapeExampleEnvironment2();
+    }
+
     public override void Setup(Room room)
     {
         Console.WriteLine("Setting up IoTScape Example 2 environment");
