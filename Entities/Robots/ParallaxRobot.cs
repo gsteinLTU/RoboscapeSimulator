@@ -73,7 +73,7 @@ namespace RoboScapeSimulator.Entities.Robots
             var rearWheelShapeIndex = simulation.Shapes.Add(rearWheelShape);
 
             float wheelDistX = 0.05f;
-            float wheelDistY = -0.025f;
+            float wheelDistY = 0.003f;
             float wheelDistZ = 0.025f;
 
             var lWheelOffset = new RigidPose(new Vector3(-wheelDistX, wheelDistY, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
@@ -104,7 +104,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 LocalOffsetA = new Vector3(-wheelDistX, wheelDistY, wheelDistZ),
                 LocalOffsetB = default,
                 ServoSettings = ServoSettings.Default,
-                SpringSettings = new SpringSettings(5, 1)
+                SpringSettings = new SpringSettings(30, 1)
             });
 
             simulation.Solver.Add(BodyReference.Handle, LWheel, new PointOnLineServo
@@ -146,7 +146,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 LocalOffsetA = new Vector3(wheelDistX, wheelDistY, wheelDistZ),
                 LocalOffsetB = default,
                 ServoSettings = ServoSettings.Default,
-                SpringSettings = new SpringSettings(5, 1)
+                SpringSettings = new SpringSettings(30, 1)
             });
 
 
@@ -159,7 +159,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 SpringSettings = new SpringSettings(30, 1)
             });
 
-            var rearWheelOffset = new RigidPose(new Vector3(0, -0.04f, -0.03f));
+            var rearWheelOffset = new RigidPose(new Vector3(0, -0.03f, -0.03f));
             RigidPose.MultiplyWithoutOverlap(rearWheelOffset, BodyReference.Pose, out rearWheelPose);
 
             RearWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
@@ -168,9 +168,9 @@ namespace RoboScapeSimulator.Entities.Robots
 
             simulation.Solver.Add(BodyReference.Handle, RearWheel, new BallSocket
             {
-                LocalOffsetA = new Vector3(0, -0.06f, -0.08f),
+                LocalOffsetA = new Vector3(0, -0.065f, -0.08f),
                 LocalOffsetB = new Vector3(0, 0, 0),
-                SpringSettings = new SpringSettings(30, 1)
+                SpringSettings = new SpringSettings(60, 1)
             });
 
             // Setup collisions
