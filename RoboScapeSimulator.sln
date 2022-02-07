@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{071BC843-932C-4A31-832C-A90ABE4BACF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoboScapeSimulator", "src\RoboScapeSimulator\RoboScapeSimulator.csproj", "{F5825B96-2E31-497B-9D4F-80D88BD269BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoboScapeSimulator.Tests", "src\RoboScapeSimulator.Tests\RoboScapeSimulator.Tests.csproj", "{6FBD70C9-2D80-457A-BA28-5E24F676A533}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F5825B96-2E31-497B-9D4F-80D88BD269BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5825B96-2E31-497B-9D4F-80D88BD269BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5825B96-2E31-497B-9D4F-80D88BD269BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5825B96-2E31-497B-9D4F-80D88BD269BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FBD70C9-2D80-457A-BA28-5E24F676A533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FBD70C9-2D80-457A-BA28-5E24F676A533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FBD70C9-2D80-457A-BA28-5E24F676A533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FBD70C9-2D80-457A-BA28-5E24F676A533}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F5825B96-2E31-497B-9D4F-80D88BD269BE} = {071BC843-932C-4A31-832C-A90ABE4BACF5}
+		{6FBD70C9-2D80-457A-BA28-5E24F676A533} = {071BC843-932C-4A31-832C-A90ABE4BACF5}
+	EndGlobalSection
+EndGlobal
