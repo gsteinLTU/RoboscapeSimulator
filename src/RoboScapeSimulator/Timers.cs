@@ -2,77 +2,80 @@ using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-/// <summary>
-/// Helper functions to create timers used in main server code
-/// </summary>
-internal static class Timers
+namespace RoboScapeSimulator
 {
-    public static System.Timers.Timer CreateClientUpdateTimer(int updateFPS, IDictionary<string, Room> rooms)
+    /// <summary>
+    /// Helper functions to create timers used in main server code
+    /// </summary>
+    internal static class Timers
     {
-        var clientUpdateTimer = new System.Timers.Timer(1000d / updateFPS);
-
-        clientUpdateTimer.Elapsed += (source, e) =>
+        public static System.Timers.Timer CreateClientUpdateTimer(int updateFPS, IDictionary<string, Room> rooms)
         {
-            foreach (Room room in rooms.Values)
+            var clientUpdateTimer = new System.Timers.Timer(1000d / updateFPS);
+
+            clientUpdateTimer.Elapsed += (source, e) =>
             {
-                if (room.SkipNextUpdate)
+                foreach (Room room in rooms.Values)
                 {
-                    room.SkipNextUpdate = false;
-                    continue;
+                    if (room.SkipNextUpdate)
+                    {
+                        room.SkipNextUpdate = false;
+                        continue;
+                    }
+
+                    foreach (var socket in room.activeSockets)
+                    {
+                        Messages.SendUpdate(socket, room);
+                    }
                 }
 
-                foreach (var socket in room.activeSockets)
-                {
-                    Messages.SendUpdate(socket, room);
-                }
-            }
+            };
 
-        };
+            clientUpdateTimer.Start();
+            return clientUpdateTimer;
+        }
 
-        clientUpdateTimer.Start();
-        return clientUpdateTimer;
-    }
-
-    public static System.Timers.Timer CreateClientFullUpdateTimer(IDictionary<string, Room> rooms, JsonSerializer serializer)
-    {
-        var clientFullUpdateTimer = new System.Timers.Timer(60000d);
-
-        clientFullUpdateTimer.Elapsed += (source, e) =>
+        public static System.Timers.Timer CreateClientFullUpdateTimer(IDictionary<string, Room> rooms, JsonSerializer serializer)
         {
-            foreach (Room room in rooms.Values)
+            var clientFullUpdateTimer = new System.Timers.Timer(60000d);
+
+            clientFullUpdateTimer.Elapsed += (source, e) =>
             {
-                using var writer = new JTokenWriter();
-                serializer.Serialize(writer, room.SimInstance.GetBodies());
-                foreach (var socket in room.activeSockets)
+                foreach (Room room in rooms.Values)
                 {
-                    Messages.SendUpdate(socket, room, true);
+                    using var writer = new JTokenWriter();
+                    serializer.Serialize(writer, room.SimInstance.GetBodies());
+                    foreach (var socket in room.activeSockets)
+                    {
+                        Messages.SendUpdate(socket, room, true);
+                    }
                 }
-            }
-        };
+            };
 
-        clientFullUpdateTimer.Start();
+            clientFullUpdateTimer.Start();
 
-        return clientFullUpdateTimer;
-    }
+            return clientFullUpdateTimer;
+        }
 
-    public static System.Timers.Timer CreateCleanDeadRoomsTimer(ConcurrentDictionary<string, Room> rooms)
-    {
-        var cleanDeadRoomsTimer = new System.Timers.Timer(600000d);
-
-        cleanDeadRoomsTimer.Elapsed += (source, e) =>
+        public static System.Timers.Timer CreateCleanDeadRoomsTimer(ConcurrentDictionary<string, Room> rooms)
         {
-            // If room is Hibernating and past its TTL, remove it
-            var oldRooms = rooms.Where(pair => pair.Value.Hibernating && (DateTime.Now - pair.Value.LastInteractionTime).TotalSeconds > pair.Value.MaxHibernateTime).ToList();
+            var cleanDeadRoomsTimer = new System.Timers.Timer(600000d);
 
-            if (oldRooms.Count > 0)
+            cleanDeadRoomsTimer.Elapsed += (source, e) =>
             {
-                Console.WriteLine($"Removing {oldRooms.Count} old rooms");
-                oldRooms.ForEach(pair => rooms.TryRemove(pair));
-            }
-        };
+                // If room is Hibernating and past its TTL, remove it
+                var oldRooms = rooms.Where(pair => pair.Value.Hibernating && (DateTime.Now - pair.Value.LastInteractionTime).TotalSeconds > pair.Value.MaxHibernateTime).ToList();
 
-        cleanDeadRoomsTimer.Start();
+                if (oldRooms.Count > 0)
+                {
+                    Console.WriteLine($"Removing {oldRooms.Count} old rooms");
+                    oldRooms.ForEach(pair => rooms.TryRemove(pair));
+                }
+            };
 
-        return cleanDeadRoomsTimer;
+            cleanDeadRoomsTimer.Start();
+
+            return cleanDeadRoomsTimer;
+        }
     }
 }

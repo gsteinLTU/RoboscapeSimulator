@@ -1,6 +1,6 @@
 using BepuPhysics;
 
-namespace IoTScape.Devices
+namespace RoboScapeSimulator.IoTScape.Devices
 {
     class TransformSensor : IoTScapeObject
     {

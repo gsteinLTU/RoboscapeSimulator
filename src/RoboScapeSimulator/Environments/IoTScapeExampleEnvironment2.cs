@@ -1,55 +1,56 @@
 using System.Numerics;
-using IoTScape;
-using IoTScape.Devices;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
-
-class IoTScapeExampleEnvironment2 : EnvironmentConfiguration
+using RoboScapeSimulator.IoTScape;
+using RoboScapeSimulator.IoTScape.Devices;
+namespace RoboScapeSimulator.Environments
 {
-    public IoTScapeExampleEnvironment2()
+    class IoTScapeExampleEnvironment2 : EnvironmentConfiguration
     {
-        Name = "IoTScapeExampleEnvironment2";
-        ID = "iotscape2";
-        Description = "RadiationSensor Demo Environment";
-    }
+        public IoTScapeExampleEnvironment2()
+        {
+            Name = "IoTScapeExampleEnvironment2";
+            ID = "iotscape2";
+            Description = "RadiationSensor Demo Environment";
+        }
 
-    IoTScapeObject? radiationSensor;
+        IoTScapeObject? radiationSensor;
 
-    TransformSensor? locationSensor;
+        TransformSensor? locationSensor;
 
-    public override object Clone()
-    {
-        return new IoTScapeExampleEnvironment2();
-    }
+        public override object Clone()
+        {
+            return new IoTScapeExampleEnvironment2();
+        }
 
-    public override void Setup(Room room)
-    {
-        Console.WriteLine("Setting up IoTScape Example 2 environment");
+        public override void Setup(Room room)
+        {
+            Console.WriteLine("Setting up IoTScape Example 2 environment");
 
-        // Ground
-        var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            // Ground
+            var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
-        // Walls
-        float wallsize = 15;
-        var wall1 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, -wallsize / 2), Quaternion.Identity, true, nameOverride: "wall1");
-        var wall2 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, wallsize / 2), Quaternion.Identity, true, nameOverride: "wall2");
-        var wall3 = new Cube(room, 1, 1, wallsize + 1, new Vector3(-wallsize / 2, 0.5f, 0), Quaternion.Identity, true, nameOverride: "wall3");
-        var wall4 = new Cube(room, 1, 1, wallsize + 1, new Vector3(wallsize / 2, 0.5f, 0), Quaternion.Identity, true, nameOverride: "wall4");
+            // Walls
+            float wallsize = 15;
+            var wall1 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, -wallsize / 2), Quaternion.Identity, true, nameOverride: "wall1");
+            var wall2 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, wallsize / 2), Quaternion.Identity, true, nameOverride: "wall2");
+            var wall3 = new Cube(room, 1, 1, wallsize + 1, new Vector3(-wallsize / 2, 0.5f, 0), Quaternion.Identity, true, nameOverride: "wall3");
+            var wall4 = new Cube(room, 1, 1, wallsize + 1, new Vector3(wallsize / 2, 0.5f, 0), Quaternion.Identity, true, nameOverride: "wall4");
 
-        // Demo robot
-        var robot = new ParallaxRobot(room, debug: false);
+            // Demo robot 
+            var robot = new ParallaxRobot(room, debug: false);
 
-        var barrel = new Cube(room, initialPosition: new Vector3(3, 0, 3), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { ModelName = "barrel.gltf", ModelScale = 0.4f }, isKinematic: true);
+            var barrel = new Cube(room, initialPosition: new Vector3(3, 0, 3), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { ModelName = "barrel.gltf", ModelScale = 0.4f }, isKinematic: true);
 
-        locationSensor = new(robot.BodyReference, robot.ID);
-        locationSensor.Setup(room);
+            locationSensor = new(robot.BodyReference, robot.ID);
+            locationSensor.Setup(room);
 
-        IoTScapeServiceDefinition radiationSensorDefinition = new(
-            "RadiationSensor",
-            new IoTScapeServiceDescription() { version = "1" },
-            "",
-            new Dictionary<string, IoTScapeMethodDescription>()
-            {
+            IoTScapeServiceDefinition radiationSensorDefinition = new(
+                "RadiationSensor",
+                new IoTScapeServiceDescription() { version = "1" },
+                "",
+                new Dictionary<string, IoTScapeMethodDescription>()
+                {
                 {"getIntensity", new IoTScapeMethodDescription(){
                     documentation = "Get radiation reading at current location",
                     paramsList = new List<IoTScapeMethodParams>(){},
@@ -57,24 +58,25 @@ class IoTScapeExampleEnvironment2 : EnvironmentConfiguration
                         "number"
                     }}
                 }}
-            },
-            new Dictionary<string, IoTScapeEventDescription>());
+                },
+                new Dictionary<string, IoTScapeEventDescription>());
 
-        var sensorBody = robot.BodyReference;
-        var targetBody = barrel.BodyReference;
-        var targetIntensity = 100;
+            var sensorBody = robot.BodyReference;
+            var targetBody = barrel.BodyReference;
+            var targetIntensity = 100;
 
-        radiationSensor = new(radiationSensorDefinition, robot.ID);
-        radiationSensor.Methods["getIntensity"] = (string[] args) =>
-        {
-            float intensity = 0;
-            float distance = (sensorBody.Pose.Position - targetBody.Pose.Position).LengthSquared();
-            intensity = targetIntensity / distance;
+            radiationSensor = new(radiationSensorDefinition, robot.ID);
+            radiationSensor.Methods["getIntensity"] = (string[] args) =>
+            {
+                float intensity = 0;
+                float distance = (sensorBody.Pose.Position - targetBody.Pose.Position).LengthSquared();
+                intensity = targetIntensity / distance;
 
-            return new string[] { intensity.ToString() };
-        };
+                return new string[] { intensity.ToString() };
+            };
 
-        radiationSensor.Setup(room);
+            radiationSensor.Setup(room);
 
+        }
     }
 }
