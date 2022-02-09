@@ -80,7 +80,7 @@ namespace RoboScapeSimulator
         /// </summary>
         /// <param name="onlyAwake">Should only dynamic, non-sleeping objects be returned?</param>
         /// <returns>Dictionary with entity name as key, BodyInfo as value</returns>
-        public Dictionary<string, object> GetBodies(bool onlyAwake = false)
+        public Dictionary<string, object> GetBodies(bool onlyAwake = false, bool allData = true)
         {
             var output = new Dictionary<string, object>();
 
@@ -97,10 +97,10 @@ namespace RoboScapeSimulator
                         z = staticEntity.StaticReference.Pose.Position.Z
                     },
                         angle = staticEntity.StaticReference.Pose.Orientation,
-                        width = staticEntity.StaticReference.BoundingBox.Max.X - staticEntity.StaticReference.BoundingBox.Min.X,
-                        height = staticEntity.StaticReference.BoundingBox.Max.Y - staticEntity.StaticReference.BoundingBox.Min.Y,
-                        depth = staticEntity.StaticReference.BoundingBox.Max.Z - staticEntity.StaticReference.BoundingBox.Min.Z,
-                        visualInfo = staticEntity.VisualInfo
+                        width = allData ? staticEntity.StaticReference.BoundingBox.Max.X - staticEntity.StaticReference.BoundingBox.Min.X : null,
+                        height = allData ? staticEntity.StaticReference.BoundingBox.Max.Y - staticEntity.StaticReference.BoundingBox.Min.Y : null,
+                        depth = allData ? staticEntity.StaticReference.BoundingBox.Max.Z - staticEntity.StaticReference.BoundingBox.Min.Z : null,
+                        visualInfo = allData ? staticEntity.VisualInfo : null
                     });
                 }
                 else if (entity is DynamicEntity dynamicEntity && (!onlyAwake || dynamicEntity.BodyReference.Awake))
@@ -114,10 +114,10 @@ namespace RoboScapeSimulator
                         z = dynamicEntity.BodyReference.Pose.Position.Z
                     },
                         angle = dynamicEntity.BodyReference.Pose.Orientation,
-                        width = dynamicEntity.Width,
-                        height = dynamicEntity.Height,
-                        depth = dynamicEntity.Depth,
-                        visualInfo = entity.VisualInfo,
+                        width = allData ? dynamicEntity.Width : null,
+                        height = allData ? dynamicEntity.Height : null,
+                        depth = allData ? dynamicEntity.Depth : null,
+                        visualInfo = allData ? entity.VisualInfo : null,
                         vel = dynamicEntity.BodyReference.Velocity.Linear
                     });
                 }
@@ -136,9 +136,9 @@ namespace RoboScapeSimulator
         public Vec3 vel;
         public Quaternion angle;
         public float anglevel;
-        public float width;
-        public float height;
-        public float depth;
+        public float? width;
+        public float? height;
+        public float? depth;
         public VisualInfo? visualInfo;
     }
 

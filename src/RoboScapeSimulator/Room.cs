@@ -66,6 +66,11 @@ namespace RoboScapeSimulator
         public event EventHandler? OnRoomClose;
 
 
+        /// <summary>
+        /// Time elapsed in the simulation instance
+        /// </summary>
+        public float Time { get => SimInstance.Time; }
+
         private bool hibernating = false;
 
         /// <summary>
@@ -158,7 +163,7 @@ namespace RoboScapeSimulator
             return new Dictionary<string, object>()
         {
             {"background", ""},
-            {"time", SimInstance.Time}
+            {"time", Time}
         };
         }
 
@@ -268,7 +273,7 @@ namespace RoboScapeSimulator
         /// Update the state of the Room and its simulation
         /// </summary>
         /// <param name="dt">Delta time between updates</param>
-        internal void Update(float dt)
+        public void Update(float dt)
         {
             if (Hibernating) return;
 

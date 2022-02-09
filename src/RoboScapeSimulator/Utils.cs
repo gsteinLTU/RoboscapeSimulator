@@ -13,6 +13,14 @@ namespace RoboScapeSimulator
     {
         static JsonSerializer serializer = new();
 
+        private static bool serializerInitialized = false;
+
+        private static void initializeSerializer()
+        {
+            serializer.NullValueHandling = NullValueHandling.Ignore;
+            serializer.Converters.Add(new SmallerFloatFormatConverter());
+        }
+
         public static void ExtractYawPitchRoll(this Quaternion r, out float yaw, out float pitch, out float roll)
         {
             yaw = MathF.Atan2(2.0f * (r.Y * r.W + r.X * r.Z), 1.0f - 2.0f * (r.X * r.X + r.Y * r.Y));
@@ -25,6 +33,11 @@ namespace RoboScapeSimulator
         /// </summary>
         public static void printJSON(JToken token)
         {
+            if (!serializerInitialized)
+            {
+                initializeSerializer();
+            }
+
             using (var writer = new StringWriter())
             {
                 serializer.Serialize(writer, token);
@@ -42,6 +55,11 @@ namespace RoboScapeSimulator
 
         public static void sendAsJSON<T>(SocketIOSocket socket, string eventName, T data)
         {
+            if (!serializerInitialized)
+            {
+                initializeSerializer();
+            }
+
             using (var writer = new JTokenWriter())
             {
                 serializer.Serialize(writer, data);
@@ -63,6 +81,38 @@ namespace RoboScapeSimulator
             simulation.RayCast(origin, direction, maxRange / 100f, ref hitHandler);
             simulation.BufferPool.Return(ref results);
             return intersectionCount > 0;
+        }
+
+        private class SmallerFloatFormatConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(float) || objectType == typeof(double) || objectType == typeof(Half);
+            }
+
+            public override void WriteJson(JsonWriter writer, object value,
+                                           JsonSerializer serializer)
+            {
+                if (MathF.Abs((float)value) < 0.0001f)
+                {
+                    writer.WriteValue("0");
+                }
+                else
+                {
+                    writer.WriteValue(string.Format("{0:G5}", value));
+                }
+            }
+
+            public override bool CanRead
+            {
+                get { return false; }
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType,
+                                         object existingValue, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 

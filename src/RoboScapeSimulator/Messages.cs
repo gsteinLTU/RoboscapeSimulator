@@ -32,10 +32,10 @@ namespace RoboScapeSimulator
         /// </summary>
         internal static void SendUpdate(SocketIOSocket socket, Room room, bool isFullUpdate = false)
         {
-            Dictionary<string, object> updateData = room.SimInstance.GetBodies(!isFullUpdate);
+            Dictionary<string, object> updateData = room.SimInstance.GetBodies(!isFullUpdate, isFullUpdate);
             updateData.Add("time", room.SimInstance.Time);
 
-            Utils.sendAsJSON(socket, isFullUpdate ? "fullUpdate" : "update", updateData);
+            Utils.sendAsJSON(socket, isFullUpdate ? "fullUpdate" : "u", updateData);
         }
 
         internal static void HandleJoinRoom(JToken[] args, SocketIOSocket socket, IDictionary<string, Room> rooms, ref string socketRoom)
