@@ -16,7 +16,7 @@ namespace RoboScapeSimulator.Environments
         }
         IoTScapeObject? cubeObject;
 
-        TransformSensor? locationSensor;
+        PositionSensor? locationSensor;
 
         public override object Clone()
         {
