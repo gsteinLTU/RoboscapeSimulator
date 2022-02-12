@@ -93,13 +93,13 @@ namespace RoboScapeSimulator
             public override void WriteJson(JsonWriter writer, object value,
                                            JsonSerializer serializer)
             {
-                if (MathF.Abs((float)value) < 0.0001f)
+                if (MathF.Abs((float)value) < 0.001f)
                 {
                     writer.WriteValue("0");
                 }
                 else
                 {
-                    writer.WriteValue(string.Format("{0:G5}", value));
+                    writer.WriteValue(string.Format("{0:G" + (int)Math.Max(4, Math.Round(4 + MathF.Log10(MathF.Abs((float)value)))) + "}", value));
                 }
             }
 

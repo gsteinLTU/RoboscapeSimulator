@@ -107,7 +107,7 @@ namespace RoboScapeSimulator
                 {
                     output.Add(entity.Name, new BodyInfo
                     {
-                        label = entity.Name,
+                        label = allData ? entity.Name : null,
                         pos = {
                         x = dynamicEntity.BodyReference.Pose.Position.X,
                         y = dynamicEntity.BodyReference.Pose.Position.Y,
@@ -131,11 +131,11 @@ namespace RoboScapeSimulator
     [Serializable]
     public struct BodyInfo
     {
-        public string label;
+        public string? label;
         public Vec3 pos;
         public Vec3 vel;
         public Quaternion angle;
-        public float anglevel;
+        public float? anglevel;
         public float? width;
         public float? height;
         public float? depth;
