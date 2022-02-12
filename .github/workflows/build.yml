@@ -20,7 +20,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -c Release
     - name: Test
-      run: dotnet test --no-build --verbosity normal --filter "Category!=LongRunning"
+      run: dotnet test --verbosity normal --filter "Category!=LongRunning"
     - name: Build
       run: dotnet publish --no-restore -c Release
     - name: Set up QEMU

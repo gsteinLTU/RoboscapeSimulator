@@ -1,8 +1,6 @@
-using System;
-
 using IoTScapeCommandCallback = System.Func<string[], string[]>;
 
-namespace IoTScape
+namespace RoboScapeSimulator.IoTScape
 {
     public class IoTScapeObject
     {

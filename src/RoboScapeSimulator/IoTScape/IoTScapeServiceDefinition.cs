@@ -1,4 +1,4 @@
-namespace IoTScape
+namespace RoboScapeSimulator.IoTScape
 {
     [Serializable]
     public class IoTScapeServiceDefinition
