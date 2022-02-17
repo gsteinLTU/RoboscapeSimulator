@@ -10,7 +10,7 @@ namespace RoboScapeSimulator.Entities.Robots
     /// <summary>
     /// Base class for any RoboScape robot, subclasses must implement actuators/sensors
     /// </summary>
-    abstract class Robot : DynamicEntity, IResettable
+    public abstract class Robot : DynamicEntity, IResettable
     {
         /// <summary>
         /// Reference to the simulation this robot is inside of
@@ -153,7 +153,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <summary>
         /// Methods to use as handlers for message types received by this robot
         /// </summary>
-        private readonly Dictionary<char, Action<byte[]>> messageHandlers = new();
+        public readonly Dictionary<char, Action<byte[]>> MessageHandlers = new();
 
         /// <summary>
         /// Add a message handler for a certain message type
@@ -162,12 +162,12 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <param name="onMessage">Function to run when message is received, input to function is message as byte array</param>
         public void AddHandler(char messageCode, Action<byte[]> onMessage)
         {
-            if (messageHandlers.ContainsKey(messageCode))
+            if (MessageHandlers.ContainsKey(messageCode))
             {
                 throw new Exception($"Message code {messageCode} already has handler assigned");
             }
 
-            messageHandlers.Add(messageCode, onMessage);
+            MessageHandlers.Add(messageCode, onMessage);
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <param name="messageCode">char code of message type</param>
         public void RemoveHandler(char messageCode)
         {
-            messageHandlers.Remove(messageCode);
+            MessageHandlers.Remove(messageCode);
         }
 
         private void SetupRobot()
@@ -296,16 +296,16 @@ namespace RoboScapeSimulator.Entities.Robots
 
                 // Pass message to handler, if exists
                 char messageCode = (char)msg[0];
-                if (messageHandlers.ContainsKey(messageCode))
+                if (MessageHandlers.ContainsKey(messageCode))
                 {
                     if (nonDelayedMessages.Contains(messageCode))
                     {
-                        messageHandlers[messageCode](msg);
+                        MessageHandlers[messageCode](msg);
                     }
                     else if (MinTimeBetweenMessages <= 0 || time.Elapsed.TotalSeconds - lastMessageTime > MinTimeBetweenMessages)
                     {
                         lastMessageTime = (float)time.Elapsed.TotalSeconds;
-                        messageHandlers[messageCode](msg);
+                        MessageHandlers[messageCode](msg);
                     }
                 }
                 else

@@ -11,8 +11,8 @@ namespace RoboScapeSimulator.Entities.Robots
 {
     /// <summary>
     /// Robot subtype based on the Parallax ActivityBot 360 used in physical classrooms
-    /// </summary>
-    class ParallaxRobot : Robot
+    /// </summary> 
+    public class ParallaxRobot : Robot
     {
         public BodyHandle LWheel;
         public ConstraintHandle LMotor;
@@ -33,12 +33,12 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <summary>
         /// Encoder value for left wheel
         /// </summary>
-        private double leftTicks = 0;
+        public double LeftTicks = 0;
 
         /// <summary>
         /// Encoder value for right wheel
         /// </summary>
-        private double rightTicks = 0;
+        public double RightTicks = 0;
 
         /// <summary>
         /// Modes the robot can be in:
@@ -220,8 +220,8 @@ namespace RoboScapeSimulator.Entities.Robots
             });
             //rightWheelMotor.targetVelocity = 360 * rightSpeed / 60;
 
-            leftTicks += leftSpeed * dt;
-            rightTicks += rightSpeed * dt;
+            LeftTicks += leftSpeed * dt;
+            RightTicks += rightSpeed * dt;
 
             // Keep track of ticks for set distance
             if (driveState == DriveState.SetDistance)
@@ -396,12 +396,12 @@ namespace RoboScapeSimulator.Entities.Robots
             // Create response message
             byte[] messageBytes = new byte[9];
             messageBytes[0] = (byte)'T';
-            BitConverter.GetBytes((int)leftTicks).CopyTo(messageBytes, 1);
-            BitConverter.GetBytes((int)rightTicks).CopyTo(messageBytes, 5);
+            BitConverter.GetBytes((int)LeftTicks).CopyTo(messageBytes, 1);
+            BitConverter.GetBytes((int)RightTicks).CopyTo(messageBytes, 5);
 
             SendRoboScapeMessage(messageBytes);
 
-            Console.WriteLine($"Get Ticks {leftTicks} {rightTicks}");
+            Console.WriteLine($"Get Ticks {LeftTicks} {RightTicks}");
         }
 
         #endregion
@@ -440,8 +440,8 @@ namespace RoboScapeSimulator.Entities.Robots
             base.Reset();
 
             ResetSpeed();
-            leftTicks = 0;
-            rightTicks = 0;
+            LeftTicks = 0;
+            RightTicks = 0;
             leftDistance = 0;
             rightDistance = 0;
 
