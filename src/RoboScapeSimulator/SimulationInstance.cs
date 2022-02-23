@@ -10,16 +10,16 @@ namespace RoboScapeSimulator
         /// <summary>
         /// References to static bodies in the scene
         /// </summary>
-        internal Dictionary<string, StaticReference> NamedStatics = new();
+        public Dictionary<string, StaticReference> NamedStatics = new();
 
         /// <summary>
         /// References to moving bodies in the scene
         /// </summary>
-        internal Dictionary<string, BodyReference> NamedBodies = new();
+        public Dictionary<string, BodyReference> NamedBodies = new();
 
-        internal List<Entity> Entities = new();
+        public List<Entity> Entities = new();
 
-        internal IEnumerable<Robot> Robots => Entities.Where(e => e is Robot).Cast<Robot>();
+        public IEnumerable<Robot> Robots => Entities.Where(e => e is Robot).Cast<Robot>();
 
         public Simulation Simulation;
 

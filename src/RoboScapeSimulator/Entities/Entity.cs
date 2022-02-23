@@ -61,6 +61,8 @@ namespace RoboScapeSimulator.Entities
     [Serializable]
     public struct VisualInfo
     {
+        public VisualInfo() { }
+
         [JsonProperty("model")]
         public string ModelName = "";
 
