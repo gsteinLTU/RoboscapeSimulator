@@ -35,7 +35,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     // Socket.io setup
     server.OnConnection((SocketIOSocket socket) =>
     {
-        string socketRoom = "";
+        string? socketRoom = "";
 
         Console.WriteLine("Client connected!");
 
@@ -49,13 +49,22 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
             }
         });
 
+        // Cleanup a bit on disconnect
+        socket.On("leaveRoom", () =>
+        {
+            if (socketRoom != null)
+            {
+                Console.WriteLine("Client left room!");
+                rooms[socketRoom].RemoveSocket(socket);
+                socketRoom = null;
+            }
+        });
+
         // Send room info
         socket.On("getRooms", (JToken[] args) =>
         {
             var user = (string)args[0];
-            Console.WriteLine("init " + user);
             Messages.SendUserRooms(socket, user, rooms);
-            Console.WriteLine("init2 " + user);
         });
 
         socket.On("joinRoom", (JToken[] args) =>

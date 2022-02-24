@@ -84,7 +84,7 @@ public class RobotTests
         Assert.InRange(robot.LeftTicks, 1d, double.PositiveInfinity);
         Assert.InRange(robot.RightTicks, 1d, double.PositiveInfinity);
 
-        robot.Reset();
+        testRoom.ResetRobot(robot.ID);
 
         for (int i = 0; i < 60; i++)
         {
@@ -113,10 +113,10 @@ public class RobotTests
             testRoom.Update(1.0f / 60.0f);
         }
 
+        Vector3 initialPosition = new(robot.BodyReference.Pose.Position.X, robot.BodyReference.Pose.Position.Y, robot.BodyReference.Pose.Position.Z);
+
         // Send set speed 100 100
         robot.MessageHandlers['S'](new byte[] { (byte)'S', 0x64, 0, 0x64, 0 });
-
-        Vector3 initialPosition = new(robot.BodyReference.Pose.Position.X, robot.BodyReference.Pose.Position.Y, robot.BodyReference.Pose.Position.Z);
 
         for (int i = 0; i < 250; i++)
         {
@@ -131,7 +131,7 @@ public class RobotTests
         Assert.InRange(robot.LeftTicks, 1d, double.PositiveInfinity);
         Assert.InRange(robot.RightTicks, 1d, double.PositiveInfinity);
 
-        robot.Reset();
+        testRoom.ResetRobot(robot.ID);
 
         for (int i = 0; i < 60; i++)
         {

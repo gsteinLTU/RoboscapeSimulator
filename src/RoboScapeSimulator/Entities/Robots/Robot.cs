@@ -338,6 +338,7 @@ namespace RoboScapeSimulator.Entities.Robots
             BodyReference.Velocity.Angular = new Vector3();
 
             time.Restart();
+            lastMessageTime = 0;
             SendRoboScapeMessage(new byte[] { (byte)'I' });
 
             Console.WriteLine($"Reset Robot");

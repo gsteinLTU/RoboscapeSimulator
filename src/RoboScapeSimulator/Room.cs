@@ -196,6 +196,10 @@ namespace RoboScapeSimulator
         private void handleResetRobot(JToken[] args)
         {
             string robotID = args[0].ToString();
+            ResetRobot(robotID);
+        }
+
+        public void ResetRobot(string robotID){
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot != null)
             {
