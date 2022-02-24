@@ -16,7 +16,7 @@ namespace RoboScapeSimulator.Entities
             Name = $"ground_{ID++}";
             VisualInfo = visualInfo;
             var simulationInstance = room.SimInstance;
-            var groundHandle = simulationInstance.Simulation.Statics.Add(new StaticDescription(position ?? new Vector3(0, -thickness / 2, 0), new CollidableDescription(simulationInstance.Simulation.Shapes.Add(new Box(xsize, thickness, zsize)), 0.1f)));
+            var groundHandle = simulationInstance.Simulation.Statics.Add(new StaticDescription(position ?? new Vector3(0, -thickness / 2, 0), simulationInstance.Simulation.Shapes.Add(new Box(xsize, thickness, zsize))));
             StaticReference = simulationInstance.Simulation.Statics.GetStaticReference(groundHandle);
 
             room.SimInstance.NamedStatics.Add(Name, StaticReference);

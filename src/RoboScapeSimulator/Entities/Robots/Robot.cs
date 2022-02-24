@@ -71,7 +71,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 box = new Box(tempSize.Z, tempSize.Y, tempSize.X);
             }
 
-            box.ComputeInertia(mass, out var boxInertia);
+            var boxInertia = box.ComputeInertia(mass);
 
             var bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(position ?? new Vector3(rng.Next(-5, 5), spawnHeight, rng.Next(-5, 5)), boxInertia, new CollidableDescription(simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
             BodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
