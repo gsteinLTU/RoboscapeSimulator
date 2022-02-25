@@ -42,7 +42,7 @@ namespace RoboScapeSimulator.Entities
             var simulationInstance = room.SimInstance;
             var rng = new Random();
             var box = new Box(width, height, depth);
-            box.ComputeInertia(2, out var boxInertia);
+            var boxInertia = box.ComputeInertia(2);
 
             BodyHandle bodyHandle;
             Vector3 position = initialPosition ?? new Vector3(rng.Next(-5, 5), rng.Next(3, 5), rng.Next(-5, 5));

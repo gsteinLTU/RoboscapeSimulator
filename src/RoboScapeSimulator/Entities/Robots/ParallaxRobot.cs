@@ -65,11 +65,11 @@ namespace RoboScapeSimulator.Entities.Robots
             CreateHandlers();
 
             var wheelShape = new Cylinder(0.03f, .01f);
-            wheelShape.ComputeInertia(0.25f, out var wheelInertia);
+            var wheelInertia = wheelShape.ComputeInertia(0.25f);
             var wheelShapeIndex = simulation.Shapes.Add(wheelShape);
 
             var rearWheelShape = new Sphere(0.01f);
-            rearWheelShape.ComputeInertia(0.25f, out var rearWheelInertia);
+            var rearWheelInertia = rearWheelShape.ComputeInertia(0.25f);
             var rearWheelShapeIndex = simulation.Shapes.Add(rearWheelShape);
 
             float wheelDistX = 0.05f;
