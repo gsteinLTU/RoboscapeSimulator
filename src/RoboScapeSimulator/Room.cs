@@ -1,7 +1,9 @@
 using Newtonsoft.Json.Linq;
+using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.Environments;
 using SocketIOSharp.Server.Client;
+using WebSocketSharp;
 
 namespace RoboScapeSimulator
 {
@@ -38,7 +40,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Time (in seconds) without interaction this room will stay alive for, default 15 minutes
         /// </summary>
-        public float Timeout = 60 * 30;
+        public float Timeout = 60 * 15;
 
         /// <summary>
         /// Previous time this Room was interacted with
@@ -65,6 +67,10 @@ namespace RoboScapeSimulator
         /// </summary>
         public event EventHandler? OnRoomClose;
 
+        /// <summary>
+        /// ID of the environment used to launch this Room
+        /// </summary>
+        public string EnvironmentID;
 
         /// <summary>
         /// Time elapsed in the simulation instance
@@ -119,6 +125,8 @@ namespace RoboScapeSimulator
                 Console.WriteLine($"Environment {environment} not found");
             }
             var env = Environments.Find((env) => env.ID == environment) ?? Environments[0];
+
+            EnvironmentID = env.ID;
 
             // Create instance of requested environment
             environmentConfiguration = (EnvironmentConfiguration?)env.Clone();
@@ -190,6 +198,7 @@ namespace RoboScapeSimulator
             LastInteractionTime = DateTime.Now;
             activeSockets.Add(socket);
             socket.On("resetRobot", handleResetRobot);
+            socket.On("resetAll", handleResetAll);
             socket.On("robotButton", handleRobotButton);
         }
 
@@ -199,15 +208,14 @@ namespace RoboScapeSimulator
             ResetRobot(robotID);
         }
 
-        public void ResetRobot(string robotID){
-            Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
-            if (robot != null)
+        private void handleResetAll(JToken[] args)
+        {
+            foreach (var entity in SimInstance.Entities)
             {
-                robot.Reset();
-            }
-            else
-            {
-                Console.WriteLine("Attempt to reset unknown robot " + robot);
+                if (entity is IResettable resettable)
+                {
+                    resettable.Reset();
+                }
             }
         }
 
@@ -223,12 +231,30 @@ namespace RoboScapeSimulator
         }
 
         /// <summary>
+        /// Reset a robot based on its ID
+        /// </summary>
+        /// <param name="robotID">ID of robot to reset</param>
+        public void ResetRobot(string robotID)
+        {
+            Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
+            if (robot != null)
+            {
+                robot.Reset();
+            }
+            else
+            {
+                Console.WriteLine("Attempt to reset unknown robot " + robot);
+            }
+        }
+
+        /// <summary>
         /// Removes a socket from active list and removes message listeners
         /// </summary>
         /// <param name="socket">Socket to remove from active sockets list</param>
         internal void RemoveSocket(SocketIOSocket socket)
         {
             socket.Off("resetRobot", handleResetRobot);
+            socket.Off("resetAll", handleResetAll);
             socket.Off("robotButton", handleRobotButton);
             socket.Emit("roomLeft");
             activeSockets.Remove(socket);
@@ -271,6 +297,42 @@ namespace RoboScapeSimulator
                 // Wake up if sleeping
                 Hibernating = false;
             }
+        }
+
+        /// <summary>
+        /// Client-relevant information about a Room
+        /// </summary>
+        [Serializable]
+        public struct RoomInfo
+        {
+            public string name;
+
+            public bool hasPassword;
+
+            public string environment;
+
+            public DateTime lastInteractionTime;
+
+            public bool isHibernating;
+
+            public string creator;
+        }
+
+        /// <summary>
+        /// Get the client-relevant information about this room
+        /// </summary>
+        /// <returns>Struct of information about this room</returns>
+        public RoomInfo GetRoomInfo()
+        {
+            return new RoomInfo()
+            {
+                name = Name,
+                creator = Creator ?? "",
+                environment = EnvironmentID,
+                hasPassword = !Password.IsNullOrEmpty(),
+                isHibernating = Hibernating,
+                lastInteractionTime = LastInteractionTime
+            };
         }
 
         /// <summary>
