@@ -284,7 +284,9 @@ namespace RoboScapeSimulator
             new IoTScapeExampleEnvironment2(),
             new TableEnvironment(),
             new TableEnvironment(3, 2),
-            new WallEnvironment()
+            new WallEnvironment(),
+            new PositionSensorDemo(),
+            new PositionSensorDemo(2)
         };
 
         public DateTime LastInteractionTime

@@ -1,7 +1,11 @@
 using BepuPhysics;
+using RoboScapeSimulator.Entities.Robots;
 
 namespace RoboScapeSimulator.IoTScape.Devices
 {
+    /// <summary>
+    /// An IoTScape sensor that provides access to a body's position and yaw
+    /// </summary>
     class PositionSensor : IoTScapeObject
     {
         static readonly IoTScapeServiceDefinition definition = definition = new IoTScapeServiceDefinition(
@@ -50,6 +54,18 @@ namespace RoboScapeSimulator.IoTScape.Devices
             },
             new Dictionary<string, IoTScapeEventDescription>());
 
+
+        /// <summary>
+        /// Create PositionSensor attached to a Robot
+        /// </summary>
+        /// <param name="robot">Robot to attach sensor to</param>
+        public PositionSensor(Robot robot) : this(robot.BodyReference, robot.ID) { }
+
+        /// <summary>
+        /// Create a PositionSensor tracking a BodyReference
+        /// </summary>
+        /// <param name="trackedBody">Body to track position/heading of</param>
+        /// <param name="id">ID to assign sensor</param>
         public PositionSensor(BodyReference trackedBody, string? id = null) : base(definition, id)
         {
             Methods["getX"] = (string[] args) =>

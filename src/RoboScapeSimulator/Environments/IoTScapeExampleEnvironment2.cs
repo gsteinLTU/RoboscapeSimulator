@@ -42,7 +42,7 @@ namespace RoboScapeSimulator.Environments
 
             var barrel = new Cube(room, initialPosition: new Vector3(3, 0, 3), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { ModelName = "barrel.gltf", ModelScale = 0.4f }, isKinematic: true);
 
-            locationSensor = new(robot.BodyReference, robot.ID);
+            locationSensor = new(robot);
             locationSensor.Setup(room);
 
             IoTScapeServiceDefinition radiationSensorDefinition = new(
