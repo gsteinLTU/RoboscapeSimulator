@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using BepuPhysics;
 using BepuPhysics.Collidables;
@@ -285,7 +286,7 @@ namespace RoboScapeSimulator.Entities.Robots
         {
             if (msg.Length < 5)
             {
-                Console.WriteLine("Drive message too short!");
+                Debug.WriteLine("Drive message too short!");
                 return;
             }
 
@@ -300,14 +301,14 @@ namespace RoboScapeSimulator.Entities.Robots
 
             driveState = DriveState.SetDistance;
 
-            Console.WriteLine($"Drive {left} {right}");
+            Debug.WriteLine($"Drive {left} {right}");
         }
 
         public void OnSetSpeed(byte[] msg)
         {
             if (msg.Length < 5)
             {
-                Console.WriteLine("Set Speed message too short!");
+                Debug.WriteLine("Set Speed message too short!");
                 return;
             }
 
@@ -316,16 +317,14 @@ namespace RoboScapeSimulator.Entities.Robots
 
             driveState = DriveState.SetSpeed;
 
-#if DEBUG
-            Console.WriteLine($"Set Speed {leftSpeed} {rightSpeed}");
-#endif
+            Debug.WriteLine($"Set Speed {leftSpeed} {rightSpeed}");
         }
 
         public void OnBeep(byte[] msg)
         {
             if (msg.Length < 5)
             {
-                Console.WriteLine("Beep message too short!");
+                Debug.WriteLine("Beep message too short!");
                 return;
             }
 
@@ -335,16 +334,14 @@ namespace RoboScapeSimulator.Entities.Robots
             // TODO: Send beep to client
             room.SendToClients("beep", new BeepData() { Robot = BytesToHexstring(MacAddress, ""), Duration = duration, Frequency = tone });
 
-#if DEBUG
-            Console.WriteLine($"Beep {duration} {tone}");
-#endif
+            Debug.WriteLine($"Beep {duration} {tone}");
         }
 
         public void OnSetLED(byte[] msg)
         {
             if (msg.Length < 3)
             {
-                Console.WriteLine("Set LED message too short!");
+                Debug.WriteLine("Set LED message too short!");
                 return;
             }
 
@@ -353,9 +350,7 @@ namespace RoboScapeSimulator.Entities.Robots
             var which = msg[1];
             var status = msg[2];
 
-#if DEBUG
-            Console.WriteLine($"Set LED {which} {status}");
-#endif
+            Debug.WriteLine($"Set LED {which} {status}");
         }
 
         unsafe public void OnGetRange(byte[] msg)
@@ -386,9 +381,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
             SendRoboScapeMessage(messageBytes);
 
-#if DEBUG
-            Console.WriteLine($"Get Range {distance}");
-#endif
+            Debug.WriteLine($"Get Range {distance}");
         }
 
         public void OnGetTicks(byte[] msg)
@@ -401,7 +394,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
             SendRoboScapeMessage(messageBytes);
 
-            Console.WriteLine($"Get Ticks {LeftTicks} {RightTicks}");
+            Debug.WriteLine($"Get Ticks {LeftTicks} {RightTicks}");
         }
 
         #endregion
@@ -414,7 +407,7 @@ namespace RoboScapeSimulator.Entities.Robots
             messageBytes[1] = (byte)(status ? 0 : 1);
 
             SendRoboScapeMessage(messageBytes);
-            Console.WriteLine($"Button Sent");
+            Debug.WriteLine($"Button Sent");
         }
 
         /// <summary>

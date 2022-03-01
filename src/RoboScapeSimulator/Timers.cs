@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -68,7 +69,7 @@ namespace RoboScapeSimulator
 
                 if (oldRooms.Count > 0)
                 {
-                    Console.WriteLine($"Removing {oldRooms.Count} old rooms");
+                    Trace.WriteLine($"Removing {oldRooms.Count} old rooms");
                     oldRooms.ForEach(pair => rooms.TryRemove(pair));
                 }
             };

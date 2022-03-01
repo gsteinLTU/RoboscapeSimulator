@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using SocketIOSharp.Server.Client;
 
@@ -93,7 +94,7 @@ namespace RoboScapeSimulator
             {
                 // Join failed
                 Utils.sendAsJSON(socket, "roomJoined", false);
-                Console.WriteLine("Failed attempt to join room " + roomID);
+                Trace.WriteLine("Failed attempt to join room " + roomID);
             }
         }
     }

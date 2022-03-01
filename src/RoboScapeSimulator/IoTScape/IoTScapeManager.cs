@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -43,7 +44,7 @@ namespace RoboScapeSimulator.IoTScape
         void announce(IoTScapeObject o)
         {
             string serviceJson = JsonConvert.SerializeObject(new Dictionary<string, IoTScapeServiceDefinition>() { { o.Definition.name, o.Definition } });
-            Console.WriteLine($"Announcing service {o.Definition.name} from object with ID {o.Definition.id}");
+            Trace.WriteLine($"Announcing service {o.Definition.name} from object with ID {o.Definition.id}");
 
             _socket.SendTo(serviceJson.Select(c => (byte)c).ToArray(), SocketFlags.None, hostEndPoint);
         }
@@ -65,7 +66,7 @@ namespace RoboScapeSimulator.IoTScape
         {
             if (IsRegistered(o))
             {
-                Console.WriteLine("IoTScapeObject " + o.Definition.name + ":" + o.Definition.id + " already registered.");
+                Trace.WriteLine("IoTScapeObject " + o.Definition.name + ":" + o.Definition.id + " already registered.");
                 return o.Definition.id ?? "";
             }
 
@@ -150,7 +151,7 @@ namespace RoboScapeSimulator.IoTScape
 
                 var json = JsonSerializer.Create();
                 IoTScapeRequest request = json.Deserialize<IoTScapeRequest>(new JsonTextReader(new StringReader(incomingString)));
-                Console.WriteLine(request);
+                Debug.WriteLine(request);
 
                 // Verify device exists
                 if (objects.ContainsKey(request.service + ":" + request.device))
@@ -211,7 +212,7 @@ namespace RoboScapeSimulator.IoTScape
             string responseJson = JsonConvert.SerializeObject(response,
                 new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            Console.WriteLine(responseJson);
+            Debug.WriteLine(responseJson);
 
             _socket.SendTo(responseJson.Select(c => (byte)c).ToArray(), SocketFlags.None, hostEndPoint);
         }

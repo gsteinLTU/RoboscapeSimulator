@@ -8,7 +8,8 @@ using SocketIOSharp.Common;
 using SocketIOSharp.Server;
 using SocketIOSharp.Server.Client;
 
-Console.WriteLine("Starting RoboScapeSimulator...");
+Trace.Listeners.Add(new ConsoleTraceListener());
+Trace.WriteLine("Starting RoboScapeSimulator...");
 
 /// <summary>
 /// Frequency to send update messages to users
@@ -37,12 +38,12 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     {
         string? socketRoom = "";
 
-        Console.WriteLine("Client connected!");
+        Trace.WriteLine("Client connected!");
 
         // Cleanup a bit on disconnect
         socket.On(SocketIOEvent.DISCONNECT, () =>
         {
-            Console.WriteLine("Client disconnected!");
+            Trace.WriteLine("Client disconnected!");
             if (socketRoom != null)
             {
                 rooms[socketRoom].RemoveSocket(socket);
@@ -54,7 +55,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
         {
             if (socketRoom != null)
             {
-                Console.WriteLine("Client left room!");
+                Trace.WriteLine("Client left room!");
                 rooms[socketRoom].RemoveSocket(socket);
                 socketRoom = null;
             }
@@ -78,7 +79,7 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
     Stopwatch stopwatch = new();
     stopwatch.Start();
 
-    Console.WriteLine("Server started");
+    Trace.WriteLine("Server started");
 
     // Client update loops
     var clientUpdateTimer = Timers.CreateClientUpdateTimer(updateFPS, rooms);

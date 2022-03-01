@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
@@ -25,7 +26,7 @@ namespace RoboScapeSimulator.Environments
 
         public override void Setup(Room room)
         {
-            Console.WriteLine("Setting up PositionSensor Demo environment");
+            Trace.WriteLine("Setting up PositionSensor Demo environment");
 
             // Ground
             var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });

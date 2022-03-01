@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
@@ -116,13 +117,13 @@ namespace RoboScapeSimulator
         /// <param name="environment">ID of EnvironmentConfiguration to setup this Room with</param>
         public Room(string name = "", string password = "", string environment = "default")
         {
-            Console.WriteLine($"Setting up room {name} with environment {environment}");
+            Trace.WriteLine($"Setting up room {name} with environment {environment}");
             SimInstance = new SimulationInstance();
 
             // Find requested environment (or use default)
             if (!Environments.Any((env) => env.ID == environment))
             {
-                Console.WriteLine($"Environment {environment} not found");
+                Trace.WriteLine($"Environment {environment} not found");
             }
             var env = Environments.Find((env) => env.ID == environment) ?? Environments[0];
 
@@ -153,7 +154,7 @@ namespace RoboScapeSimulator
 
             LastInteractionTime = DateTime.Now;
 
-            Console.WriteLine("Room " + Name + " created.");
+            Trace.WriteLine("Room " + Name + " created.");
         }
 
         public void Dispose()
@@ -243,7 +244,7 @@ namespace RoboScapeSimulator
             }
             else
             {
-                Console.WriteLine("Attempt to reset unknown robot " + robot);
+                Trace.WriteLine("Attempt to reset unknown robot " + robot);
             }
         }
 
@@ -357,7 +358,7 @@ namespace RoboScapeSimulator
                     RemoveSocket(activeSockets[0]);
                 }
 
-                Console.WriteLine($"Room {Name} is now hibernating");
+                Trace.WriteLine($"Room {Name} is now hibernating");
                 return;
             }
 
