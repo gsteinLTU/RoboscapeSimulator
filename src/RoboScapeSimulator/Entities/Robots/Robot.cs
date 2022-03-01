@@ -193,7 +193,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 MacAddress = GenerateRandomMAC();
             }
 
-            Console.WriteLine($"Creating robot with MAC {BytesToHexstring(MacAddress, ":")} at initial position {_initialPosition}");
+            Trace.WriteLine($"Creating robot with MAC {BytesToHexstring(MacAddress, ":")} at initial position {_initialPosition}");
         }
 
         /// <summary>
@@ -255,9 +255,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 messageBytes.CopyTo(finalMessageBytes, 10);
             }
 
-#if DEBUG
-            Console.WriteLine(BytesToHexstring(finalMessageBytes));
-#endif
+            Debug.WriteLine(BytesToHexstring(finalMessageBytes));
 
             socket?.SendAsync(finalMessageBytes, finalMessageBytes.Length);
         }
@@ -288,9 +286,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 IPEndPoint? remoteEP = null;
                 var msg = socket.Receive(ref remoteEP);
 
-#if DEBUG
-                Console.WriteLine($"Message from {remoteEP.Address}: {BytesToHexstring(msg)}");
-#endif
+                Debug.WriteLine($"Message from {remoteEP.Address}: {BytesToHexstring(msg)}");
 
                 room.LastInteractionTime = DateTime.Now;
 
@@ -310,7 +306,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 }
                 else
                 {
-                    Console.WriteLine($"No message handler for message with code {messageCode}");
+                    Trace.WriteLine($"No message handler for message with code {messageCode}");
                 }
 
                 // Return message to server
@@ -341,7 +337,7 @@ namespace RoboScapeSimulator.Entities.Robots
             lastMessageTime = 0;
             SendRoboScapeMessage(new byte[] { (byte)'I' });
 
-            Console.WriteLine($"Reset Robot");
+            Debug.WriteLine($"Reset Robot");
         }
     }
 }

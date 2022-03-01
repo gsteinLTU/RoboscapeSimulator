@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 namespace RoboScapeSimulator.Environments
@@ -18,7 +19,7 @@ namespace RoboScapeSimulator.Environments
 
         public override void Setup(Room room)
         {
-            Console.WriteLine("Setting up default environment");
+            Trace.WriteLine("Setting up default environment");
 
             // Ground
             var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });

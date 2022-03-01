@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
@@ -25,7 +26,7 @@ namespace RoboScapeSimulator.Environments
 
         public override void Setup(Room room)
         {
-            Console.WriteLine("Setting up IoTScape Example 2 environment");
+            Trace.WriteLine("Setting up IoTScape Example 2 environment");
 
             // Ground
             var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
@@ -42,7 +43,7 @@ namespace RoboScapeSimulator.Environments
 
             var barrel = new Cube(room, initialPosition: new Vector3(3, 0, 3), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { ModelName = "barrel.gltf", ModelScale = 0.4f }, isKinematic: true);
 
-            locationSensor = new(robot.BodyReference, robot.ID);
+            locationSensor = new(robot);
             locationSensor.Setup(room);
 
             IoTScapeServiceDefinition radiationSensorDefinition = new(

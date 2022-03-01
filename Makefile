@@ -9,4 +9,6 @@ watch:
 test:
 	dotnet test
 start:
-	dotnet run --project src/RoboScapeSimulator/RoboScapeSimulator.csproj
+	dotnet run -c Release --project src/RoboScapeSimulator/RoboScapeSimulator.csproj
+start-dev:
+	dotnet run -c Debug --project src/RoboScapeSimulator/RoboScapeSimulator.csproj

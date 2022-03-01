@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using SocketIOSharp.Server.Client;
 
@@ -13,7 +14,7 @@ namespace RoboScapeSimulator
         /// </summary>
         internal static void SendAvailableRooms(SocketIOSocket socket, IDictionary<string, Room> rooms)
         {
-            Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Keys }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
+            Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Select(room => room.Value.GetRoomInfo()) }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
             Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
         }
 
@@ -22,9 +23,7 @@ namespace RoboScapeSimulator
         /// </summary>
         internal static void SendUserRooms(SocketIOSocket socket, string user, IDictionary<string, Room> rooms)
         {
-            var userRooms = rooms.Where(pair => pair.Value.Creator == user).Select(pair => pair.Key).ToList();
-            Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", userRooms }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
-            Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
+            SendAvailableRooms(socket, rooms.Where(pair => pair.Value.Creator == user).ToDictionary(pair => pair.Key, pair => pair.Value));
         }
 
         /// <summary>
@@ -95,7 +94,7 @@ namespace RoboScapeSimulator
             {
                 // Join failed
                 Utils.sendAsJSON(socket, "roomJoined", false);
-                Console.WriteLine("Failed attempt to join room " + roomID);
+                Trace.WriteLine("Failed attempt to join room " + roomID);
             }
         }
     }

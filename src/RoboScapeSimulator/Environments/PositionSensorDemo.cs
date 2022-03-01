@@ -2,25 +2,31 @@ using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.IoTScape.Devices;
 namespace RoboScapeSimulator.Environments
 {
-    class DemoEnvironment : EnvironmentConfiguration
+    class PositionSensorDemo : EnvironmentConfiguration
     {
-        public DemoEnvironment()
+
+        uint _robots = 1;
+
+        public PositionSensorDemo(uint robots = 1)
         {
-            Name = "Demo 2021";
-            ID = "demo";
-            Description = "The demo environment";
+
+            Name = $"PositionSensor Demo With {robots} robot(s)";
+            ID = $"possensor_{robots}r";
+            Description = "PositionSensor environment";
+            _robots = robots;
         }
 
         public override object Clone()
         {
-            return new DemoEnvironment();
+            return new PositionSensorDemo(_robots);
         }
 
         public override void Setup(Room room)
         {
-            Trace.WriteLine("Setting up demo 2021 environment");
+            Trace.WriteLine("Setting up PositionSensor Demo environment");
 
             // Ground
             var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
@@ -33,12 +39,12 @@ namespace RoboScapeSimulator.Environments
             var wall4 = new Cube(room, 1, 1, wallsize + 1, new Vector3(wallsize / 2, 0.5f, 0), Quaternion.Identity, true, nameOverride: "wall4");
 
             // Demo robots
-            var robot = new ParallaxRobot(room);
-            var robot2 = new ParallaxRobot(room);
-
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < _robots; i++)
             {
-                var cube = new Cube(room, visualInfo: new VisualInfo() { Color = "#B85" });
+                var robot = new ParallaxRobot(room);
+
+                PositionSensor locationSensor = new(robot);
+                locationSensor.Setup(room);
             }
         }
     }

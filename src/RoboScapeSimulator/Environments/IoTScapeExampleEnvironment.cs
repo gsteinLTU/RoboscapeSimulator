@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
@@ -25,7 +26,7 @@ namespace RoboScapeSimulator.Environments
 
         public override void Setup(Room room)
         {
-            Console.WriteLine("Setting up IoTScape Example environment");
+            Trace.WriteLine("Setting up IoTScape Example environment");
 
             // Ground
             var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
@@ -96,7 +97,7 @@ namespace RoboScapeSimulator.Environments
                     z = float.Parse(args[2]);
                 }
 
-                Console.WriteLine($"Moving to {x}, {y}, {z}");
+                Debug.WriteLine($"Moving to {x}, {y}, {z}");
                 cube.BodyReference.Pose.Position = new Vector3(x, y, z);
                 cube.BodyReference.Awake = true;
 

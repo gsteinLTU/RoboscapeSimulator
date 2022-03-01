@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using BepuPhysics;
@@ -41,7 +42,7 @@ namespace RoboScapeSimulator
             using (var writer = new StringWriter())
             {
                 serializer.Serialize(writer, token);
-                Console.WriteLine(writer.ToString());
+                Debug.WriteLine(writer.ToString());
             }
         }
 
