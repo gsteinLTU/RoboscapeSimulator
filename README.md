@@ -11,6 +11,7 @@ In appsettings.json, a few options can be configured:
  - `RoboScapeSimSettings`
    - `RoboScapeHost` - Host of RoboScape instance to communicate with
    - `RoboScapePort` - Port to communicate with RoboScape instance on
+   - `IoTScapePort` - Port to communicate with IoTScape instance on
    - `MaxRooms` - Maximum number of rooms to allow users to create
 
 ## Current Scenarios
