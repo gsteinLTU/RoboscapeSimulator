@@ -6,18 +6,24 @@ const { hrtime } = require('process');
 
 const startTime = hrtime.bigint();
 reader.on('data', data => {
-    
+    // Data from other process
 });
-
-setInterval(()=> {}, 1000 * 60 * 60);
 
 const httpServer = require("http").createServer();
 const io = require("socket.io")(httpServer, {
-  
+    cors: {
+        origin: "*",
+        credentials: false
+    }
 });
 
 io.on("connection", (socket) => {
-    
+    // send socket connected message
+    writer.write("1" + socket.id + "\r\n");
+
+    socket.onAny((event, ...args) => {
+        writer.write("0" + socket.id + event + " " + JSON.stringify(args) + "\r\n");
+    });
 });
 
 httpServer.listen(9001);

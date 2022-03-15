@@ -11,6 +11,26 @@ using SocketIOSharp.Server.Client;
 Trace.Listeners.Add(new ConsoleTraceListener());
 Trace.WriteLine("Starting RoboScapeSimulator...");
 
+RoboScapeSimulator.Node.Server server = new();
+
+server.Start();
+
+server.OnConnection((socket) =>
+{
+    Trace.WriteLine("New socket connected: " + socket.ID);
+
+    socket.On("getRooms", (args) =>
+    {
+        Trace.WriteLine("Socket " + socket.ID + " requesting rooms for " + args[0]);
+    });
+});
+
+while (true)
+{
+
+}
+
+/*
 /// <summary>
 /// Frequency to send update messages to users
 /// </summary>
@@ -101,3 +121,4 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
         Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));
     }
 }
+*/

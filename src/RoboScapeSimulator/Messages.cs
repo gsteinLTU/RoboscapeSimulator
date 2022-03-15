@@ -45,6 +45,14 @@ namespace RoboScapeSimulator
                 rooms[socketRoom].RemoveSocket(socket);
             }
 
+            if (args.Length == 0 || args[0]["roomID"] == null)
+            {
+                // Invalid message
+                Utils.sendAsJSON(socket, "roomJoined", false);
+                Trace.WriteLine("Failed attempt to join room");
+                return;
+            }
+
             // Create room if requested
             string roomID = (string)args[0]["roomID"];
             if (roomID == "create")
