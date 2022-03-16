@@ -15,6 +15,11 @@ RoboScapeSimulator.Node.Server server = new();
 
 server.Start();
 
+
+JsonSerializer serializer = new();
+
+serializer.NullValueHandling = NullValueHandling.Ignore;
+
 server.OnConnection((socket) =>
 {
     Trace.WriteLine("New socket connected: " + socket.ID);
@@ -22,6 +27,18 @@ server.OnConnection((socket) =>
     socket.On("getRooms", (args) =>
     {
         Trace.WriteLine("Socket " + socket.ID + " requesting rooms for " + args[0]);
+
+        using (var writer = new JTokenWriter())
+        {
+            serializer.Serialize(writer, new Dictionary<string, object>());
+            socket.Emit("availableRooms", writer.Token);
+        }
+
+        using (var writer = new JTokenWriter())
+        {
+            serializer.Serialize(writer, Room.ListEnvironments());
+            socket.Emit("availableEnvironments", writer.Token);
+        }
     });
 });
 

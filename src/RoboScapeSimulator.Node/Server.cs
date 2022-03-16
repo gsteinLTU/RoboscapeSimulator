@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -95,7 +96,7 @@ public class Server
                         Trace.WriteLine(string.Concat("New Socket Connected: ", message.AsSpan(1)));
                         connectionCallbacks.ForEach(callback =>
                         {
-                            var socket = new Socket() { ID = message[1..] };
+                            var socket = new Socket(this, message[1..]);
 
                             if (!sockets.ContainsKey(socket.ID))
                             {
@@ -147,9 +148,12 @@ public class Server
         Message, SocketConnected
     }
 
-    internal void send()
+    internal void send(byte[] data)
     {
-
+        if (pipeWriter != null)
+        {
+            pipeWriter.Write(data, 0, data.Length);
+        }
     }
 }
 
@@ -158,11 +162,17 @@ public class Server
 /// </summary>
 public class Socket
 {
-    private Server? server;
+    internal Socket(Server server, string ID)
+    {
+        this.server = server;
+        this.ID = ID;
+    }
 
-    public string? ID;
+    internal Server server;
 
-    internal Dictionary<JToken, List<Action<JToken[]>>> callbacks = new();
+    public string ID;
+
+    internal readonly Dictionary<JToken, List<Action<JToken[]>>> callbacks = new();
 
     public void On(JToken eventName, Action<JToken[]> callback)
     {
@@ -176,7 +186,7 @@ public class Socket
         }
     }
 
-    private List<Action> onDisconnect = new();
+    private readonly List<Action> onDisconnect = new();
 
     public void OnDisconnect(Action callback)
     {
@@ -191,8 +201,14 @@ public class Socket
         }
     }
 
-    public void Emit(JToken eventName, JToken data)
+    public void Emit(string eventName, JToken data)
     {
-
+        string buffer = "0";
+        buffer += ID;
+        buffer += eventName;
+        buffer += " ";
+        buffer += data.ToString(Formatting.None);
+        buffer += "\r\n";
+        server.send(Encoding.Default.GetBytes(buffer));
     }
 }
