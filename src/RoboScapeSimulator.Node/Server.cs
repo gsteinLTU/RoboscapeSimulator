@@ -8,17 +8,30 @@ using Newtonsoft.Json.Linq;
 
 namespace RoboScapeSimulator.Node;
 
+/// <summary>
+/// Connection to Node.js-based communications program
+/// </summary>
 public class Server : IDisposable
 {
     List<Action<Socket>> connectionCallbacks = new();
 
+    /// <summary>
+    /// Add a callback run when a socket connects
+    /// </summary>
+    /// <param name="callback"></param>
     public void OnConnection(Action<Socket> callback)
     {
         connectionCallbacks.Add(callback);
     }
 
+    /// <summary>
+    /// Node.js process
+    /// </summary>
     Process? client;
 
+    /// <summary>
+    /// Thread handling input
+    /// </summary>
     Thread? processThread;
 
     AnonymousPipeServerStream? pipeWriter;
@@ -26,9 +39,16 @@ public class Server : IDisposable
 
     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
+    /// <summary>
+    /// Sockets known to this server
+    /// </summary>
     Dictionary<string, Socket> sockets = new();
+
     private bool disposedValue;
 
+    /// <summary>
+    /// Start the server
+    /// </summary>
     public void Start()
     {
         if (client != null && !client.HasExited)
@@ -40,8 +60,8 @@ public class Server : IDisposable
         pipeWriter = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, 0x8000);
         pipeReader = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable, 0x8000);
 
+        // Start Node.js process
         client = new Process();
-
         client.StartInfo.FileName = "node";
         client.StartInfo.Arguments = "./src/node/index.js " + pipeWriter.GetClientHandleAsString() + " " + pipeReader.GetClientHandleAsString();
         client.StartInfo.UseShellExecute = false;
@@ -184,18 +204,37 @@ public class Server : IDisposable
 /// </summary>
 public class Socket
 {
+    /// <summary>
+    /// Create a new Socket
+    /// </summary>
+    /// <param name="server">Server this socket belongs to</param>
+    /// <param name="ID">ID of this socket</param>
     internal Socket(Server server, string ID)
     {
         this.server = server;
         this.ID = ID;
     }
 
+    /// <summary>
+    /// The server this Socket belongs to
+    /// </summary>
     internal Server server;
 
+    /// <summary>
+    /// ID of this Socket
+    /// </summary>
     public string ID;
 
+    /// <summary>
+    /// Callbacks for message types
+    /// </summary>
     internal readonly Dictionary<JToken, List<Action<JToken[]>>> callbacks = new();
 
+    /// <summary>
+    /// Add a callback for an event
+    /// </summary>
+    /// <param name="eventName">Name of event</param>
+    /// <param name="callback">Callback to run when event occurs</param>
     public void On(JToken eventName, Action<JToken[]> callback)
     {
         if (callbacks.ContainsKey(eventName))
@@ -208,6 +247,11 @@ public class Socket
         }
     }
 
+    /// <summary>
+    /// Add a callback for an event
+    /// </summary>
+    /// <param name="eventName">Name of event</param>
+    /// <param name="callback">Callback to run when event occurs</param>
     public void On(JToken eventName, Action callback)
     {
         On(eventName, (JToken[] args) => callback());
@@ -215,11 +259,20 @@ public class Socket
 
     private readonly List<Action> onDisconnect = new();
 
+    /// <summary>
+    /// Setup a callback to run when this Socket disconnects
+    /// </summary>
+    /// <param name="callback">Callback to run when socket disconnects</param>
     public void OnDisconnect(Action callback)
     {
         onDisconnect.Add(callback);
     }
 
+    /// <summary>
+    /// Remove a callback from an event
+    /// </summary>
+    /// <param name="eventName">Event to remove callback from</param>
+    /// <param name="callback">Callback to remove</param>
     public void Off(JToken eventName, Action<JToken[]> callback)
     {
         if (callbacks.ContainsKey(eventName))
@@ -228,6 +281,11 @@ public class Socket
         }
     }
 
+    /// <summary>
+    /// Send an event to the client of this Socket
+    /// </summary>
+    /// <param name="eventName">Name of event to emit</param>
+    /// <param name="data">Data to send</param>
     public void Emit(string eventName, JToken data)
     {
         string buffer = "0";
@@ -238,6 +296,10 @@ public class Socket
         server.send(buffer);
     }
 
+    /// <summary>
+    /// Send an event to the client of this Socket
+    /// </summary>
+    /// <param name="eventName">Name of event to emit</param>
     public void Emit(string eventName)
     {
         Emit(eventName, "");
