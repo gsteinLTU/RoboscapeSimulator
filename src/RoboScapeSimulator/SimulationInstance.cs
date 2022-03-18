@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using BepuPhysics;
 using BepuUtilities.Memory;
@@ -71,7 +72,14 @@ namespace RoboScapeSimulator
             Simulation.Timestep(dt);
             foreach (var entity in Entities)
             {
-                entity.Update(dt);
+                try
+                {
+                    entity.Update(dt);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e);
+                }
             }
         }
 

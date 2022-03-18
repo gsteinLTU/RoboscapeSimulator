@@ -3,8 +3,6 @@ using Newtonsoft.Json.Linq;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.Environments;
-using SocketIOSharp.Server.Client;
-using WebSocketSharp;
 
 namespace RoboScapeSimulator
 {
@@ -16,7 +14,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// List of sockets for users connected to this room
         /// </summary>
-        public List<SocketIOSocket> activeSockets = new();
+        public List<Node.Socket> activeSockets = new();
 
         /// <summary>
         /// Visible string used to identify this room
@@ -194,7 +192,7 @@ namespace RoboScapeSimulator
         /// Adds a socket to active list and sets up message listeners
         /// </summary>
         /// <param name="socket">Socket to add to active sockets list</param>
-        internal void AddSocket(SocketIOSocket socket)
+        internal void AddSocket(Node.Socket socket)
         {
             LastInteractionTime = DateTime.Now;
             activeSockets.Add(socket);
@@ -252,7 +250,7 @@ namespace RoboScapeSimulator
         /// Removes a socket from active list and removes message listeners
         /// </summary>
         /// <param name="socket">Socket to remove from active sockets list</param>
-        internal void RemoveSocket(SocketIOSocket socket)
+        internal void RemoveSocket(Node.Socket socket)
         {
             socket.Off("resetRobot", handleResetRobot);
             socket.Off("resetAll", handleResetAll);
@@ -332,7 +330,7 @@ namespace RoboScapeSimulator
                 name = Name,
                 creator = Creator ?? "",
                 environment = EnvironmentID,
-                hasPassword = !Password.IsNullOrEmpty(),
+                hasPassword = !string.IsNullOrEmpty(Password),
                 isHibernating = Hibernating,
                 lastInteractionTime = LastInteractionTime
             };

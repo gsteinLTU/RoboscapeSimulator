@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace RoboScapeSimulator.Node;
 
-public class Server
+public class Server : IDisposable
 {
     List<Action<Socket>> connectionCallbacks = new();
 
@@ -27,11 +27,18 @@ public class Server
     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     Dictionary<string, Socket> sockets = new();
+    private bool disposedValue;
 
     public void Start()
     {
-        pipeWriter = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable);
-        pipeReader = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
+        if (client != null && !client.HasExited)
+        {
+            Trace.WriteLine("Server already running");
+            return;
+        }
+
+        pipeWriter = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, 0x8000);
+        pipeReader = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable, 0x8000);
 
         client = new Process();
 
@@ -55,13 +62,8 @@ public class Server
                 // Handle input from process
                 var readerTask = reader.MoveNextAsync().AsTask();
 
-                if (await Task.WhenAny(readerTask, Task.Delay(1000)) == readerTask)
+                if (await readerTask)
                 {
-                    if (!readerTask.Wait(1000))
-                    {
-                        continue;
-                    }
-
                     message = reader.Current;
 
                     if (message[0].ToString() == ((byte)ReceiveMessageType.Message).ToString())
@@ -70,7 +72,7 @@ public class Server
                         string socketID = message.Substring(1, 20);
                         string messageType = message[21..messageDataStart];
                         string messageData = message[(messageDataStart + 1)..];
-                        Debug.WriteLine(string.Concat(string.Concat("Message for ", socketID, " Received: Type: "), string.Concat(messageType, " Data: ", messageData)));
+                        Debug.WriteLine(string.Concat(string.Concat("Message from ", socketID, " Received: Type: "), string.Concat(messageType, " Data: ", messageData)));
 
                         if (sockets.ContainsKey(socketID) && sockets[socketID].callbacks.ContainsKey(messageType))
                         {
@@ -115,19 +117,12 @@ public class Server
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            var message = await sr.ReadLineAsync();
-
-            if (message != null)
+            string? line = null;
+            while ((line = await sr.ReadLineAsync()) != null)
             {
-                yield return message;
+                yield return line;
             }
         }
-    }
-
-    ~Server()
-    {
-        cancellationTokenSource.Cancel();
-        client?.Close();
     }
 
     internal enum SendMessageType
@@ -146,12 +141,41 @@ public class Server
         Message, SocketConnected
     }
 
-    internal void send(byte[] data)
+    StreamWriter? sw;
+
+    internal void send(string data)
     {
+        if (sw == null)
+        {
+            sw = new(pipeWriter);
+            sw.AutoFlush = true;
+        }
+
         if (pipeWriter != null)
         {
-            pipeWriter.Write(data, 0, data.Length);
+            sw.WriteLine(data);
         }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                cancellationTokenSource.Cancel();
+                client?.Close();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
 
@@ -184,6 +208,11 @@ public class Socket
         }
     }
 
+    public void On(JToken eventName, Action callback)
+    {
+        On(eventName, (JToken[] args) => callback());
+    }
+
     private readonly List<Action> onDisconnect = new();
 
     public void OnDisconnect(Action callback)
@@ -206,7 +235,11 @@ public class Socket
         buffer += eventName;
         buffer += " ";
         buffer += data.ToString(Formatting.None);
-        buffer += "\r\n";
-        server.send(Encoding.Default.GetBytes(buffer));
+        server.send(buffer);
+    }
+
+    public void Emit(string eventName)
+    {
+        Emit(eventName, "");
     }
 }

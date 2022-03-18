@@ -7,7 +7,6 @@ using BepuPhysics.Trees;
 using BepuUtilities.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SocketIOSharp.Server.Client;
 namespace RoboScapeSimulator
 {
     public static class Utils
@@ -54,7 +53,7 @@ namespace RoboScapeSimulator
             Array.ForEach(tokens, printJSON);
         }
 
-        public static void sendAsJSON<T>(SocketIOSocket socket, string eventName, T data)
+        public static void sendAsJSON<T>(Node.Socket socket, string eventName, T data)
         {
             if (!serializerInitialized)
             {

@@ -438,18 +438,18 @@ namespace RoboScapeSimulator.Entities.Robots
             leftDistance = 0;
             rightDistance = 0;
 
-            simulation.Solver.ApplyDescription(LMotor, new AngularAxisMotor
-            {
-                LocalAxisA = new Vector3(0, 1, 0),
-                Settings = new MotorSettings(3, 1e-6f),
-                TargetVelocity = 0
-            });
-            simulation.Solver.ApplyDescription(RMotor, new AngularAxisMotor
-            {
-                LocalAxisA = new Vector3(0, -1, 0),
-                Settings = new MotorSettings(3, 1e-6f),
-                TargetVelocity = 0
-            });
+            // simulation.Solver.ApplyDescription(LMotor, new AngularAxisMotor
+            // {
+            //     LocalAxisA = new Vector3(0, 1, 0),
+            //     Settings = new MotorSettings(3, 1e-6f),
+            //     TargetVelocity = 0
+            // });
+            // simulation.Solver.ApplyDescription(RMotor, new AngularAxisMotor
+            // {
+            //     LocalAxisA = new Vector3(0, -1, 0),
+            //     Settings = new MotorSettings(3, 1e-6f),
+            //     TargetVelocity = 0
+            // });
 
             // Reset wheels as well
             BodyReference rWheelBody = simulation.Bodies.GetBodyReference(RWheel);

@@ -4,50 +4,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RoboScapeSimulator;
 using RoboScapeSimulator.IoTScape;
-using SocketIOSharp.Common;
-using SocketIOSharp.Server;
-using SocketIOSharp.Server.Client;
 
 Trace.Listeners.Add(new ConsoleTraceListener());
 Trace.WriteLine("Starting RoboScapeSimulator...");
 
-RoboScapeSimulator.Node.Server server = new();
-
-server.Start();
-
-
-JsonSerializer serializer = new();
-
-serializer.NullValueHandling = NullValueHandling.Ignore;
-
-server.OnConnection((socket) =>
-{
-    Trace.WriteLine("New socket connected: " + socket.ID);
-
-    socket.On("getRooms", (args) =>
-    {
-        Trace.WriteLine("Socket " + socket.ID + " requesting rooms for " + args[0]);
-
-        using (var writer = new JTokenWriter())
-        {
-            serializer.Serialize(writer, new Dictionary<string, object>(){{"availableRooms",new List<String>()}});
-            socket.Emit("availableRooms", writer.Token);
-        }
-
-        using (var writer = new JTokenWriter())
-        {
-            serializer.Serialize(writer, Room.ListEnvironments());
-            socket.Emit("availableEnvironments", writer.Token);
-        }
-    });
-});
-
-while (true)
-{
-
-}
-
-/*
 /// <summary>
 /// Frequency to send update messages to users
 /// </summary>
@@ -55,7 +15,7 @@ const int updateFPS = 10;
 
 /// <summary>
 /// Frequency to run simulation at
-/// </summary>
+/// </summary> 
 const int simFPS = 60;
 
 JsonSerializer serializer = new();
@@ -68,17 +28,17 @@ ConcurrentDictionary<string, Room> rooms = new();
 
 IoTScapeManager ioTScapeManager = new IoTScapeManager();
 
-using (SocketIOServer server = new(new SocketIOServerOption(9001)))
+using (RoboScapeSimulator.Node.Server server = new())
 {
     // Socket.io setup
-    server.OnConnection((SocketIOSocket socket) =>
+    server.OnConnection((RoboScapeSimulator.Node.Socket socket) =>
     {
         string? socketRoom = "";
 
         Trace.WriteLine("Client connected!");
 
         // Cleanup a bit on disconnect
-        socket.On(SocketIOEvent.DISCONNECT, () =>
+        socket.OnDisconnect(() =>
         {
             Trace.WriteLine("Client disconnected!");
             if (socketRoom != null)
@@ -138,4 +98,3 @@ using (SocketIOServer server = new(new SocketIOServerOption(9001)))
         Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));
     }
 }
-*/
