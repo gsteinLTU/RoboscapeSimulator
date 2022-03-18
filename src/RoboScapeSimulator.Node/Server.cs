@@ -57,14 +57,12 @@ public class Server
 
                 if (await Task.WhenAny(readerTask, Task.Delay(1000)) == readerTask)
                 {
-                    if (!readerTask.Result)
+                    if (!readerTask.Wait(1000))
                     {
                         continue;
                     }
 
                     message = reader.Current;
-
-                    Trace.WriteLine(message);
 
                     if (message[0].ToString() == ((byte)ReceiveMessageType.Message).ToString())
                     {
@@ -72,12 +70,12 @@ public class Server
                         string socketID = message.Substring(1, 20);
                         string messageType = message[21..messageDataStart];
                         string messageData = message[(messageDataStart + 1)..];
-                        Trace.WriteLine(string.Concat(string.Concat("Message for ", socketID, " Received: Type: "), string.Concat(messageType, " Data: ", messageData)));
+                        Debug.WriteLine(string.Concat(string.Concat("Message for ", socketID, " Received: Type: "), string.Concat(messageType, " Data: ", messageData)));
 
-                        if (sockets.ContainsKey(socketID))
+                        if (sockets.ContainsKey(socketID) && sockets[socketID].callbacks.ContainsKey(messageType))
                         {
                             JToken jData = JToken.ReadFrom(new JsonTextReader(new StringReader(messageData)));
-                            sockets[socketID].callbacks[messageType]?.ForEach(callback =>
+                            sockets[socketID].callbacks[messageType].ForEach(callback =>
                             {
                                 if (jData.Type == JTokenType.Array)
                                 {

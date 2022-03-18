@@ -30,7 +30,7 @@ server.OnConnection((socket) =>
 
         using (var writer = new JTokenWriter())
         {
-            serializer.Serialize(writer, new Dictionary<string, object>());
+            serializer.Serialize(writer, new Dictionary<string, object>(){{"availableRooms",new List<String>()}});
             socket.Emit("availableRooms", writer.Token);
         }
 
