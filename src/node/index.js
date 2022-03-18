@@ -61,6 +61,8 @@ io.on("connection", (socket) => {
 
 httpServer.listen(9001);
 
+console.debug('Node server started');
+
 // Detect main process crash
 setInterval(() => {
     if(!isRunning(ppid) || process.ppid != ppid){
