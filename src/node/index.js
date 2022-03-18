@@ -1,11 +1,12 @@
 const readline = require('readline');
 const fs = require('fs');
+const process = require('process');
+const isRunning = require('is-running');
+
 const reader = fs.createReadStream(null, {fd: Number.parseInt(process.argv[2])});
 const writer = fs.createWriteStream(null, {fd: Number.parseInt(process.argv[3])});
-const { hrtime } = require('process');
 
-const startTime = hrtime.bigint();
-
+const ppid = process.ppid;
 const sockets = {};
 
 reader.on('data', data => {
@@ -47,3 +48,10 @@ io.on("connection", (socket) => {
 });
 
 httpServer.listen(9001);
+
+// Detect main process crash
+setInterval(() => {
+    if(!isRunning(ppid)){
+        process.exit();
+    }
+}, 1000);
