@@ -3,15 +3,16 @@ const fs = require('fs');
 const process = require('process');
 const isRunning = require('is-running');
 
-const reader = fs.createReadStream(null, {fd: Number.parseInt(process.argv[2])});
-const writer = fs.createWriteStream(null, {fd: Number.parseInt(process.argv[3])});
+const reader = fs.createReadStream(null, { fd: Number.parseInt(process.argv[2]) });
+const writer = fs.createWriteStream(null, { fd: Number.parseInt(process.argv[3]) });
+const ppid = process.ppid;
 
 const lineReader = readline.createInterface({
     input: reader,
     crlfDelay: Infinity
 });
 
-const ppid = process.ppid;
+const PORT = 9001;
 
 const sockets = {};
 
@@ -26,12 +27,12 @@ lineReader.on('line', data => {
 
         try {
             message = JSON.parse(message.substring(eventName.length + 1));
-            
+
             //console.log("Message for " + destSocket + ": type: " + eventName + " data: " + message);
             if (Object.keys(sockets).includes(destSocket)) {
                 sockets[destSocket].emit(eventName, message);
             }
-                        
+
         } catch (error) {
             console.error(error);
         }
@@ -48,6 +49,8 @@ const io = require("socket.io")(httpServer, {
 });
 
 io.on("connection", (socket) => {
+    console.debug("Socket " + socket.id + " connected");
+
     sockets[socket.id] = socket;
 
     // Send socket connected message
@@ -59,13 +62,16 @@ io.on("connection", (socket) => {
     });
 });
 
-httpServer.listen(9001);
+
+httpServer.listen(PORT, () => {
+    console.debug('Node server listening on ' + PORT);
+});
 
 console.debug('Node server started');
 
 // Detect main process crash
 setInterval(() => {
-    if(!isRunning(ppid) || process.ppid != ppid){
+    if (!isRunning(ppid) || process.ppid != ppid) {
         process.exit();
     }
 }, 1000);

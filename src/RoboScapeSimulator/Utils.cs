@@ -62,8 +62,15 @@ namespace RoboScapeSimulator
 
             using (var writer = new JTokenWriter())
             {
-                serializer.Serialize(writer, data);
-                socket.Emit(eventName, writer.Token);
+                if (data != null)
+                {
+                    serializer.Serialize(writer, data);
+                    socket.Emit(eventName, writer.Token);
+                }
+                else
+                {
+                    socket.Emit(eventName);
+                }
             }
         }
 
