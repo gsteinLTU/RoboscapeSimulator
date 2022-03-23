@@ -64,8 +64,8 @@ public class Server : IDisposable
         }
 
         sw = null;
-        pipeWriter = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, 0x8000);
-        pipeReader = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable, 0x8000);
+        pipeWriter = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, 0x10000);
+        pipeReader = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable, 0x10000);
         IAsyncEnumerator<string> reader;
 
 
@@ -200,15 +200,18 @@ public class Server : IDisposable
             sw.AutoFlush = true;
         }
 
-        if (pipeWriter != null)
+        lock (sw)
         {
-            try
+            if (pipeWriter != null)
             {
-                sw.WriteLine(data);
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(e);
+                try
+                {
+                    sw.WriteLine(data);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e);
+                }
             }
         }
     }
