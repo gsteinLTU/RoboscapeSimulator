@@ -57,14 +57,31 @@ public class Server : IDisposable
             return;
         }
 
+        if (processThread != null)
+        {
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource = new();
+        }
+
+        sw = null;
         pipeWriter = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, 0x8000);
         pipeReader = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable, 0x8000);
+        IAsyncEnumerator<string> reader;
+
 
         // Start Node.js process
         client = new Process();
         client.StartInfo.FileName = "node";
         client.StartInfo.Arguments = "./src/node/index.js " + pipeWriter.GetClientHandleAsString() + " " + pipeReader.GetClientHandleAsString();
         client.StartInfo.UseShellExecute = false;
+        client.EnableRaisingEvents = true;
+
+        client.Exited += (sender, args) =>
+        {
+            // Restart node if died
+            Start();
+        };
+
         client.Start();
 
         pipeWriter.DisposeLocalCopyOfClientHandle();
@@ -74,17 +91,24 @@ public class Server : IDisposable
         {
             var cancelToken = cancellationTokenSource.Token;
 
-            var reader = readPipe(pipeReader, cancellationTokenSource.Token).GetAsyncEnumerator();
+            reader = readPipe(pipeReader, cancellationTokenSource.Token).GetAsyncEnumerator();
 
             string message;
+            var readerTask = reader.MoveNextAsync().AsTask();
+
             while (!cancelToken.IsCancellationRequested)
             {
                 // Handle input from process
-                var readerTask = reader.MoveNextAsync().AsTask();
+                var readerTaskTimeout = Task.WhenAny(Task.Delay(100), readerTask);
 
-                if (await readerTask)
+                if ((await readerTaskTimeout) == readerTask)
                 {
                     message = reader.Current;
+
+                    if (message == null)
+                    {
+                        continue;
+                    }
 
                     if (message[0].ToString() == ((byte)ReceiveMessageType.Message).ToString())
                     {
@@ -125,8 +149,13 @@ public class Server : IDisposable
                             callback(socket);
                         });
                     }
+
+                    readerTask = reader.MoveNextAsync().AsTask();
                 }
+
             }
+
+            Debug.WriteLine("processThread ended");
         });
         processThread.Start();
     }
@@ -173,7 +202,14 @@ public class Server : IDisposable
 
         if (pipeWriter != null)
         {
-            sw.WriteLine(data);
+            try
+            {
+                sw.WriteLine(data);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
+            }
         }
     }
 
