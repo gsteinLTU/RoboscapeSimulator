@@ -182,9 +182,12 @@ namespace RoboScapeSimulator
 
         public void SendToClients(string eventName, params object[] args)
         {
-            foreach (var socket in activeSockets)
+            lock (activeSockets)
             {
-                Utils.sendAsJSON(socket, eventName, args);
+                foreach (var socket in activeSockets)
+                {
+                    Utils.sendAsJSON(socket, eventName, args);
+                }
             }
         }
 
@@ -195,7 +198,10 @@ namespace RoboScapeSimulator
         internal void AddSocket(Node.Socket socket)
         {
             LastInteractionTime = DateTime.Now;
-            activeSockets.Add(socket);
+            lock (activeSockets)
+            {
+                activeSockets.Add(socket);
+            }
             socket.On("resetRobot", handleResetRobot);
             socket.On("resetAll", handleResetAll);
             socket.On("robotButton", handleRobotButton);
@@ -256,7 +262,10 @@ namespace RoboScapeSimulator
             socket.Off("resetAll", handleResetAll);
             socket.Off("robotButton", handleRobotButton);
             socket.Emit("roomLeft");
-            activeSockets.Remove(socket);
+            lock (activeSockets)
+            {
+                activeSockets.Remove(socket);
+            }
         }
 
         /// <summary>

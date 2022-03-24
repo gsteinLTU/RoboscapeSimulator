@@ -7,6 +7,8 @@ if (numClients <= 0) {
     throw new Error("Invalid number of clients");
 }
 
+let knownRooms = [];
+
 for (let i = 0; i < numClients; i++)
 {
     const socket = io("http://localhost:9001", { forceNew: true, withCredentials: false });
@@ -14,7 +16,7 @@ for (let i = 0; i < numClients; i++)
     let averageDiff = 0;
     let numUpdates = 0;
     let lastUpdate = Date.now();
-
+    let room = undefined;
 
     const log = (msg) => {
         console.log(`Client ${i}: ${msg}`);
@@ -56,7 +58,9 @@ for (let i = 0; i < numClients; i++)
 
     socket.on('roomJoined', result => {
         if (result != false) {
-            log('Joined room');
+            log('Joined room ' + result);
+            room = result;
+            knownRooms.push(room);
             lastUpdate = Date.now();
         } else {
             log('Failed to join room');

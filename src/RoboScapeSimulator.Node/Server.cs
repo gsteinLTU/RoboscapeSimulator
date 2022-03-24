@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Runtime.CompilerServices;
@@ -42,7 +43,7 @@ public class Server : IDisposable
     /// <summary>
     /// Sockets known to this server
     /// </summary>
-    Dictionary<string, Socket> sockets = new();
+    ConcurrentDictionary<string, Socket> sockets = new();
 
     private bool disposedValue;
 
@@ -144,7 +145,7 @@ public class Server : IDisposable
 
                             if (!sockets.ContainsKey(socket.ID))
                             {
-                                sockets.Add(socket.ID, socket);
+                                sockets.TryAdd(socket.ID, socket);
                             }
                             callback(socket);
                         });
