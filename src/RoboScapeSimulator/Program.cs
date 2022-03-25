@@ -41,7 +41,7 @@ using (RoboScapeSimulator.Node.Server server = new())
         socket.OnDisconnect(() =>
         {
             Trace.WriteLine("Client disconnected!");
-            if (socketRoom != null)
+            if (!string.IsNullOrEmpty(socketRoom))
             {
                 rooms[socketRoom].RemoveSocket(socket);
             }
@@ -50,7 +50,7 @@ using (RoboScapeSimulator.Node.Server server = new())
         // Cleanup a bit on disconnect
         socket.On("leaveRoom", () =>
         {
-            if (socketRoom != null)
+            if (!string.IsNullOrEmpty(socketRoom))
             {
                 Trace.WriteLine("Client left room!");
                 rooms[socketRoom].RemoveSocket(socket);
