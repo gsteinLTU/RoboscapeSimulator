@@ -24,9 +24,12 @@ namespace RoboScapeSimulator
                         continue;
                     }
 
-                    foreach (var socket in room.activeSockets)
+                    lock (room.activeSockets)
                     {
-                        Messages.SendUpdate(socket, room);
+                        foreach (var socket in room.activeSockets)
+                        {
+                            Messages.SendUpdate(socket, room);
+                        }
                     }
                 }
 

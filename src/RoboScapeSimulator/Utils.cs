@@ -68,9 +68,7 @@ namespace RoboScapeSimulator
             {
                 try
                 {
-                    using var writer = new JTokenWriter();
-                    serializer.Serialize(writer, data);
-                    socket.Emit(eventName, writer.Token);
+                    socket.Emit(eventName, JsonConvert.SerializeObject(data, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Converters = new List<JsonConverter>() { new SmallerFloatFormatConverter() } }));
                 }
                 catch (System.Exception e)
                 {

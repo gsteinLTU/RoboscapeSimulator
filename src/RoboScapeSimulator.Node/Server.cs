@@ -346,6 +346,16 @@ public class Socket
         server.send(buffer);
     }
 
+    public void Emit(string eventName, string data)
+    {
+        string buffer = "0";
+        buffer += ID;
+        buffer += eventName;
+        buffer += " ";
+        buffer += data;
+        server.send(buffer);
+    }
+
     /// <summary>
     /// Send an event to the client of this Socket
     /// </summary>
