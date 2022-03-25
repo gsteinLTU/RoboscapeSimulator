@@ -310,7 +310,8 @@ namespace RoboScapeSimulator
             new TableEnvironment(3, 2),
             new WallEnvironment(),
             new PositionSensorDemo(),
-            new PositionSensorDemo(2)
+            new PositionSensorDemo(2),
+            new SquareDrivingEnvironment()
         };
 
         public DateTime LastInteractionTime
