@@ -61,6 +61,7 @@ using (RoboScapeSimulator.Node.Server server = new())
         // Send room info
         socket.On("getRooms", (JToken[] args) =>
         {
+            if (args.Length == 0 || args[0].Type != JTokenType.String) return;
             var user = (string)args[0];
             Messages.SendUserRooms(socket, user, rooms);
         });

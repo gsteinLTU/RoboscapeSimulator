@@ -38,10 +38,13 @@ namespace RoboScapeSimulator
                 initializeSerializer();
             }
 
-            using (var writer = new StringWriter())
+            if (token != null)
             {
-                serializer.Serialize(writer, token);
-                Debug.WriteLine(writer.ToString());
+                using (var writer = new StringWriter())
+                {
+                    serializer.Serialize(writer, token);
+                    Debug.WriteLine(writer.ToString());
+                }
             }
         }
 
@@ -60,17 +63,35 @@ namespace RoboScapeSimulator
                 initializeSerializer();
             }
 
-            using (var writer = new JTokenWriter())
+
+            if (data != null)
             {
-                if (data != null)
+                try
                 {
+                    using var writer = new JTokenWriter();
                     serializer.Serialize(writer, data);
                     socket.Emit(eventName, writer.Token);
                 }
-                else
+                catch (System.Exception e)
                 {
-                    socket.Emit(eventName);
+                    if (data is IDictionary<string, object>)
+                    {
+                        var dict = data as IDictionary<string, object>;
+                        foreach (var entry in dict)
+                        {
+                            Console.WriteLine("\t" + entry.Key + ": " + entry.Value.ToString());
+                        }
+                    }
+                    else
+                    {
+                        Trace.TraceError("Data: " + data.ToString());
+                    }
+                    Trace.TraceError(e.ToString());
                 }
+            }
+            else
+            {
+                socket.Emit(eventName);
             }
         }
 
