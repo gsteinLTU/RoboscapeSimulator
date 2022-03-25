@@ -1,4 +1,4 @@
-const { io } = require("socket.io-client");
+const io = require("socket.io-client");
 
 const numClients = Number.parseInt(process.argv[2] ?? '1');
 console.log(`Starting ${numClients} client${numClients > 1 ? 's' : ''}...`);
@@ -9,7 +9,8 @@ if (numClients <= 0) {
 
 let knownRooms = [];
 
-for (let i = 0; i < numClients; i++) {
+//for (let i = 0; i < numClients; i++) {
+let createSocket = (i) => {
     const socket = io("http://localhost:9001", { forceNew: true, withCredentials: false });
     const user = Math.round(Math.random() * 100000);
     let averageDiff = 0;
@@ -25,6 +26,13 @@ for (let i = 0; i < numClients; i++) {
         log('Client connected');
     });
 
+
+    socket.on('reconnect', (e) => {
+        log('Reconnected');
+        if (room !== undefined) {
+            socket.emit('joinRoom', { roomID: room });
+        }
+    });
     socket.on('u', () => {
         let now = Date.now();
 
@@ -70,7 +78,23 @@ for (let i = 0; i < numClients; i++) {
 
     socket.emit('getRooms', user);
 
-    setTimeout(() => {
-        socket.emit('joinRoom', { roomID: 'create', env: 'default', password: '', namespace: user });
-    }, 250);
-}
+    //setTimeout(() => {
+    //    socket.emit('joinRoom', { roomID: 'create', env: 'default', password: '', namespace: user });
+    //}, 250);
+
+    let checkInRoom = () => {
+        if (room == undefined) {
+            socket.emit('joinRoom', { roomID: 'create', env: 'default', password: '', namespace: user });
+            setTimeout(checkInRoom, 1000);
+        }
+    };
+
+    checkInRoom();
+
+    if (i > 1) {
+        setTimeout(createSocket.bind(null, i - 1), 300);
+    }
+};
+
+//let i = numClients;
+setTimeout(createSocket.bind(null, numClients), 100);
