@@ -152,6 +152,16 @@ namespace RoboScapeSimulator
 
             LastInteractionTime = DateTime.Now;
 
+            OnHibernateStart += (o, e) =>
+            {
+                Trace.WriteLine($"Room {Name} is now hibernating");
+            };
+
+            OnHibernateEnd += (o, e) =>
+            {
+                Trace.WriteLine($"Room {Name} is no longer hibernating");
+            };
+
             Trace.WriteLine("Room " + Name + " created.");
         }
 
@@ -265,6 +275,12 @@ namespace RoboScapeSimulator
             lock (activeSockets)
             {
                 activeSockets.Remove(socket);
+
+                // Stop running room when no users
+                if (activeSockets.Count == 0)
+                {
+                    Hibernating = true;
+                }
             }
         }
 
@@ -365,7 +381,6 @@ namespace RoboScapeSimulator
                     RemoveSocket(activeSockets[0]);
                 }
 
-                Trace.WriteLine($"Room {Name} is now hibernating");
                 return;
             }
 

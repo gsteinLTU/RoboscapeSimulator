@@ -28,7 +28,7 @@ lineReader.on('line', data => {
         try {
             message = JSON.parse(message.substring(eventName.length + 1));
 
-            //console.log("Message for " + destSocket + ": type: " + eventName + " data: " + message);
+            //console.log('Message for ' + destSocket + ': type: ' + eventName + ' data: ' + message);
             if (Object.keys(sockets).includes(destSocket)) {
                 sockets[destSocket].emit(eventName, message);
             }
@@ -40,25 +40,29 @@ lineReader.on('line', data => {
 });
 
 // Socket.IO setup
-const { Server } = require("socket.io");
+const { Server } = require('socket.io');
 const io = new Server({
     cors: {
-        origin: "*",
+        origin: '*',
         credentials: false
     }
 });
 
-io.on("connection", (socket) => {
-    console.debug("Socket " + socket.id + " connected");
+io.on('connection', (socket) => {
+    console.debug('Socket ' + socket.id + ' connected');
 
     sockets[socket.id] = socket;
 
     // Send socket connected message
-    writer.write("1" + socket.id + "\r\n");
+    writer.write('1' + socket.id + '\r\n');
 
     // Forward messages to server program
     socket.onAny((event, ...args) => {
-        writer.write("0" + socket.id + event + " " + JSON.stringify(args) + "\r\n");
+        writer.write('0' + socket.id + event + ' ' + JSON.stringify(args) + '\r\n');
+    });
+
+    socket.on('disconnect', () => {
+        writer.write('2' + socket.id + '\r\n');
     });
 });
 

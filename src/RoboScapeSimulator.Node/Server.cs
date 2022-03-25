@@ -151,6 +151,16 @@ public class Server : IDisposable
                         });
                     }
 
+                    if (message[0].ToString() == ((byte)ReceiveMessageType.SocketDisconnected).ToString())
+                    {
+                        Trace.WriteLine(string.Concat("Socket Disconnected: ", message.AsSpan(1)));
+
+                        if (sockets.ContainsKey(message[1..]))
+                        {
+                            sockets[message[1..]].onDisconnect.ForEach(callback => callback());
+                        }
+                    }
+
                     readerTask = reader.MoveNextAsync().AsTask();
                 }
 
@@ -188,7 +198,7 @@ public class Server : IDisposable
 
     internal enum ReceiveMessageType
     {
-        Message, SocketConnected
+        Message, SocketConnected, SocketDisconnected
     }
 
     StreamWriter? sw;
@@ -297,7 +307,7 @@ public class Socket
         On(eventName, (JToken[] args) => callback());
     }
 
-    private readonly List<Action> onDisconnect = new();
+    internal readonly List<Action> onDisconnect = new();
 
     /// <summary>
     /// Setup a callback to run when this Socket disconnects
