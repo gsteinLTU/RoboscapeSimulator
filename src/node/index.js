@@ -40,8 +40,8 @@ lineReader.on('line', data => {
 });
 
 // Socket.IO setup
-const httpServer = require("http").createServer();
-const io = require("socket.io")(httpServer, {
+const { Server } = require("socket.io");
+const io = new Server({
     cors: {
         origin: "*",
         credentials: false
@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
 });
 
 
-httpServer.listen(PORT, () => {
+io.listen(PORT, () => {
     console.debug('Node server listening on ' + PORT);
 });
 

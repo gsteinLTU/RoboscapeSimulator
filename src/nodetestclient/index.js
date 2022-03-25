@@ -9,8 +9,7 @@ if (numClients <= 0) {
 
 let knownRooms = [];
 
-for (let i = 0; i < numClients; i++)
-{
+for (let i = 0; i < numClients; i++) {
     const socket = io("http://localhost:9001", { forceNew: true, withCredentials: false });
     const user = Math.round(Math.random() * 100000);
     let averageDiff = 0;
@@ -19,11 +18,11 @@ for (let i = 0; i < numClients; i++)
     let room = undefined;
 
     const log = (msg) => {
-        console.log(`Client ${i}: ${msg}`);
+        console.log(`${Date.now()} Client ${i}: ${msg}`);
     };
 
     socket.on('connect', (e) => {
-        console.log('Client connected');
+        log('Client connected');
     });
 
     socket.on('u', () => {
