@@ -16,7 +16,7 @@ const int updateFPS = 10;
 /// <summary>
 /// Frequency to run simulation at
 /// </summary> 
-const int simFPS = 60;
+const int simFPS = 45;
 
 JsonSerializer serializer = new();
 serializer.NullValueHandling = NullValueHandling.Ignore;
@@ -87,15 +87,23 @@ using (RoboScapeSimulator.Node.Server server = new())
     var fpsSpan = TimeSpan.FromSeconds(1d / simFPS);
     Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));
 
-    // Simulation update loop
-    while (true)
+    var updateTimer = new Timer((e) =>
     {
-        foreach (Room room in rooms.Values)
+        lock (rooms)
         {
-            room.Update((float)stopwatch.Elapsed.TotalSeconds);
+            foreach (Room room in rooms.Values)
+            {
+                room.Update((float)stopwatch.Elapsed.TotalSeconds);
+            }
         }
+
         ioTScapeManager.Update((float)stopwatch.Elapsed.TotalSeconds);
         stopwatch.Restart();
-        Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));
+    });
+    updateTimer.Change(fpsSpan, fpsSpan);
+
+    while (true)
+    {
+        Thread.Sleep(100);
     }
 }
