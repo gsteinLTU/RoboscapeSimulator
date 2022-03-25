@@ -29,7 +29,8 @@ namespace RoboScapeSimulator.Environments
             var robot = new ParallaxRobot(room, new Vector3(0, 0.25f, 0), Quaternion.Identity, debug: false);
 
             // Cube
-            var cube = new Cube(room, 2, 1, 2, new Vector3(-1.5f, 0.5f, 1f), Quaternion.Identity);
+            float size = 1.5f;
+            var cube = new Cube(room, size, size / 2.0f, size, new Vector3(-size / 2f - 0.25f, size / 4f + 0.25f, size / 2f), Quaternion.Identity);
         }
     }
 }
