@@ -62,6 +62,7 @@ namespace RoboScapeSimulator
                         Trace.WriteLine($"Removing {oldRooms.Count} old rooms");
                         oldRooms.ForEach(pair => rooms.TryRemove(pair));
                     }
+
                 }
             });
 
