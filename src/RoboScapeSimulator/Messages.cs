@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
-using SocketIOSharp.Server.Client;
 
 namespace RoboScapeSimulator
 {
@@ -12,7 +11,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Send the available rooms and environments to a socket
         /// </summary>
-        internal static void SendAvailableRooms(SocketIOSocket socket, IDictionary<string, Room> rooms)
+        internal static void SendAvailableRooms(Node.Socket socket, IDictionary<string, Room> rooms)
         {
             Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Select(room => room.Value.GetRoomInfo()) }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
             Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
@@ -21,7 +20,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Send the rooms created  and environments to a socket
         /// </summary>
-        internal static void SendUserRooms(SocketIOSocket socket, string user, IDictionary<string, Room> rooms)
+        internal static void SendUserRooms(Node.Socket socket, string user, IDictionary<string, Room> rooms)
         {
             SendAvailableRooms(socket, rooms.Where(pair => pair.Value.Creator == user).ToDictionary(pair => pair.Key, pair => pair.Value));
         }
@@ -29,7 +28,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Send update on room's status to user
         /// </summary>
-        internal static void SendUpdate(SocketIOSocket socket, Room room, bool isFullUpdate = false)
+        internal static void SendUpdate(Node.Socket socket, Room room, bool isFullUpdate = false)
         {
             Dictionary<string, object> updateData = room.SimInstance.GetBodies(!isFullUpdate, isFullUpdate);
             updateData.Add("time", room.SimInstance.Time);
@@ -37,12 +36,20 @@ namespace RoboScapeSimulator
             Utils.sendAsJSON(socket, isFullUpdate ? "fullUpdate" : "u", updateData);
         }
 
-        internal static void HandleJoinRoom(JToken[] args, SocketIOSocket socket, IDictionary<string, Room> rooms, ref string socketRoom)
+        internal static void HandleJoinRoom(JToken[] args, Node.Socket socket, IDictionary<string, Room> rooms, ref string socketRoom)
         {
             // Remove from existing room
             if (!string.IsNullOrWhiteSpace(socketRoom))
             {
                 rooms[socketRoom].RemoveSocket(socket);
+            }
+
+            if (args.Length == 0 || args[0]["roomID"] == null)
+            {
+                // Invalid message
+                Utils.sendAsJSON(socket, "roomJoined", false);
+                Trace.WriteLine("Failed attempt to join room");
+                return;
             }
 
             // Create room if requested

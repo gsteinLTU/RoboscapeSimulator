@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Numerics;
+using System.Text;
 using BepuPhysics;
 using BepuUtilities.Memory;
 using RoboScapeSimulator.Entities;
@@ -71,7 +73,14 @@ namespace RoboScapeSimulator
             Simulation.Timestep(dt);
             foreach (var entity in Entities)
             {
-                entity.Update(dt);
+                try
+                {
+                    entity.Update(dt);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e);
+                }
             }
         }
 
@@ -92,10 +101,10 @@ namespace RoboScapeSimulator
                     {
                         label = entity.Name,
                         pos = {
-                        x = staticEntity.StaticReference.Pose.Position.X,
-                        y = staticEntity.StaticReference.Pose.Position.Y,
-                        z = staticEntity.StaticReference.Pose.Position.Z
-                    },
+                            x = staticEntity.StaticReference.Pose.Position.X,
+                            y = staticEntity.StaticReference.Pose.Position.Y,
+                            z = staticEntity.StaticReference.Pose.Position.Z
+                        },
                         angle = staticEntity.StaticReference.Pose.Orientation,
                         width = allData ? staticEntity.StaticReference.BoundingBox.Max.X - staticEntity.StaticReference.BoundingBox.Min.X : null,
                         height = allData ? staticEntity.StaticReference.BoundingBox.Max.Y - staticEntity.StaticReference.BoundingBox.Min.Y : null,
@@ -107,7 +116,7 @@ namespace RoboScapeSimulator
                 {
                     output.Add(entity.Name, new BodyInfo
                     {
-                        label = allData ? entity.Name : null,
+                        label = entity.Name,
                         pos = {
                         x = dynamicEntity.BodyReference.Pose.Position.X,
                         y = dynamicEntity.BodyReference.Pose.Position.Y,
@@ -140,6 +149,24 @@ namespace RoboScapeSimulator
         public float? height;
         public float? depth;
         public VisualInfo? visualInfo;
+
+        public override string ToString()
+        {
+            StringBuilder builder = new();
+
+            builder.AppendLine("BodyInfo:");
+            builder.AppendLine("\tlabel:\t" + label ?? "null");
+            builder.AppendLine("\tpos:\t" + pos ?? "null");
+            builder.AppendLine("\tvel:\t" + vel ?? "null");
+            builder.AppendLine("\tangle:\t" + angle ?? "null");
+            builder.AppendLine("\tanglevel:\t" + anglevel ?? "null");
+            builder.AppendLine("\twidth:\t" + width ?? "null");
+            builder.AppendLine("\theight:\t" + height ?? "null");
+            builder.AppendLine("\tdepth:\t" + depth ?? "null");
+            builder.AppendLine("\tvisualInfo:\t" + visualInfo ?? "null");
+
+            return builder.ToString();
+        }
     }
 
     [Serializable]

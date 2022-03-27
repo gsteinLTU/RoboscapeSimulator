@@ -10,73 +10,65 @@ namespace RoboScapeSimulator
     /// </summary>
     internal static class Timers
     {
-        public static System.Timers.Timer CreateClientUpdateTimer(int updateFPS, IDictionary<string, Room> rooms)
+        public static Timer CreateClientUpdateTimer(double updateFPS, IDictionary<string, Room> rooms, bool isFullUpdate = false)
         {
-            var clientUpdateTimer = new System.Timers.Timer(1000d / updateFPS);
+            TimeSpan period = TimeSpan.FromMilliseconds(1000d / updateFPS);
 
-            clientUpdateTimer.Elapsed += (source, e) =>
+            var updateTimer = new Timer((e) =>
             {
-                foreach (Room room in rooms.Values)
+                lock (rooms)
                 {
-                    if (room.SkipNextUpdate)
+                    rooms.AsParallel().ForAll(kvp =>
                     {
-                        room.SkipNextUpdate = false;
-                        continue;
-                    }
+                        var room = kvp.Value;
+                        if (!isFullUpdate && room.SkipNextUpdate)
+                        {
+                            room.SkipNextUpdate = false;
+                            return;
+                        }
 
-                    foreach (var socket in room.activeSockets)
-                    {
-                        Messages.SendUpdate(socket, room);
-                    }
+                        lock (room.activeSockets)
+                        {
+                            foreach (var socket in room.activeSockets)
+                            {
+                                Messages.SendUpdate(socket, room, isFullUpdate);
+                            }
+                        }
+                    });
                 }
 
-            };
-
-            clientUpdateTimer.Start();
-            return clientUpdateTimer;
+            });
+            updateTimer.Change(period, period);
+            return updateTimer;
         }
 
-        public static System.Timers.Timer CreateClientFullUpdateTimer(IDictionary<string, Room> rooms, JsonSerializer serializer)
+        public static Timer CreateClientFullUpdateTimer(IDictionary<string, Room> rooms, JsonSerializer serializer)
         {
-            var clientFullUpdateTimer = new System.Timers.Timer(60000d);
-
-            clientFullUpdateTimer.Elapsed += (source, e) =>
-            {
-                foreach (Room room in rooms.Values)
-                {
-                    using var writer = new JTokenWriter();
-                    serializer.Serialize(writer, room.SimInstance.GetBodies());
-                    foreach (var socket in room.activeSockets)
-                    {
-                        Messages.SendUpdate(socket, room, true);
-                    }
-                }
-            };
-
-            clientFullUpdateTimer.Start();
-
-            return clientFullUpdateTimer;
+            return CreateClientUpdateTimer(1d / 60d, rooms, true);
         }
 
-        public static System.Timers.Timer CreateCleanDeadRoomsTimer(ConcurrentDictionary<string, Room> rooms)
+        public static Timer CreateCleanDeadRoomsTimer(ConcurrentDictionary<string, Room> rooms)
         {
-            var cleanDeadRoomsTimer = new System.Timers.Timer(600000d);
-
-            cleanDeadRoomsTimer.Elapsed += (source, e) =>
+            TimeSpan period = TimeSpan.FromSeconds(60 * 10);
+            var deadRoomTimer = new Timer((e) =>
             {
-                // If room is Hibernating and past its TTL, remove it
-                var oldRooms = rooms.Where(pair => pair.Value.Hibernating && (DateTime.Now - pair.Value.LastInteractionTime).TotalSeconds > pair.Value.MaxHibernateTime).ToList();
-
-                if (oldRooms.Count > 0)
+                lock (rooms)
                 {
-                    Trace.WriteLine($"Removing {oldRooms.Count} old rooms");
-                    oldRooms.ForEach(pair => rooms.TryRemove(pair));
+                    // If room is Hibernating and past its TTL, remove it
+                    var oldRooms = rooms.Where(pair => pair.Value.Hibernating && (DateTime.Now - pair.Value.LastInteractionTime).TotalSeconds > pair.Value.MaxHibernateTime).ToList();
+
+                    if (oldRooms.Count > 0)
+                    {
+                        Trace.WriteLine($"Removing {oldRooms.Count} old rooms");
+                        oldRooms.ForEach(pair => rooms.TryRemove(pair));
+                    }
+
                 }
-            };
+            });
 
-            cleanDeadRoomsTimer.Start();
+            deadRoomTimer.Change(period, period);
 
-            return cleanDeadRoomsTimer;
+            return deadRoomTimer;
         }
     }
 }
