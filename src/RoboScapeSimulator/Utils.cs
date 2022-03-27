@@ -11,15 +11,6 @@ namespace RoboScapeSimulator
 {
     public static class Utils
     {
-        static JsonSerializer serializer = new();
-
-        private static bool serializerInitialized = false;
-
-        private static void initializeSerializer()
-        {
-            serializer.NullValueHandling = NullValueHandling.Ignore;
-            serializer.Converters.Add(new SmallerFloatFormatConverter());
-        }
 
         public static void ExtractYawPitchRoll(this Quaternion r, out float yaw, out float pitch, out float roll)
         {
@@ -33,18 +24,9 @@ namespace RoboScapeSimulator
         /// </summary>
         public static void printJSON(JToken token)
         {
-            if (!serializerInitialized)
-            {
-                initializeSerializer();
-            }
-
             if (token != null)
             {
-                using (var writer = new StringWriter())
-                {
-                    serializer.Serialize(writer, token);
-                    Debug.WriteLine(writer.ToString());
-                }
+                Debug.WriteLine(JsonConvert.SerializeObject(token, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Converters = new List<JsonConverter>() { new SmallerFloatFormatConverter() } }));
             }
         }
 
@@ -58,12 +40,6 @@ namespace RoboScapeSimulator
 
         public static void sendAsJSON<T>(Node.Socket socket, string eventName, T data)
         {
-            if (!serializerInitialized)
-            {
-                initializeSerializer();
-            }
-
-
             if (data != null)
             {
                 try

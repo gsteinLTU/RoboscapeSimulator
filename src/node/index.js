@@ -26,7 +26,11 @@ lineReader.on('line', data => {
         let eventName = message.substring(0, message.indexOf(' '));
 
         try {
-            message = JSON.parse(message.substring(eventName.length + 1));
+            if (message.length > eventName.length + 1) {
+                message = JSON.parse(message.substring(eventName.length + 1));
+            } else {
+                message = "";
+            }
 
             //console.log('Message for ' + destSocket + ': type: ' + eventName + ' data: ' + message);
             if (Object.keys(sockets).includes(destSocket)) {
@@ -34,6 +38,7 @@ lineReader.on('line', data => {
             }
 
         } catch (error) {
+            console.error(message);
             console.error(error);
         }
     }
