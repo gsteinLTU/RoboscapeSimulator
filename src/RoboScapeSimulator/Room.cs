@@ -303,15 +303,9 @@ namespace RoboScapeSimulator
         internal static List<EnvironmentConfiguration> Environments = new()
         {
             new DefaultEnvironment(),
-            new DemoEnvironment(),
-            new IoTScapeExampleEnvironment(),
-            new IoTScapeExampleEnvironment2(),
-            new TableEnvironment(),
-            new TableEnvironment(3, 2),
             new WallEnvironment(),
-            new PositionSensorDemo(),
-            new PositionSensorDemo(2),
-            new SquareDrivingEnvironment()
+            new SquareDrivingEnvironment(),
+            new FourColorRobotsEnvironment()
         };
 
         public DateTime LastInteractionTime
