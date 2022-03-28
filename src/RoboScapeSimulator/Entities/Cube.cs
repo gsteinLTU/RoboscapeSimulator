@@ -84,7 +84,6 @@ namespace RoboScapeSimulator.Entities
         {
             if (AllowReset)
             {
-                Trace.WriteLine("Cube reset " + Name + " to " + initialPosition);
                 BodyReference.Pose.Position = initialPosition;
                 BodyReference.Pose.Orientation = initialOrientation;
                 BodyReference.Velocity.Linear = new Vector3();
