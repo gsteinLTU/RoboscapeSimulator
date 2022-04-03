@@ -36,6 +36,10 @@ namespace RoboScapeSimulator.IoTScape.Devices
             public const float TO_INCHES = 39.37008f;
         }
 
+        public float MinAngle = 0;
+
+        public float MaxAngle = MathF.PI * 2;
+
         /// <summary>
         /// Amount to multiply distance by to change units from meters
         /// </summary>
@@ -91,6 +95,8 @@ namespace RoboScapeSimulator.IoTScape.Devices
 
                     Vector3 axis = Vector3.Transform(Vector3.UnitY, trackedBody.Pose.Orientation);
 
+                    float angleDelta = MathF.Abs(MaxAngle - MinAngle) / NumRays;
+
                     for (int i = 0; i < NumRays; i++)
                     {
                         distance = MaxDistance;
@@ -102,7 +108,7 @@ namespace RoboScapeSimulator.IoTScape.Devices
                             IntersectionCount = &intersectionCount
                         };
 
-                        Vector3 direction = Vector3.Transform(Vector3.Transform(Vector3.UnitZ, Quaternion.CreateFromAxisAngle(axis, -2f * MathF.PI / NumRays * i)), trackedBody.Pose.Orientation);
+                        Vector3 direction = Vector3.Transform(Vector3.Transform(Vector3.UnitZ, Quaternion.CreateFromAxisAngle(axis, -angleDelta * i + MinAngle)), trackedBody.Pose.Orientation);
                         simulation.RayCast(trackedBody.Pose.Position + Vector3.Transform(Offset, trackedBody.Pose.Orientation) + direction * MinDistance,
                                            direction, MaxDistance, ref hitHandler);
 
@@ -113,7 +119,6 @@ namespace RoboScapeSimulator.IoTScape.Devices
 
                         ranges.Add(distance * OutputMulitplier);
                     }
-
 
                     return ranges.Select(range => range.ToString()).ToArray();
                 };
