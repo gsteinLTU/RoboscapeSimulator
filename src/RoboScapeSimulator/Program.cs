@@ -11,7 +11,7 @@ Trace.WriteLine("Starting RoboScapeSimulator...");
 /// <summary>
 /// Frequency to send update messages to users
 /// </summary>
-const int updateFPS = 10;
+const int updateFPS = 9;
 
 /// <summary>
 /// Frequency to run simulation at
