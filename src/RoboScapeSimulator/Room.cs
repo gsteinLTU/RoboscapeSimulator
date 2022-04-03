@@ -306,7 +306,8 @@ namespace RoboScapeSimulator
             new WallEnvironment(),
             new SquareDrivingEnvironment(),
             new FourColorRobotsEnvironment(),
-            new ObstacleCourseEnvironment()
+            new ObstacleCourseEnvironment(),
+            new LIDARTestEnvironment()
         };
 
         public DateTime LastInteractionTime

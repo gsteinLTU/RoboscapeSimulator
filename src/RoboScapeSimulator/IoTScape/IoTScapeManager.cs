@@ -44,7 +44,7 @@ namespace RoboScapeSimulator.IoTScape
         void announce(IoTScapeObject o)
         {
             string serviceJson = JsonConvert.SerializeObject(new Dictionary<string, IoTScapeServiceDefinition>() { { o.Definition.name, o.Definition } });
-            Trace.WriteLine($"Announcing service {o.Definition.name} from object with ID {o.Definition.id}");
+            Debug.WriteLine($"Announcing service {o.Definition.name} from object with ID {o.Definition.id}");
 
             _socket.SendTo(serviceJson.Select(c => (byte)c).ToArray(), SocketFlags.None, hostEndPoint);
         }
@@ -66,7 +66,7 @@ namespace RoboScapeSimulator.IoTScape
         {
             if (IsRegistered(o))
             {
-                Trace.WriteLine("IoTScapeObject " + o.Definition.name + ":" + o.Definition.id + " already registered.");
+                Debug.WriteLine("IoTScapeObject " + o.Definition.name + ":" + o.Definition.id + " already registered.");
                 return o.Definition.id ?? "";
             }
 
