@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoboScapeSimulator", "src\R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoboScapeSimulator.Tests", "src\RoboScapeSimulator.Tests\RoboScapeSimulator.Tests.csproj", "{6FBD70C9-2D80-457A-BA28-5E24F676A533}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoboScapeSimulator.Node", "src\RoboScapeSimulator.Node\RoboScapeSimulator.Node.csproj", "{59DCB975-C7EA-4C17-BEAD-A935804BC5F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +28,14 @@ Global
 		{6FBD70C9-2D80-457A-BA28-5E24F676A533}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FBD70C9-2D80-457A-BA28-5E24F676A533}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FBD70C9-2D80-457A-BA28-5E24F676A533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59DCB975-C7EA-4C17-BEAD-A935804BC5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59DCB975-C7EA-4C17-BEAD-A935804BC5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59DCB975-C7EA-4C17-BEAD-A935804BC5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59DCB975-C7EA-4C17-BEAD-A935804BC5F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F5825B96-2E31-497B-9D4F-80D88BD269BE} = {071BC843-932C-4A31-832C-A90ABE4BACF5}
 		{6FBD70C9-2D80-457A-BA28-5E24F676A533} = {071BC843-932C-4A31-832C-A90ABE4BACF5}
+		{59DCB975-C7EA-4C17-BEAD-A935804BC5F7} = {071BC843-932C-4A31-832C-A90ABE4BACF5}
 	EndGlobalSection
 EndGlobal

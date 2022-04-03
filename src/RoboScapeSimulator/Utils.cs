@@ -7,20 +7,10 @@ using BepuPhysics.Trees;
 using BepuUtilities.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SocketIOSharp.Server.Client;
 namespace RoboScapeSimulator
 {
     public static class Utils
     {
-        static JsonSerializer serializer = new();
-
-        private static bool serializerInitialized = false;
-
-        private static void initializeSerializer()
-        {
-            serializer.NullValueHandling = NullValueHandling.Ignore;
-            serializer.Converters.Add(new SmallerFloatFormatConverter());
-        }
 
         public static void ExtractYawPitchRoll(this Quaternion r, out float yaw, out float pitch, out float roll)
         {
@@ -34,15 +24,9 @@ namespace RoboScapeSimulator
         /// </summary>
         public static void printJSON(JToken token)
         {
-            if (!serializerInitialized)
+            if (token != null)
             {
-                initializeSerializer();
-            }
-
-            using (var writer = new StringWriter())
-            {
-                serializer.Serialize(writer, token);
-                Debug.WriteLine(writer.ToString());
+                Debug.WriteLine(JsonConvert.SerializeObject(token, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Converters = new List<JsonConverter>() { new SmallerFloatFormatConverter() } }));
             }
         }
 
@@ -54,17 +38,34 @@ namespace RoboScapeSimulator
             Array.ForEach(tokens, printJSON);
         }
 
-        public static void sendAsJSON<T>(SocketIOSocket socket, string eventName, T data)
+        public static void sendAsJSON<T>(Node.Socket socket, string eventName, T data)
         {
-            if (!serializerInitialized)
+            if (data != null)
             {
-                initializeSerializer();
+                try
+                {
+                    socket.Emit(eventName, JsonConvert.SerializeObject(data, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Converters = new List<JsonConverter>() { new SmallerFloatFormatConverter() } }));
+                }
+                catch (System.Exception e)
+                {
+                    if (data is IDictionary<string, object>)
+                    {
+                        var dict = data as IDictionary<string, object>;
+                        foreach (var entry in dict)
+                        {
+                            Console.WriteLine("\t" + entry.Key + ": " + entry.Value.ToString());
+                        }
+                    }
+                    else
+                    {
+                        Trace.TraceError("Data: " + data.ToString());
+                    }
+                    Trace.TraceError(e.ToString());
+                }
             }
-
-            using (var writer = new JTokenWriter())
+            else
             {
-                serializer.Serialize(writer, data);
-                socket.Emit(eventName, writer.Token);
+                socket.Emit(eventName);
             }
         }
 

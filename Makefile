@@ -1,9 +1,11 @@
 build:
 	dotnet build
+	cd src/node && npm install
 clean:
 	dotnet clean
 restore:
 	dotnet restore
+	cd src/node && npm install
 watch:
 	dotnet watch --project src/RoboScapeSimulator/RoboScapeSimulator.csproj run
 test:

@@ -3,8 +3,6 @@ using Newtonsoft.Json.Linq;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.Environments;
-using SocketIOSharp.Server.Client;
-using WebSocketSharp;
 
 namespace RoboScapeSimulator
 {
@@ -16,7 +14,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// List of sockets for users connected to this room
         /// </summary>
-        public List<SocketIOSocket> activeSockets = new();
+        public List<Node.Socket> activeSockets = new();
 
         /// <summary>
         /// Visible string used to identify this room
@@ -154,6 +152,16 @@ namespace RoboScapeSimulator
 
             LastInteractionTime = DateTime.Now;
 
+            OnHibernateStart += (o, e) =>
+            {
+                Trace.WriteLine($"Room {Name} is now hibernating");
+            };
+
+            OnHibernateEnd += (o, e) =>
+            {
+                Trace.WriteLine($"Room {Name} is no longer hibernating");
+            };
+
             Trace.WriteLine("Room " + Name + " created.");
         }
 
@@ -184,9 +192,12 @@ namespace RoboScapeSimulator
 
         public void SendToClients(string eventName, params object[] args)
         {
-            foreach (var socket in activeSockets)
+            lock (activeSockets)
             {
-                Utils.sendAsJSON(socket, eventName, args);
+                foreach (var socket in activeSockets)
+                {
+                    Utils.sendAsJSON(socket, eventName, args);
+                }
             }
         }
 
@@ -194,10 +205,13 @@ namespace RoboScapeSimulator
         /// Adds a socket to active list and sets up message listeners
         /// </summary>
         /// <param name="socket">Socket to add to active sockets list</param>
-        internal void AddSocket(SocketIOSocket socket)
+        internal void AddSocket(Node.Socket socket)
         {
             LastInteractionTime = DateTime.Now;
-            activeSockets.Add(socket);
+            lock (activeSockets)
+            {
+                activeSockets.Add(socket);
+            }
             socket.On("resetRobot", handleResetRobot);
             socket.On("resetAll", handleResetAll);
             socket.On("robotButton", handleRobotButton);
@@ -252,13 +266,22 @@ namespace RoboScapeSimulator
         /// Removes a socket from active list and removes message listeners
         /// </summary>
         /// <param name="socket">Socket to remove from active sockets list</param>
-        internal void RemoveSocket(SocketIOSocket socket)
+        internal void RemoveSocket(Node.Socket socket)
         {
             socket.Off("resetRobot", handleResetRobot);
             socket.Off("resetAll", handleResetAll);
             socket.Off("robotButton", handleRobotButton);
             socket.Emit("roomLeft");
-            activeSockets.Remove(socket);
+            lock (activeSockets)
+            {
+                activeSockets.Remove(socket);
+
+                // Stop running room when no users
+                if (activeSockets.Count == 0)
+                {
+                    Hibernating = true;
+                }
+            }
         }
 
         /// <summary>
@@ -280,14 +303,10 @@ namespace RoboScapeSimulator
         internal static List<EnvironmentConfiguration> Environments = new()
         {
             new DefaultEnvironment(),
-            new DemoEnvironment(),
-            new IoTScapeExampleEnvironment(),
-            new IoTScapeExampleEnvironment2(),
-            new TableEnvironment(),
-            new TableEnvironment(3, 2),
             new WallEnvironment(),
-            new PositionSensorDemo(),
-            new PositionSensorDemo(2)
+            new SquareDrivingEnvironment(),
+            new FourColorRobotsEnvironment(),
+            new ObstacleCourseEnvironment()
         };
 
         public DateTime LastInteractionTime
@@ -332,7 +351,7 @@ namespace RoboScapeSimulator
                 name = Name,
                 creator = Creator ?? "",
                 environment = EnvironmentID,
-                hasPassword = !Password.IsNullOrEmpty(),
+                hasPassword = !string.IsNullOrEmpty(Password),
                 isHibernating = Hibernating,
                 lastInteractionTime = LastInteractionTime
             };
@@ -358,7 +377,6 @@ namespace RoboScapeSimulator
                     RemoveSocket(activeSockets[0]);
                 }
 
-                Trace.WriteLine($"Room {Name} is now hibernating");
                 return;
             }
 
