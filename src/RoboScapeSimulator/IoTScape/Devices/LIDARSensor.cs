@@ -102,7 +102,7 @@ namespace RoboScapeSimulator.IoTScape.Devices
                             IntersectionCount = &intersectionCount
                         };
 
-                        Vector3 direction = Vector3.Transform(Vector3.Transform(Vector3.UnitZ, Quaternion.CreateFromAxisAngle(axis, 2f * MathF.PI / NumRays * i)), trackedBody.Pose.Orientation);
+                        Vector3 direction = Vector3.Transform(Vector3.Transform(Vector3.UnitZ, Quaternion.CreateFromAxisAngle(axis, -2f * MathF.PI / NumRays * i)), trackedBody.Pose.Orientation);
                         simulation.RayCast(trackedBody.Pose.Position + Vector3.Transform(Offset, trackedBody.Pose.Orientation) + direction * MinDistance,
                                            direction, MaxDistance, ref hitHandler);
 
