@@ -19,6 +19,11 @@ namespace RoboScapeSimulator
             roll = MathF.Atan2(2.0f * (r.X * r.Y + r.Z * r.W), 1.0f - 2.0f * (r.X * r.X + r.Z * r.Z));
         }
 
+        public static Vector3 PointOnCircle(this Random rng, float radius = 1, float height = 0)
+        {
+            return new(radius * MathF.Cos(rng.NextSingle() * 2 * MathF.PI), height, radius * MathF.Sin(rng.NextSingle() * 2 * MathF.PI));
+        }
+
         /// <summary>
         /// Helper function to print a JToken
         /// </summary>

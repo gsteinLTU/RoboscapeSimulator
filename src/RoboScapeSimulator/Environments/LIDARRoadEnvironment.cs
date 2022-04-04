@@ -29,7 +29,7 @@ namespace RoboScapeSimulator.Environments
 
             // Demo robot
             var robot = new ParallaxRobot(room, new(1, 0.2f, 1), Quaternion.Identity);
-            var lidar = new LIDARSensor(robot) { Offset = new(0, 0.1f, 0.07f), NumRays = 16, MinAngle = MathF.PI / 4, MaxAngle = 3f * MathF.PI / 4 };
+            var lidar = new LIDARSensor(robot) { Offset = new(0, 0.1f, 0.07f), NumRays = 16, MinAngle = MathF.PI / 4, MaxAngle = 3f * MathF.PI / 4, MaxDistance = 5 };
             lidar.Setup(room);
 
             // Start and end areas
@@ -38,11 +38,15 @@ namespace RoboScapeSimulator.Environments
 
             AddPath(room, new()
             {
-                new(0, 0, 0),
-                new(0, 0, 5),
-                new(5, 0, 5),
-                new(5, 0, 0),
-                new(0, 0, 0),
+                new(-2.5f, 0, 0),
+                new(-2.5f, 0, 5),
+            });
+
+
+            AddPath(room, new()
+            {
+                new(2.5f, 0, 0),
+                new(2.5f, 0, 5),
             });
 
             static void AddPath(Room room, List<Vector3> points, float thickness = 0.1f, float height = 0.5f)
