@@ -8,46 +8,83 @@ namespace RoboScapeSimulator.Environments
 {
     class LIDARRoadEnvironment : EnvironmentConfiguration
     {
-        public LIDARRoadEnvironment()
+        private string _courseType;
+
+        public LIDARRoadEnvironment(string courseType = Courses.Easy)
         {
-            Name = "LIDAR Road";
-            ID = "lidarroad";
-            Description = "Robot with LIDAR drives down a road";
+            Name = $"LIDAR Road ({courseType})";
+            ID = "lidarroad" + courseType;
+            Description = $"Robot with LIDAR drives down a {courseType} road";
+            _courseType = courseType;
+        }
+
+        public struct Courses
+        {
+            public const string Easy = "Easy";
         }
 
         public override object Clone()
         {
-            return new LIDARRoadEnvironment();
+            return new LIDARRoadEnvironment(_courseType);
         }
 
         public override void Setup(Room room)
         {
-            Trace.WriteLine("Setting up lidar test environment");
+            Trace.WriteLine($"Setting up {Name} environment");
 
             // Ground
             var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
             // Demo robot
-            var robot = new ParallaxRobot(room, new(1, 0.2f, 1), Quaternion.Identity);
-            var lidar = new LIDARSensor(robot) { Offset = new(0, 0.1f, 0.07f), NumRays = 16, MinAngle = MathF.PI / 4, MaxAngle = 3f * MathF.PI / 4, MaxDistance = 5 };
+            var robot = new ParallaxRobot(room, new(0, 0.2f, 0), Quaternion.Identity);
+            var lidar = new LIDARSensor(robot) { Offset = new(0, 0.1f, 0.07f), NumRays = 3, MinAngle = MathF.PI / 6f, MaxAngle = 5f * MathF.PI / 6, MaxDistance = 5 };
             lidar.Setup(room);
 
-            // Start and end areas
-            var start = new Cube(room, 5, 0.01f, 1, new(0, 0.005f, -5), Quaternion.CreateFromYawPitchRoll(0, 0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
-            var end = new Cube(room, 5, 0.01f, 1, new(0, 0.005f, 5), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
-
-            AddPath(room, new()
+            switch (_courseType)
             {
-                new(-2.5f, 0, 0),
-                new(-2.5f, 0, 5),
-            });
+                case Courses.Easy:
+                default:
+
+                    // left
+                    AddPath(room, new()
+                    {
+                        new(-0.5f, 0, 0),
+                        new(-0.5f, 0, 1),
+                        new(-1f, 0, 2.25f),
+                        new(-1f, 0, 2.75f),
+                        new(0.25f, 0, 4.75f),
+                        new(0.25f, 0, 5.25f),
+                        new(-0.5f, 0, 7f),
+                    });
+
+                    // right
+                    AddPath(room, new()
+                    {
+                        new(0.5f, 0, 0),
+                        new(0.5f, 0, 1),
+                        new(0f, 0, 2.25f),
+                        new(0f, 0, 2.75f),
+                        new(1.25f, 0, 4.75f),
+                        new(1.25f, 0, 5.25f),
+                        new(0.5f, 0, 7f),
+                    });
+
+                    // start area
+                    AddPath(room, new()
+                    {
+                        new(-0.5f, 0, 0),
+                        new(-0.5f, 0, -0.5f),
+                        new(0.5f, 0, -0.5f),
+                        new(0.5f, 0, 0f),
+                    });
 
 
-            AddPath(room, new()
-            {
-                new(2.5f, 0, 0),
-                new(2.5f, 0, 5),
-            });
+                    // Start and end areas
+                    var start = new Cube(room, 1, 0.01f, 1, new(0, 0.005f, 0f), Quaternion.CreateFromYawPitchRoll(0, 0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
+                    var end = new Cube(room, 1, 0.01f, 1, new(0, 0.005f, 7f), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
+
+                    break;
+            }
 
             static void AddPath(Room room, List<Vector3> points, float thickness = 0.1f, float height = 0.5f)
             {
@@ -70,7 +107,7 @@ namespace RoboScapeSimulator.Environments
 
                 var center = p1 + ((p2 - p1) * 0.5f);
                 var angle = MathF.Atan2(p2.Z - p1.Z, p2.X - p1.X);
-                var wall1 = new Cube(room, length, height, thickness, center, Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle), true, visualInfo: new VisualInfo() { Color = "#633" });
+                var wall1 = new Cube(room, length, height, thickness, center, Quaternion.CreateFromAxisAngle(Vector3.UnitY, -angle), true, visualInfo: new VisualInfo() { Color = "#633" });
             }
 
         }
