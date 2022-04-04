@@ -99,7 +99,7 @@ namespace RoboScapeSimulator
                 {
                     output.Add(entity.Name, new BodyInfo
                     {
-                        label = entity.Name,
+                        label = allData ? entity.Name : null,
                         pos = {
                             x = staticEntity.StaticReference.Pose.Position.X,
                             y = staticEntity.StaticReference.Pose.Position.Y,
@@ -116,7 +116,7 @@ namespace RoboScapeSimulator
                 {
                     output.Add(entity.Name, new BodyInfo
                     {
-                        label = entity.Name,
+                        label = allData ? entity.Name : null,
                         pos = {
                         x = dynamicEntity.BodyReference.Pose.Position.X,
                         y = dynamicEntity.BodyReference.Pose.Position.Y,
