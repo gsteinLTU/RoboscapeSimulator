@@ -32,7 +32,7 @@ namespace RoboScapeSimulator.Environments
             var wall = new Cube(room, wallsize, 1, 0.1f, new Vector3(0, 0.5f, 2f), Quaternion.Identity, true, nameOverride: "wall1", visualInfo: new VisualInfo() { Image = "bricks.png" });
 
             // Demo robot
-            var robot = new ParallaxRobot(room, new(1, 0.1f, 1), Quaternion.Identity);
+            var robot = new ParallaxRobot(room, new(1, 0.2f, 1), Quaternion.Identity);
             var lidar = new LIDARSensor(robot) { Offset = new(0, 0.1f, 0.07f), NumRays = 16, MinAngle = MathF.PI / 4, MaxAngle = 3f * MathF.PI / 4 };
             lidar.Setup(room);
         }
