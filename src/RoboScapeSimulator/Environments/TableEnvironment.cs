@@ -2,30 +2,34 @@ using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.IoTScape.Devices;
+
 namespace RoboScapeSimulator.Environments
 {
     class TableEnvironment : EnvironmentConfiguration
     {
         uint _boxes = 2;
         uint _robots = 1;
+        bool _lidar = false;
 
-        public TableEnvironment(uint boxes = 2, uint robots = 1)
+        public TableEnvironment(uint boxes = 2, uint robots = 1, bool lidar = false)
         {
-            Name = $"Table With {boxes} Boxes and {robots} robots";
-            ID = $"table_{boxes}b{robots}r";
+            Name = $"Table With {boxes} Boxes and {robots} robots {(lidar ? "with lidar" : "")}";
+            ID = $"table_{boxes}b{robots}r{(lidar ? "_lidar" : "")}";
             Description = "The table environment";
             _boxes = boxes;
             _robots = robots;
+            _lidar = lidar;
         }
 
         public override object Clone()
         {
-            return new TableEnvironment(_boxes, _robots);
+            return new TableEnvironment(_boxes, _robots, _lidar);
         }
 
         public override void Setup(Room room)
         {
-            Trace.WriteLine("Setting up table environment");
+            Trace.WriteLine($"Setting up {Name} environment");
 
             // Ground
             var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
@@ -37,6 +41,12 @@ namespace RoboScapeSimulator.Environments
             for (int i = 0; i < _robots; i++)
             {
                 var robot = new ParallaxRobot(room, spawnHeight: 1.25f);
+
+                if (_lidar)
+                {
+                    var lidar = new LIDARSensor(robot) { Offset = new(0, 0.25f, 0.07f), NumRays = 15, MinAngle = MathF.PI / 2, MaxAngle = 3 * MathF.PI / 2 };
+                    lidar.Setup(room);
+                }
             }
 
             for (int i = 0; i < _boxes; i++)
