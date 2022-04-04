@@ -310,7 +310,8 @@ namespace RoboScapeSimulator
             new LIDARTestEnvironment(),
             new TableEnvironment(2, 1, true),
             new TableEnvironment(2, 2, true),
-            new LIDARRoadEnvironment()
+            new LIDARRoadEnvironment(),
+            new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.Hard)
         };
 
         public DateTime LastInteractionTime

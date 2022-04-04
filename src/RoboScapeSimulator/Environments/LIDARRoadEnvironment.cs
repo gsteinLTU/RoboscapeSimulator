@@ -21,6 +21,7 @@ namespace RoboScapeSimulator.Environments
         public struct Courses
         {
             public const string Easy = "Easy";
+            public const string Hard = "Hard";
         }
 
         public override object Clone()
@@ -42,6 +43,48 @@ namespace RoboScapeSimulator.Environments
 
             switch (_courseType)
             {
+                case Courses.Hard:
+                    // left
+                    AddPath(room, new()
+                    {
+                        new(-0.5f, 0, 0),
+                        new(-0.5f, 0, 1.75f),
+                        new(1.5f, 0, 2.25f),
+                        new(1.5f, 0, 2.75f),
+                        new(-2.5f, 0, 3.5f),
+                        new(-2.5f, 0, 5.25f),
+                        new(1.5f, 0, 6.25f),
+                        new(1.5f, 0, 8f),
+                    });
+
+                    // right
+                    AddPath(room, new()
+                    {
+                        new(0.5f, 0, 0),
+                        new(0.5f, 0, 0.75f),
+                        new(2.5f, 0, 1.5f),
+                        new(2.5f, 0, 3.5f),
+                        new(-1.5f, 0, 4.25f),
+                        new(-1.5f, 0, 4.5f),
+                        new(2.5f, 0, 5.5f),
+                        new(2.5f, 0, 8f),
+                    });
+
+                    // start area
+                    AddPath(room, new()
+                    {
+                        new(-0.5f, 0, 0),
+                        new(-0.5f, 0, -0.5f),
+                        new(0.5f, 0, -0.5f),
+                        new(0.5f, 0, 0f),
+                    });
+
+
+                    // Start and end areas
+                    var hardstart = new Cube(room, 1, 0.01f, 1, new(0, 0.005f, 0f), Quaternion.CreateFromYawPitchRoll(0, 0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
+                    var hardend = new Cube(room, 1, 0.01f, 1, new(2f, 0.005f, 8f), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
+
+                    break;
                 case Courses.Easy:
                 default:
 
@@ -80,8 +123,8 @@ namespace RoboScapeSimulator.Environments
 
 
                     // Start and end areas
-                    var start = new Cube(room, 1, 0.01f, 1, new(0, 0.005f, 0f), Quaternion.CreateFromYawPitchRoll(0, 0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
-                    var end = new Cube(room, 1, 0.01f, 1, new(0, 0.005f, 7f), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
+                    var easystart = new Cube(room, 1, 0.01f, 1, new(0, 0.005f, 0f), Quaternion.CreateFromYawPitchRoll(0, 0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
+                    var easyend = new Cube(room, 1, 0.01f, 1, new(0, 0.005f, 7f), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
 
                     break;
             }
