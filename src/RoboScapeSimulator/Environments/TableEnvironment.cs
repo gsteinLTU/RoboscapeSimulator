@@ -43,6 +43,9 @@ namespace RoboScapeSimulator.Environments
             {
                 var robot = new ParallaxRobot(room, rng.PointOnCircle(1, 1.75f));
 
+                PositionSensor locationSensor = new(robot);
+                locationSensor.Setup(room);
+
                 if (_lidar)
                 {
                     var lidar = new LIDARSensor(robot) { Offset = new(0, 0.25f, 0.07f), NumRays = 15, MinAngle = MathF.PI / 2, MaxAngle = 3 * MathF.PI / 2, MaxDistance = 5 };
