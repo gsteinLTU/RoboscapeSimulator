@@ -37,7 +37,7 @@ namespace RoboScapeSimulator.Environments
             var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
             // Demo robot
-            var robot = new ParallaxRobot(room, new(0, 0.2f, 0), Quaternion.Identity);
+            var robot = new ParallaxRobot(room, new(0, 0.25f, 0), Quaternion.Identity);
             var lidar = new LIDARSensor(robot) { Offset = new(0, 0.1f, 0.07f), NumRays = 3, MinAngle = -2 * MathF.PI / 6f + MathF.PI / 2, MaxAngle = 2f * MathF.PI / 6 + MathF.PI / 2, MaxDistance = 5 };
             lidar.Setup(room);
 
