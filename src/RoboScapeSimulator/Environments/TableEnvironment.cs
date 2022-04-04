@@ -35,23 +35,27 @@ namespace RoboScapeSimulator.Environments
             var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
             // Table
-            var table = new Cube(room, 10.5f, 1, 10.5f, new Vector3(0, 0.5f, 0), Quaternion.Identity, true, nameOverride: "table");
+            var table = new Cube(room, 5.5f, 1, 5.5f, new Vector3(0, 0.5f, 0), Quaternion.Identity, true, nameOverride: "table");
 
             // Demo robots
+            Random rng = new Random();
             for (int i = 0; i < _robots; i++)
             {
-                var robot = new ParallaxRobot(room, spawnHeight: 1.25f);
+                var robot = new ParallaxRobot(room, rng.PointOnCircle(1, 1.75f));
+
+                PositionSensor locationSensor = new(robot);
+                locationSensor.Setup(room);
 
                 if (_lidar)
                 {
-                    var lidar = new LIDARSensor(robot) { Offset = new(0, 0.25f, 0.07f), NumRays = 15, MinAngle = MathF.PI / 2, MaxAngle = 3 * MathF.PI / 2 };
+                    var lidar = new LIDARSensor(robot) { Offset = new(0, 0.25f, 0.07f), NumRays = 15, MinAngle = MathF.PI / 2, MaxAngle = 3 * MathF.PI / 2, MaxDistance = 5 };
                     lidar.Setup(room);
                 }
             }
 
             for (int i = 0; i < _boxes; i++)
             {
-                var cube = new Cube(room, visualInfo: new VisualInfo() { Color = "#B85" });
+                var cube = new Cube(room, 0.5f, 0.5f, 0.5f, initialPosition: rng.PointOnCircle(2, 0.75f), visualInfo: new VisualInfo() { Color = "#B85" });
             }
         }
     }

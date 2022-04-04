@@ -63,7 +63,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
             if (size == null)
             {
-                box = new Box(0.25f, 0.1f, 0.15f);
+                box = new Box(0.10f, 0.1f, 0.15f);
             }
             else
             {

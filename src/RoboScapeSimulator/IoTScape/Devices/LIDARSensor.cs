@@ -36,8 +36,14 @@ namespace RoboScapeSimulator.IoTScape.Devices
             public const float TO_INCHES = 39.37008f;
         }
 
+        /// <summary>
+        /// Start angle for LIDAR rays
+        /// </summary>
         public float MinAngle = 0;
 
+        /// <summary>
+        /// End angle for LIDAR rays
+        /// </summary>
         public float MaxAngle = MathF.PI * 2;
 
         /// <summary>
@@ -88,8 +94,6 @@ namespace RoboScapeSimulator.IoTScape.Devices
                     List<float> ranges = new();
 
                     simulation.BufferPool.Take(1, out Buffer<RayHit> results);
-
-
 
                     float distance;
 
