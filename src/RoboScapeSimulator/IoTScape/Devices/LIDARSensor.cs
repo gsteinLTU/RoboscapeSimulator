@@ -95,8 +95,6 @@ namespace RoboScapeSimulator.IoTScape.Devices
 
                     simulation.BufferPool.Take(1, out Buffer<RayHit> results);
 
-
-
                     float distance;
 
                     Vector3 axis = Vector3.Transform(Vector3.UnitY, trackedBody.Pose.Orientation);
