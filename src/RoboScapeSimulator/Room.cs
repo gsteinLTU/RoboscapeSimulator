@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
@@ -217,13 +218,13 @@ namespace RoboScapeSimulator
             socket.On("robotButton", handleRobotButton);
         }
 
-        private void handleResetRobot(JToken[] args)
+        private void handleResetRobot(JsonNode[] args)
         {
             string robotID = args[0].ToString();
             ResetRobot(robotID);
         }
 
-        private void handleResetAll(JToken[] args)
+        private void handleResetAll(JsonNode[] args)
         {
             foreach (var entity in SimInstance.Entities)
             {
@@ -234,7 +235,7 @@ namespace RoboScapeSimulator
             }
         }
 
-        private void handleRobotButton(JToken[] args)
+        private void handleRobotButton(JsonNode[] args)
         {
             string robotID = args[0].ToString();
 

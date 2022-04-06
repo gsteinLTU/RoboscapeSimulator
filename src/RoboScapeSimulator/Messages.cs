@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace RoboScapeSimulator
 {
@@ -36,7 +36,7 @@ namespace RoboScapeSimulator
             Utils.sendAsJSON(socket, isFullUpdate ? "fullUpdate" : "u", updateData);
         }
 
-        internal static void HandleJoinRoom(JToken[] args, Node.Socket socket, IDictionary<string, Room> rooms, ref string socketRoom)
+        internal static void HandleJoinRoom(JsonNode[] args, Node.Socket socket, IDictionary<string, Room> rooms, ref string socketRoom)
         {
             // Remove from existing room
             if (!string.IsNullOrWhiteSpace(socketRoom))
@@ -53,7 +53,7 @@ namespace RoboScapeSimulator
             }
 
             // Create room if requested
-            var roomID = args[0].Value<string>("roomID");
+            var roomID = args[0]["roomID"]?.ToString();
             if (roomID == "create")
             {
                 // Verify we have capacity
@@ -63,9 +63,9 @@ namespace RoboScapeSimulator
                     return;
                 }
 
-                Room newRoom = new("", args[0].Value<string>("password") ?? "", args[0].Value<string>("env") ?? "default");
+                Room newRoom = new("", args[0]["password"]?.ToString() ?? "", args[0]["env"]?.ToString() ?? "default");
 
-                string? roomNamespace = args[0].Value<string>("namespace");
+                string? roomNamespace = args[0]["namespace"]?.ToString();
                 if (roomNamespace != null)
                 {
                     newRoom.Name += "@" + roomNamespace;
@@ -82,7 +82,7 @@ namespace RoboScapeSimulator
                 // Joining existing room, make sure it exists first
                 if (roomID != null && rooms.ContainsKey(roomID))
                 {
-                    if (rooms[roomID].Password == "" || rooms[roomID].Password == args[0].Value<string>("password"))
+                    if (rooms[roomID].Password == "" || rooms[roomID].Password == args[0]["password"]?.ToString())
                     {
                         rooms[roomID].Hibernating = false;
                         socketRoom = roomID;

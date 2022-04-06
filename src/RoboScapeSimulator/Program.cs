@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RoboScapeSimulator;
 using RoboScapeSimulator.IoTScape;
 
@@ -26,7 +26,7 @@ serializer.NullValueHandling = NullValueHandling.Ignore;
 /// </summary>
 ConcurrentDictionary<string, Room> rooms = new();
 
-IoTScapeManager ioTScapeManager = new IoTScapeManager();
+IoTScapeManager ioTScapeManager = new();
 
 using (RoboScapeSimulator.Node.Server server = new())
 {
@@ -59,14 +59,14 @@ using (RoboScapeSimulator.Node.Server server = new())
         });
 
         // Send room info
-        socket.On("getRooms", (JToken[] args) =>
+        socket.On("getRooms", (JsonNode[] args) =>
         {
-            if (args.Length == 0 || args[0].Type != JTokenType.String) return;
-            var user = args[0].Value<string>();
-            Messages.SendUserRooms(socket, user ?? "", rooms);
+            if (args.Length == 0) return;
+            var user = args[0]?.ToString() ?? "";
+            Messages.SendUserRooms(socket, user, rooms);
         });
 
-        socket.On("joinRoom", (JToken[] args) =>
+        socket.On("joinRoom", (JsonNode[] args) =>
         {
             Messages.HandleJoinRoom(args, socket, rooms, ref socketRoom);
         });
@@ -81,7 +81,7 @@ using (RoboScapeSimulator.Node.Server server = new())
 
     // Client update loops
     var clientUpdateTimer = Timers.CreateClientUpdateTimer(updateFPS, rooms);
-    var clientFullUpdateTimer = Timers.CreateClientFullUpdateTimer(rooms, serializer);
+    var clientFullUpdateTimer = Timers.CreateClientFullUpdateTimer(rooms);
     var cleanDeadRoomsTimer = Timers.CreateCleanDeadRoomsTimer(rooms);
 
     var fpsSpan = TimeSpan.FromSeconds(1d / simFPS);

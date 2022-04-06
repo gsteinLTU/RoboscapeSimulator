@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Runtime.CompilerServices;
-using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+
 
 namespace RoboScapeSimulator.Node;
 
@@ -14,7 +12,7 @@ namespace RoboScapeSimulator.Node;
 /// </summary>
 public class Server : IDisposable
 {
-    List<Action<Socket>> connectionCallbacks = new();
+    readonly List<Action<Socket>> connectionCallbacks = new();
 
     /// <summary>
     /// Add a callback run when a socket connects
@@ -38,12 +36,12 @@ public class Server : IDisposable
     AnonymousPipeServerStream? pipeWriter;
     AnonymousPipeServerStream? pipeReader;
 
-    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    CancellationTokenSource cancellationTokenSource = new();
 
     /// <summary>
     /// Sockets known to this server
     /// </summary>
-    ConcurrentDictionary<string, Socket> sockets = new();
+    readonly ConcurrentDictionary<string, Socket> sockets = new();
 
     private bool disposedValue;
 
@@ -121,18 +119,23 @@ public class Server : IDisposable
 
                         if (sockets.ContainsKey(socketID) && sockets[socketID].callbacks.ContainsKey(messageType))
                         {
-                            JToken jData = JToken.ReadFrom(new JsonTextReader(new StringReader(messageData)));
-                            sockets[socketID].callbacks[messageType].ForEach(callback =>
+                            JsonNode? jData = JsonNode.Parse(messageData);
+
+                            if (jData != null)
                             {
-                                if (jData.Type == JTokenType.Array)
+                                sockets[socketID].callbacks[messageType].ForEach(callback =>
                                 {
-                                    callback(((JArray)jData).ToArray());
-                                }
-                                else
-                                {
-                                    callback(new JToken[] { jData });
-                                }
-                            });
+                                    if (jData is JsonArray arr)
+                                    {
+                                        JsonNode[] a = arr.Cast<JsonNode>().ToArray();
+                                        callback(a ?? Array.Empty<JsonNode>());
+                                    }
+                                    else
+                                    {
+                                        callback(new JsonNode[] { jData });
+                                    }
+                                });
+                            }
                         }
                     }
 
@@ -173,7 +176,7 @@ public class Server : IDisposable
 
     static async IAsyncEnumerable<string> readPipe(AnonymousPipeServerStream pipe, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        StreamReader sr = new StreamReader(pipe);
+        StreamReader sr = new(pipe);
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -267,14 +270,14 @@ public class Socket
     /// <summary>
     /// Callbacks for message types
     /// </summary>
-    internal readonly Dictionary<JToken, List<Action<JToken[]>>> callbacks = new();
+    internal readonly Dictionary<string, List<Action<JsonNode[]>>> callbacks = new();
 
     /// <summary>
     /// Add a callback for an event
     /// </summary>
     /// <param name="eventName">Name of event</param>
     /// <param name="callback">Callback to run when event occurs</param>
-    public void On(JToken eventName, Action<JToken[]> callback)
+    public void On(string eventName, Action<JsonNode[]> callback)
     {
         if (callbacks.ContainsKey(eventName))
         {
@@ -282,7 +285,7 @@ public class Socket
         }
         else
         {
-            callbacks.Add(eventName, new List<Action<JToken[]>>() { callback });
+            callbacks.Add(eventName, new List<Action<JsonNode[]>>() { callback });
         }
     }
 
@@ -291,9 +294,9 @@ public class Socket
     /// </summary>
     /// <param name="eventName">Name of event</param>
     /// <param name="callback">Callback to run when event occurs</param>
-    public void On(JToken eventName, Action callback)
+    public void On(string eventName, Action callback)
     {
-        On(eventName, (JToken[] args) => callback());
+        On(eventName, (JsonNode[] args) => callback());
     }
 
     internal readonly List<Action> onDisconnect = new();
@@ -312,7 +315,7 @@ public class Socket
     /// </summary>
     /// <param name="eventName">Event to remove callback from</param>
     /// <param name="callback">Callback to remove</param>
-    public void Off(JToken eventName, Action<JToken[]> callback)
+    public void Off(string eventName, Action<JsonNode[]> callback)
     {
         if (callbacks.ContainsKey(eventName))
         {
@@ -325,13 +328,13 @@ public class Socket
     /// </summary>
     /// <param name="eventName">Name of event to emit</param>
     /// <param name="data">Data to send</param>
-    public void Emit(string eventName, JToken data)
+    public void Emit(string eventName, JsonNode data)
     {
         string buffer = "0";
         buffer += ID;
         buffer += eventName;
         buffer += " ";
-        buffer += data.ToString(Formatting.None);
+        buffer += data.ToString();
         server.send(buffer);
     }
 
