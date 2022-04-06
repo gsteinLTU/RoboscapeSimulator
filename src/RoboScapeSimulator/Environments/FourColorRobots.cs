@@ -23,13 +23,13 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up four color robots environment");
 
             // Ground
-            var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
             // Robots
-            var robot1 = new ParallaxRobot(room, new Vector3(0, 0.25f, 1.25f), Quaternion.Identity, visualInfo: new() { ModelName = "car1_red.gltf" }, debug: false);
-            var robot2 = new ParallaxRobot(room, new Vector3(1.25f, 0.25f, 0), Quaternion.Identity, visualInfo: new() { ModelName = "car1_green.gltf" }, debug: false);
-            var robot3 = new ParallaxRobot(room, new Vector3(0, 0.25f, -1.25f), Quaternion.Identity, visualInfo: new() { ModelName = "car1_blue.gltf" }, debug: false);
-            var robot4 = new ParallaxRobot(room, new Vector3(-1.25f, 0.25f, 0), Quaternion.Identity, visualInfo: new() { ModelName = "car1_purple.gltf" }, debug: false);
+            _ = new ParallaxRobot(room, new Vector3(0, 0.25f, 1.25f), Quaternion.Identity, visualInfo: new() { ModelName = "car1_red.gltf" }, debug: false);
+            _ = new ParallaxRobot(room, new Vector3(1.25f, 0.25f, 0), Quaternion.Identity, visualInfo: new() { ModelName = "car1_green.gltf" }, debug: false);
+            _ = new ParallaxRobot(room, new Vector3(0, 0.25f, -1.25f), Quaternion.Identity, visualInfo: new() { ModelName = "car1_blue.gltf" }, debug: false);
+            _ = new ParallaxRobot(room, new Vector3(-1.25f, 0.25f, 0), Quaternion.Identity, visualInfo: new() { ModelName = "car1_purple.gltf" }, debug: false);
         }
     }
 }

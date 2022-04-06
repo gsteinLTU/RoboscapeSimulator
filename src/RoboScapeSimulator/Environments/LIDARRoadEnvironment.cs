@@ -34,8 +34,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine($"Setting up {Name} environment");
 
             // Ground
-            var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
-
+            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
             float endPosZ = 7;
             float endPosX = 0;
@@ -120,8 +119,8 @@ namespace RoboScapeSimulator.Environments
             }
 
             // Start and end areas
-            var start = new Cube(room, 1, 0.01f, 1.1f, new(0, 0.005f, 0f), Quaternion.CreateFromYawPitchRoll(0, 0.005f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
-            var end = new Cube(room, 1, 0.01f, 1.1f, new(endPosX, 0.005f, endPosZ), Quaternion.CreateFromYawPitchRoll(0, -0.005f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
+            _ = new Cube(room, 1, 0.01f, 1.1f, new(0, 0.005f, 0f), Quaternion.CreateFromYawPitchRoll(0, 0.005f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
+            _ = new Cube(room, 1, 0.01f, 1.1f, new(endPosX, 0.005f, endPosZ), Quaternion.CreateFromYawPitchRoll(0, -0.005f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
 
             // Demo robot
             var robot = new ParallaxRobot(room, new(0, 0.25f, 0), Quaternion.Identity);

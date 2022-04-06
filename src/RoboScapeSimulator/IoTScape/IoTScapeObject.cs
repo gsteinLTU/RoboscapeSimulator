@@ -56,7 +56,7 @@ namespace RoboScapeSimulator.IoTScape
         /// <param name="args">Data to be passed with event</param>
         public void SendEvent(string eventType, string[] args)
         {
-            IoTScapeResponse eventResponse = new IoTScapeResponse
+            IoTScapeResponse eventResponse = new()
             {
                 id = ID,
                 service = Definition.name,
@@ -77,7 +77,7 @@ namespace RoboScapeSimulator.IoTScape
         /// <param name="EventType">Type of event, should be in service definition</param>
         public void SendEvent(string EventType)
         {
-            SendEvent(EventType, new string[] { });
+            SendEvent(EventType, Array.Empty<string>());
         }
 
         public void Setup(Room room)

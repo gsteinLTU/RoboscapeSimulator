@@ -42,7 +42,7 @@ namespace RoboScapeSimulator
             return updateTimer;
         }
 
-        public static Timer CreateClientFullUpdateTimer(IDictionary<string, Room> rooms, JsonSerializer serializer)
+        public static Timer CreateClientFullUpdateTimer(IDictionary<string, Room> rooms)
         {
             return CreateClientUpdateTimer(1d / 60d, rooms, true);
         }

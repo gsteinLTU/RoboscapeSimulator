@@ -23,14 +23,14 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up wall environment");
 
             // Ground
-            var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
             // Walls
             float wallsize = 15;
-            var wall = new Cube(room, wallsize, 1, 0.1f, new Vector3(0, 0.5f, -wallsize / 2), Quaternion.Identity, true, nameOverride: "wall1", visualInfo: new VisualInfo() { Image = "bricks.png" });
+            _ = new Cube(room, wallsize, 1, 0.1f, new Vector3(0, 0.5f, -wallsize / 2), Quaternion.Identity, true, nameOverride: "wall1", visualInfo: new VisualInfo() { Image = "bricks.png" });
 
             // Demo robots
-            var robot = new ParallaxRobot(room);
+            _ = new ParallaxRobot(room);
         }
     }
 }

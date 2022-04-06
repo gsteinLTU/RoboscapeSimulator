@@ -32,13 +32,13 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine($"Setting up {Name} environment");
 
             // Ground
-            var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
             // Table
-            var table = new Cube(room, 5.5f, 1, 5.5f, new Vector3(0, 0.5f, 0), Quaternion.Identity, true, nameOverride: "table");
+            _ = new Cube(room, 5.5f, 1, 5.5f, new Vector3(0, 0.5f, 0), Quaternion.Identity, true, nameOverride: "table");
 
             // Demo robots
-            Random rng = new Random();
+            Random rng = new();
             for (int i = 0; i < _robots; i++)
             {
                 var robot = new ParallaxRobot(room, rng.PointOnCircle(1, 1.75f));
@@ -53,9 +53,10 @@ namespace RoboScapeSimulator.Environments
                 }
             }
 
+            // Cubes
             for (int i = 0; i < _boxes; i++)
             {
-                var cube = new Cube(room, 0.5f, 0.5f, 0.5f, initialPosition: rng.PointOnCircle(2, 0.75f), visualInfo: new VisualInfo() { Color = "#B85" });
+                _ = new Cube(room, 0.5f, 0.5f, 0.5f, initialPosition: rng.PointOnCircle(2, 0.75f), visualInfo: new VisualInfo() { Color = "#B85" });
             }
         }
     }

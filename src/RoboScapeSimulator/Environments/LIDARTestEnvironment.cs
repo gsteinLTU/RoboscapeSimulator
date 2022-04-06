@@ -25,11 +25,11 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up lidar test environment");
 
             // Ground
-            var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
             // Wall
             float wallsize = 15;
-            var wall = new Cube(room, wallsize, 1, 0.1f, new Vector3(0, 0.5f, 2f), Quaternion.Identity, true, nameOverride: "wall1", visualInfo: new VisualInfo() { Image = "bricks.png" });
+            _ = new Cube(room, wallsize, 1, 0.1f, new Vector3(0, 0.5f, 2f), Quaternion.Identity, true, nameOverride: "wall1", visualInfo: new VisualInfo() { Image = "bricks.png" });
 
             // Demo robot
             var robot = new ParallaxRobot(room, new(1, 0.2f, 1), Quaternion.Identity);

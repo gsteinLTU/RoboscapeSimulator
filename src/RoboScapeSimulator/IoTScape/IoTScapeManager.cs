@@ -191,12 +191,12 @@ namespace RoboScapeSimulator.IoTScape
         /// <param name="result">Result to send to server for request's response</param>
         private void SendResponse(IoTScapeRequest request, string[] result)
         {
-            IoTScapeResponse response = new IoTScapeResponse
+            IoTScapeResponse response = new()
             {
                 id = request.device,
                 request = request.id,
                 service = request.service,
-                response = (result ?? new string[] { }).ToList()
+                response = (result ?? Array.Empty<string>()).ToList()
             };
 
             SendToServer(response);
