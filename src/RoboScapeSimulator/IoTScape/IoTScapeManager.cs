@@ -150,11 +150,11 @@ namespace RoboScapeSimulator.IoTScape
                 string incomingString = Encoding.UTF8.GetString(incoming, 0, len);
 
                 var json = JsonSerializer.Create();
-                IoTScapeRequest request = json.Deserialize<IoTScapeRequest>(new JsonTextReader(new StringReader(incomingString)));
+                var request = json.Deserialize<IoTScapeRequest>(new JsonTextReader(new StringReader(incomingString)));
                 Debug.WriteLine(request);
 
                 // Verify device exists
-                if (objects.ContainsKey(request.service + ":" + request.device))
+                if (request != null && objects.ContainsKey(request.service + ":" + request.device))
                 {
                     var device = objects[request.service + ":" + request.device];
 

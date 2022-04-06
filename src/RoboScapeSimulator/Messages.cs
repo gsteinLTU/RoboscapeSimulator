@@ -53,7 +53,7 @@ namespace RoboScapeSimulator
             }
 
             // Create room if requested
-            string roomID = (string)args[0]["roomID"];
+            var roomID = args[0].Value<string>("roomID");
             if (roomID == "create")
             {
                 // Verify we have capacity
@@ -63,14 +63,15 @@ namespace RoboScapeSimulator
                     return;
                 }
 
-                Room newRoom = new("", (string)args[0]["password"] ?? "", (string)args[0]["env"] ?? "default");
+                Room newRoom = new("", args[0].Value<string>("password") ?? "", args[0].Value<string>("env") ?? "default");
 
-                if ((string)args[0]["namespace"] != null)
+                string? roomNamespace = args[0].Value<string>("namespace");
+                if (roomNamespace != null)
                 {
-                    newRoom.Name += "@" + (string)args[0]["namespace"];
+                    newRoom.Name += "@" + roomNamespace;
 
                     // For current NetsBlox implementation, namespace is username of creating user
-                    newRoom.Creator = (string)args[0]["namespace"];
+                    newRoom.Creator = roomNamespace;
                 }
 
                 rooms[newRoom.Name] = newRoom;
@@ -79,12 +80,12 @@ namespace RoboScapeSimulator
             else
             {
                 // Joining existing room, make sure it exists first
-                if (rooms.ContainsKey(roomID))
+                if (roomID != null && rooms.ContainsKey(roomID))
                 {
-                    if (rooms[roomID].Password == "" || rooms[roomID].Password == (string)args[0]["password"])
+                    if (rooms[roomID].Password == "" || rooms[roomID].Password == args[0].Value<string>("password"))
                     {
                         rooms[roomID].Hibernating = false;
-                        socketRoom = (string)args[0]["roomID"];
+                        socketRoom = roomID;
                     }
                 }
             }

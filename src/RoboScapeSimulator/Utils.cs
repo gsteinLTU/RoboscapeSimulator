@@ -53,9 +53,8 @@ namespace RoboScapeSimulator
                 }
                 catch (System.Exception e)
                 {
-                    if (data is IDictionary<string, object>)
+                    if (data is IDictionary<string, object> dict)
                     {
-                        var dict = data as IDictionary<string, object>;
                         foreach (var entry in dict)
                         {
                             Console.WriteLine("\t" + entry.Key + ": " + entry.Value.ToString());
@@ -97,16 +96,19 @@ namespace RoboScapeSimulator
                 return objectType == typeof(float) || objectType == typeof(double) || objectType == typeof(Half);
             }
 
-            public override void WriteJson(JsonWriter writer, object value,
+            public override void WriteJson(JsonWriter writer, object? value,
                                            JsonSerializer serializer)
             {
-                if (MathF.Abs((float)value) < 0.001f)
+                if (value is float f)
                 {
-                    writer.WriteValue("0");
-                }
-                else
-                {
-                    writer.WriteValue(string.Format("{0:G" + (int)Math.Max(4, Math.Round(4 + MathF.Log10(MathF.Abs((float)value)))) + "}", value));
+                    if (MathF.Abs(f) < 0.001f)
+                    {
+                        writer.WriteValue("0");
+                    }
+                    else
+                    {
+                        writer.WriteValue(string.Format("{0:G" + (int)Math.Max(4, Math.Round(4 + MathF.Log10(MathF.Abs(f)))) + "}", value));
+                    }
                 }
             }
 
@@ -116,7 +118,7 @@ namespace RoboScapeSimulator
             }
 
             public override object ReadJson(JsonReader reader, Type objectType,
-                                         object existingValue, JsonSerializer serializer)
+                                         object? existingValue, JsonSerializer serializer)
             {
                 throw new NotImplementedException();
             }

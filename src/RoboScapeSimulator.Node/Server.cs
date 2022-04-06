@@ -177,23 +177,12 @@ public class Server : IDisposable
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            string? line = null;
+            string? line;
             while ((line = await sr.ReadLineAsync()) != null)
             {
                 yield return line;
             }
         }
-    }
-
-    internal enum SendMessageType
-    {
-        Message
-    }
-
-    internal struct Message
-    {
-        string socketID;
-        string data;
     }
 
     internal enum ReceiveMessageType
@@ -205,15 +194,15 @@ public class Server : IDisposable
 
     internal void send(string data)
     {
-        if (sw == null)
+        if (pipeWriter != null)
         {
-            sw = new(pipeWriter);
-            sw.AutoFlush = true;
-        }
+            if (sw == null)
+            {
+                sw = new(pipeWriter);
+                sw.AutoFlush = true;
+            }
 
-        lock (sw)
-        {
-            if (pipeWriter != null)
+            lock (sw)
             {
                 try
                 {
