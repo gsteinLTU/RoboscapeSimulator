@@ -7,6 +7,7 @@ using BepuPhysics.Collidables;
 using BepuPhysics.CollisionDetection;
 using BepuPhysics.Constraints;
 using BepuUtilities;
+using RoboScapeSimulator.Entities;
 
 namespace RoboScapeSimulator;
 
@@ -100,16 +101,20 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
     public float MaximumRecoveryVelocity;
     public float FrictionCoefficient;
 
+    public SimulationInstance SimInstance;
+
+    public SimulationInstanceCallbacks(SimulationInstance simInstance, CollidableProperty<BodyCollisionProperties> properties)
+    {
+        SimInstance = simInstance;
+        Properties = properties;
+        ContactSpringiness = new(30, 1);
+        MaximumRecoveryVelocity = 2f;
+        FrictionCoefficient = 2f;
+    }
+
     public void Initialize(Simulation simulation)
     {
         Properties.Initialize(simulation);
-        //Use a default if the springiness value wasn't initialized... at least until struct field initializers are supported outside of previews.
-        if (ContactSpringiness.AngularFrequency == 0 && ContactSpringiness.TwiceDampingRatio == 0)
-        {
-            ContactSpringiness = new(30, 1);
-            MaximumRecoveryVelocity = 2f;
-            FrictionCoefficient = 2f;
-        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -141,6 +146,28 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
             pairMaterial.FrictionCoefficient = 0;
             pairMaterial.MaximumRecoveryVelocity = 2f;
             pairMaterial.SpringSettings = new SpringSettings(30, 1);
+
+            var triggerHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.A.BodyHandle : pair.B.BodyHandle;
+
+            var triggerEntity = SimInstance.Entities.Find(e =>
+                {
+                    if (e is DynamicEntity d)
+                    {
+                        return d.BodyReference.Handle.Value == triggerHandle.Value;
+                    }
+                    return false;
+                }
+            );
+
+            if (triggerEntity != null)
+            {
+                if (triggerEntity is Trigger trigger)
+                {
+                    //
+                    Console.WriteLine(SimInstance.Time + "Triggered " + trigger.Name);
+                }
+            }
+
             return false;
         }
 
