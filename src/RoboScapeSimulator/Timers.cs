@@ -1,7 +1,5 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace RoboScapeSimulator
 {

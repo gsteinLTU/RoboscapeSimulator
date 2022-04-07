@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 
@@ -334,7 +335,7 @@ public class Socket
         buffer += ID;
         buffer += eventName;
         buffer += " ";
-        buffer += data.ToString();
+        buffer += data.ToJsonString(new JsonSerializerOptions() { WriteIndented = false });
         server.send(buffer);
     }
 

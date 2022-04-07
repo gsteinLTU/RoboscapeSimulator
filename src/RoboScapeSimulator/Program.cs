@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.Json.Nodes;
-using Newtonsoft.Json;
 using RoboScapeSimulator;
 using RoboScapeSimulator.IoTScape;
 
@@ -17,9 +16,6 @@ const int updateFPS = 9;
 /// Frequency to run simulation at
 /// </summary> 
 const int simFPS = 45;
-
-JsonSerializer serializer = new();
-serializer.NullValueHandling = NullValueHandling.Ignore;
 
 /// <summary>
 /// Mapping of room IDs to Room objects

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text.Json.Nodes;
-using Newtonsoft.Json.Linq;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.Environments;
