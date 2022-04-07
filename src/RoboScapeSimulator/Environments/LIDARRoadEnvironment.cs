@@ -8,7 +8,7 @@ namespace RoboScapeSimulator.Environments
 {
     class LIDARRoadEnvironment : EnvironmentConfiguration
     {
-        private string _courseType;
+        readonly private string _courseType;
 
         public LIDARRoadEnvironment(string courseType = Courses.Easy)
         {

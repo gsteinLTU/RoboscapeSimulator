@@ -41,7 +41,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// Instantiate a Robot inside a given simulation instance
         /// </summary>
         /// <param name="room">Room this Robot exists inside</param>
-        public Robot(Room room, Vector3? position = null, Quaternion? rotation = null, Vector3? size = null, float mass = 2, VisualInfo? visualInfo = null, float spawnHeight = 0.4f)
+        public Robot(Room room, in Vector3? position = null, in Quaternion? rotation = null, in Vector3? size = null, float mass = 2, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f)
         {
             this.room = room;
             simulation = room.SimInstance.Simulation;

@@ -15,10 +15,10 @@ namespace RoboScapeSimulator.IoTScape
 
         private Socket _socket;
 
-        private int idprefix;
+        readonly private int idprefix;
 
-        private ConcurrentDictionary<string, IoTScapeObject> objects = new();
-        private ConcurrentDictionary<string, int> lastIDs = new();
+        readonly private ConcurrentDictionary<string, IoTScapeObject> objects = new();
+        readonly private ConcurrentDictionary<string, int> lastIDs = new();
 
         private EndPoint hostEndPoint;
         // Wait time in seconds.
@@ -125,7 +125,7 @@ namespace RoboScapeSimulator.IoTScape
         /// </summary>
         /// <param name="o">IoTScapeObject to register</param>
         /// <returns>ID of IoTScapeObject</returns>
-        public void Unregister(IoTScapeObject o)
+        public void Unregister(in IoTScapeObject o)
         {
             if (IsRegistered(o))
             {
@@ -133,13 +133,13 @@ namespace RoboScapeSimulator.IoTScape
             }
         }
 
-        public bool IsRegistered(IoTScapeObject o)
+        public bool IsRegistered(in IoTScapeObject o)
         {
             return objects.ContainsKey(o.Definition.name + ":" + o.Definition.id);
         }
 
         // Update is called once per frame
-        public void Update(float dt)
+        public void Update(in float dt)
         {
             // Parse incoming messages
             if (_socket.Available > 0)
@@ -189,7 +189,7 @@ namespace RoboScapeSimulator.IoTScape
         /// </summary>
         /// <param name="request">Request to respond to</param>
         /// <param name="result">Result to send to server for request's response</param>
-        private void SendResponse(IoTScapeRequest request, string[] result)
+        private void SendResponse(in IoTScapeRequest request, in string[] result)
         {
             IoTScapeResponse response = new()
             {
@@ -206,7 +206,7 @@ namespace RoboScapeSimulator.IoTScape
         /// Send an IoTScapeResponse object to the server as JSON
         /// </summary>
         /// <param name="response">Response to send to server</param>
-        internal void SendToServer(IoTScapeResponse response)
+        internal void SendToServer(in IoTScapeResponse response)
         {
             // Send response
             string responseJson = JsonConvert.SerializeObject(response,

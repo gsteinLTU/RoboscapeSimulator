@@ -8,9 +8,9 @@ namespace RoboScapeSimulator.Environments
 {
     class TableEnvironment : EnvironmentConfiguration
     {
-        uint _boxes = 2;
-        uint _robots = 1;
-        bool _lidar = false;
+        readonly uint _boxes = 2;
+        readonly uint _robots = 1;
+        readonly bool _lidar = false;
 
         public TableEnvironment(uint boxes = 2, uint robots = 1, bool lidar = false)
         {

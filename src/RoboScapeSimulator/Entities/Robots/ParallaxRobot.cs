@@ -61,7 +61,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
         private bool whiskerR = false;
 
-        public ParallaxRobot(Room room, Vector3? position = null, Quaternion? rotation = null, bool debug = false, VisualInfo? visualInfo = null, float spawnHeight = 0.4f) : base(room, position, rotation, visualInfo: visualInfo, spawnHeight: spawnHeight)
+        public ParallaxRobot(Room room, in Vector3? position = null, in Quaternion? rotation = null, bool debug = false, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f) : base(room, position, rotation, visualInfo: visualInfo, spawnHeight: spawnHeight)
         {
             CreateHandlers();
 

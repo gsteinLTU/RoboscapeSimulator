@@ -172,7 +172,7 @@ namespace RoboScapeSimulator
     [Serializable]
     public struct Vec3
     {
-        public static implicit operator Vec3(Vector3 vector3) => new Vec3() { x = vector3.X, y = vector3.Y, z = vector3.Z };
+        public static implicit operator Vec3(Vector3 vector3) => new() { x = vector3.X, y = vector3.Y, z = vector3.Z };
         public float x;
         public float y;
         public float z;

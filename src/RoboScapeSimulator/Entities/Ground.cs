@@ -11,7 +11,7 @@ namespace RoboScapeSimulator.Entities
     {
         private static uint ID = 0;
 
-        public Ground(Room room, float xsize = 200, float zsize = 100, Vector3? position = null, float thickness = 0.1f, VisualInfo visualInfo = default)
+        public Ground(Room room, float xsize = 200, float zsize = 100, in Vector3? position = null, float thickness = 0.1f, in VisualInfo visualInfo = default)
         {
             Name = $"ground_{ID++}";
             VisualInfo = visualInfo;

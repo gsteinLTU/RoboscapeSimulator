@@ -8,7 +8,7 @@ namespace RoboScapeSimulator.Environments
     class PositionSensorDemo : EnvironmentConfiguration
     {
 
-        uint _robots = 1;
+        readonly uint _robots = 1;
 
         public PositionSensorDemo(uint robots = 1)
         {

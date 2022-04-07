@@ -31,7 +31,7 @@ namespace RoboScapeSimulator.Entities
         /// <param name="initialOrientation">Initial orientation of the Cube, or null for a random yaw</param>
         /// <param name="isKinematic">Whether this object should be movable</param>
         /// <param name="visualInfo">Visual description string for the Cube</param>
-        public Cube(Room room, float width = 1, float height = 1, float depth = 1, Vector3? initialPosition = null, Quaternion? initialOrientation = null, bool isKinematic = false, VisualInfo visualInfo = default, string? nameOverride = null, float mass = 2, bool allowReset = true)
+        public Cube(Room room, float width = 1, float height = 1, float depth = 1, in Vector3? initialPosition = null, in Quaternion? initialOrientation = null, bool isKinematic = false, in VisualInfo visualInfo = default, string? nameOverride = null, float mass = 2, bool allowReset = true)
         {
             if (nameOverride == null)
             {
