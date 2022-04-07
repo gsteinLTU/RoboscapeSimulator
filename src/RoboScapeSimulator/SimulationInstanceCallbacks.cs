@@ -7,12 +7,16 @@ using BepuPhysics.Collidables;
 using BepuPhysics.CollisionDetection;
 using BepuPhysics.Constraints;
 using BepuUtilities;
-using BepuUtilities.Memory;
+
+namespace RoboScapeSimulator;
 
 struct BodyCollisionProperties
 {
+    public BodyCollisionProperties() { Friction = 0.5f; Filter = new SubgroupCollisionFilter(); }
+
     public SubgroupCollisionFilter Filter;
     public float Friction;
+    public bool IsTrigger = false;
 }
 
 public struct SubgroupCollisionFilter
@@ -132,6 +136,14 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe bool ConfigureContactManifold<TManifold>(int workerIndex, CollidablePair pair, ref TManifold manifold, out PairMaterialProperties pairMaterial) where TManifold : unmanaged, IContactManifold<TManifold>
     {
+        if (pair.B.Mobility != CollidableMobility.Static && (Properties[pair.A.BodyHandle].IsTrigger || Properties[pair.B.BodyHandle].IsTrigger))
+        {
+            pairMaterial.FrictionCoefficient = 0;
+            pairMaterial.MaximumRecoveryVelocity = 2f;
+            pairMaterial.SpringSettings = new SpringSettings(30, 1);
+            return false;
+        }
+
         pairMaterial.FrictionCoefficient = Properties[pair.A.BodyHandle].Friction;
         if (pair.B.Mobility != CollidableMobility.Static)
         {

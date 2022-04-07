@@ -63,16 +63,27 @@ namespace RoboScapeSimulator.Entities
     {
         public VisualInfo() { }
 
+        /// <summary>
+        /// Name of the model to be displayed, if any
+        /// </summary>
         [JsonProperty("model")]
         public string ModelName = "";
 
-
+        /// <summary>
+        /// Uniform scale to apply to model
+        /// </summary>
         [JsonProperty("modelScale")]
         public float ModelScale = 1;
 
+        /// <summary>
+        /// Color to apply to cube mesh if no model is used
+        /// </summary>
         [JsonProperty("color")]
         public string Color = "#fff";
 
+        /// <summary>
+        /// Texture to apply to cube mesh if no model is used
+        /// </summary>
         [JsonProperty("image")]
         public string Image = "";
 
@@ -80,6 +91,11 @@ namespace RoboScapeSimulator.Entities
         /// Empty VisualInfo to display a default white cube in the client
         /// </summary>
         public static readonly VisualInfo DefaultCube = new() { };
+
+        /// <summary>
+        /// Used to indicate that an Entity does not have any visual representation (e.g. <see cref="Trigger"/> with debug disabled)
+        /// </summary>
+        public static readonly VisualInfo None = new() { ModelScale = -1 };
     }
 
     /// <summary>
