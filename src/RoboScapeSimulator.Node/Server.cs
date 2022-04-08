@@ -91,7 +91,7 @@ public class Server : IDisposable
         {
             var cancelToken = cancellationTokenSource.Token;
 
-            reader = readPipe(pipeReader, cancellationTokenSource.Token).GetAsyncEnumerator();
+            reader = ReadPipe(pipeReader, cancellationTokenSource.Token).GetAsyncEnumerator();
 
             string message;
             var readerTask = reader.MoveNextAsync().AsTask();
@@ -175,7 +175,7 @@ public class Server : IDisposable
         processThread.Start();
     }
 
-    static async IAsyncEnumerable<string> readPipe(AnonymousPipeServerStream pipe, [EnumeratorCancellation] CancellationToken cancellationToken)
+    static async IAsyncEnumerable<string> ReadPipe(AnonymousPipeServerStream pipe, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         StreamReader sr = new(pipe);
 
@@ -196,14 +196,16 @@ public class Server : IDisposable
 
     StreamWriter? sw;
 
-    internal void send(string data)
+    internal void Send(string data)
     {
         if (pipeWriter != null)
         {
             if (sw == null)
             {
-                sw = new(pipeWriter);
-                sw.AutoFlush = true;
+                sw = new(pipeWriter)
+                {
+                    AutoFlush = true
+                };
             }
 
             lock (sw)
@@ -336,7 +338,7 @@ public class Socket
         buffer += eventName;
         buffer += " ";
         buffer += data.ToJsonString(new JsonSerializerOptions() { WriteIndented = false });
-        server.send(buffer);
+        server.Send(buffer);
     }
 
     public void Emit(string eventName, string data)
@@ -346,7 +348,7 @@ public class Socket
         buffer += eventName;
         buffer += " ";
         buffer += data;
-        server.send(buffer);
+        server.Send(buffer);
     }
 
     /// <summary>

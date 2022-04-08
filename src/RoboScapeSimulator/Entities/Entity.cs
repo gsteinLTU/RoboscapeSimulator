@@ -103,6 +103,9 @@ public struct VisualInfo
 /// </summary>
 public interface IResettable
 {
+    /// <summary>
+    /// Restore this Entity to its original state
+    /// </summary>
     public void Reset();
 }
 

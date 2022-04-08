@@ -52,6 +52,7 @@ namespace RoboScapeSimulator
                 disposed = true;
                 Simulation.Dispose();
                 BufferPool.Clear();
+                GC.SuppressFinalize(this);
             }
         }
 

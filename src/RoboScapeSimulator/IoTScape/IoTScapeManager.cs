@@ -9,25 +9,27 @@ namespace RoboScapeSimulator.IoTScape
 {
     public class IoTScapeManager
     {
-        public static IoTScapeManager? Manager;
+        private static IoTScapeManager? manager;
+        public static IoTScapeManager? Manager { get => manager; set => manager = value; }
 
-        private IPAddress hostIpAddress;
-
-        private Socket _socket;
+        private readonly Socket _socket;
 
         readonly private int idprefix;
 
         readonly private ConcurrentDictionary<string, IoTScapeObject> objects = new();
         readonly private ConcurrentDictionary<string, int> lastIDs = new();
 
-        private EndPoint hostEndPoint;
+        readonly private EndPoint hostEndPoint;
+
         // Wait time in seconds.
-        private float waitTime = 30.0f;
+        private const float announcePeriod = 30.0f;
+
         private float timer = 0.0f;
+
 
         public IoTScapeManager()
         {
-            hostIpAddress = Dns.GetHostAddresses(SettingsManager.RoboScapeHostWithoutPort)[0];
+            var hostIpAddress = Dns.GetHostAddresses(SettingsManager.RoboScapeHostWithoutPort)[0];
             hostEndPoint = new IPEndPoint(hostIpAddress, SettingsManager.IoTScapePort);
 
             idprefix = Random.Shared.Next(0, 0x10000);
@@ -41,7 +43,7 @@ namespace RoboScapeSimulator.IoTScape
         /// Announces all services to server
         /// </summary>
         /// <param name="o">IoTScapeObject to announce</param>
-        void announce(IoTScapeObject o)
+        void Announce(IoTScapeObject o)
         {
             string serviceJson = JsonConvert.SerializeObject(new Dictionary<string, IoTScapeServiceDefinition>() { { o.Definition.name, o.Definition } });
             Debug.WriteLine($"Announcing service {o.Definition.name} from object with ID {o.Definition.id}");
@@ -52,9 +54,9 @@ namespace RoboScapeSimulator.IoTScape
         /// <summary>
         /// Announce all object-services to server
         /// </summary>
-        void announceAll()
+        void AnnounceAll()
         {
-            objects.Values.ToList().ForEach(announce);
+            objects.Values.ToList().ForEach(Announce);
         }
 
         /// <summary>
@@ -115,7 +117,7 @@ namespace RoboScapeSimulator.IoTScape
             }
 
             objects.TryAdd(o.Definition.name + ":" + o.Definition.id, o);
-            announce(o);
+            Announce(o);
 
             return o.Definition.id;
         }
@@ -177,9 +179,9 @@ namespace RoboScapeSimulator.IoTScape
 
             timer += dt;
 
-            if (timer > waitTime)
+            if (timer > announcePeriod)
             {
-                announceAll();
+                AnnounceAll();
                 timer = 0.0f;
             }
         }

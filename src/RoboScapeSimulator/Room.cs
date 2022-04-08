@@ -196,7 +196,7 @@ namespace RoboScapeSimulator
             {
                 foreach (var socket in activeSockets)
                 {
-                    Utils.sendAsJSON(socket, eventName, args);
+                    Utils.SendAsJSON(socket, eventName, args);
                 }
             }
         }
@@ -212,18 +212,18 @@ namespace RoboScapeSimulator
             {
                 activeSockets.Add(socket);
             }
-            socket.On("resetRobot", handleResetRobot);
-            socket.On("resetAll", handleResetAll);
-            socket.On("robotButton", handleRobotButton);
+            socket.On("resetRobot", HandleResetRobot);
+            socket.On("resetAll", HandleResetAll);
+            socket.On("robotButton", HandleRobotButton);
         }
 
-        private void handleResetRobot(JsonNode[] args)
+        private void HandleResetRobot(JsonNode[] args)
         {
             string robotID = args[0].ToString();
             ResetRobot(robotID);
         }
 
-        private void handleResetAll(JsonNode[] args)
+        private void HandleResetAll(JsonNode[] args)
         {
             foreach (var entity in SimInstance.Entities)
             {
@@ -234,7 +234,7 @@ namespace RoboScapeSimulator
             }
         }
 
-        private void handleRobotButton(JsonNode[] args)
+        private void HandleRobotButton(JsonNode[] args)
         {
             string robotID = args[0].ToString();
 
@@ -268,9 +268,9 @@ namespace RoboScapeSimulator
         /// <param name="socket">Socket to remove from active sockets list</param>
         internal void RemoveSocket(Node.Socket socket)
         {
-            socket.Off("resetRobot", handleResetRobot);
-            socket.Off("resetAll", handleResetAll);
-            socket.Off("robotButton", handleRobotButton);
+            socket.Off("resetRobot", HandleResetRobot);
+            socket.Off("resetAll", HandleResetAll);
+            socket.Off("robotButton", HandleRobotButton);
             socket.Emit("roomLeft");
             lock (activeSockets)
             {

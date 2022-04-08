@@ -27,7 +27,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Helper function to print a JToken
         /// </summary>
-        public static void printJSON(JToken token)
+        public static void PrintJSON(JToken token)
         {
             if (token != null)
             {
@@ -38,12 +38,12 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Helper function to print a JToken
         /// </summary>
-        public static void printJSONArray(JToken[] tokens)
+        public static void PrintJSONArray(JToken[] tokens)
         {
-            Array.ForEach(tokens, printJSON);
+            Array.ForEach(tokens, PrintJSON);
         }
 
-        public static void sendAsJSON<T>(Node.Socket socket, string eventName, T data)
+        public static void SendAsJSON<T>(Node.Socket socket, string eventName, T data)
         {
             if (data != null)
             {

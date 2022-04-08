@@ -16,7 +16,7 @@ namespace RoboScapeSimulator
             {
                 if (loadedSettings == null)
                 {
-                    loadSettings();
+                    LoadSettings();
                 }
 
                 return (loadedSettings?.RoboScapeHost) ?? DefaultSettings.RoboScapeHost ?? "";
@@ -32,7 +32,7 @@ namespace RoboScapeSimulator
             {
                 if (loadedSettings == null)
                 {
-                    loadSettings();
+                    LoadSettings();
                 }
 
                 return loadedSettings?.RoboScapePort ?? DefaultSettings.RoboScapePort ?? 0;
@@ -49,7 +49,7 @@ namespace RoboScapeSimulator
             {
                 if (loadedSettings == null)
                 {
-                    loadSettings();
+                    LoadSettings();
                 }
 
                 return loadedSettings?.IoTScapePort ?? DefaultSettings.IoTScapePort ?? 0;
@@ -65,7 +65,7 @@ namespace RoboScapeSimulator
             {
                 if (loadedSettings == null)
                 {
-                    loadSettings();
+                    LoadSettings();
                 }
 
                 return loadedSettings?.MaxRooms ?? DefaultSettings.MaxRooms ?? 0;
@@ -77,7 +77,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Loads the configuration in appsettings.json
         /// </summary>
-        private static void loadSettings()
+        private static void LoadSettings()
         {
             var config = new ConfigurationBuilder()
                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)

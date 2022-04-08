@@ -36,7 +36,7 @@ namespace RoboScapeSimulator.IoTScape
             }
 
             // Register default heartbeat
-            Methods["heartbeat"] = heartbeat;
+            Methods["heartbeat"] = Heartbeat;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace RoboScapeSimulator.IoTScape
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        private string[] heartbeat(string[] args)
+        private string[] Heartbeat(string[] args)
         {
             return new[] { "true" };
         }

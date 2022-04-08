@@ -13,8 +13,8 @@ namespace RoboScapeSimulator
         /// </summary>
         internal static void SendAvailableRooms(Node.Socket socket, IDictionary<string, Room> rooms)
         {
-            Utils.sendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Select(room => room.Value.GetRoomInfo()) }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
-            Utils.sendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
+            Utils.SendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Select(room => room.Value.GetRoomInfo()) }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
+            Utils.SendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace RoboScapeSimulator
             Dictionary<string, object> updateData = room.SimInstance.GetBodies(!isFullUpdate, isFullUpdate);
             updateData.Add("time", room.SimInstance.Time);
 
-            Utils.sendAsJSON(socket, isFullUpdate ? "fullUpdate" : "u", updateData);
+            Utils.SendAsJSON(socket, isFullUpdate ? "fullUpdate" : "u", updateData);
         }
 
         internal static void HandleJoinRoom(JsonNode[] args, Node.Socket socket, IDictionary<string, Room> rooms, ref string socketRoom)
@@ -47,7 +47,7 @@ namespace RoboScapeSimulator
             if (args.Length == 0 || args[0]["roomID"] == null)
             {
                 // Invalid message
-                Utils.sendAsJSON(socket, "roomJoined", false);
+                Utils.SendAsJSON(socket, "roomJoined", false);
                 Trace.WriteLine("Failed attempt to join room");
                 return;
             }
@@ -94,14 +94,14 @@ namespace RoboScapeSimulator
             {
                 // Setup updates for socket in new room 
                 rooms[socketRoom].AddSocket(socket);
-                Utils.sendAsJSON(socket, "roomJoined", socketRoom);
-                Utils.sendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
+                Utils.SendAsJSON(socket, "roomJoined", socketRoom);
+                Utils.SendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
                 SendUpdate(socket, rooms[socketRoom], true);
             }
             else
             {
                 // Join failed
-                Utils.sendAsJSON(socket, "roomJoined", false);
+                Utils.SendAsJSON(socket, "roomJoined", false);
                 Trace.WriteLine("Failed attempt to join room " + roomID);
             }
         }

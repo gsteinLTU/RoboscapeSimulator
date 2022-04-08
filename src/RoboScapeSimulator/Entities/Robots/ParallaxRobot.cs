@@ -70,7 +70,7 @@ namespace RoboScapeSimulator.Entities.Robots
             var wheelShapeIndex = simulation.Shapes.Add(wheelShape);
 
             var rearWheelShape = new Sphere(0.01f);
-            var rearWheelInertia = rearWheelShape.ComputeInertia(0.25f);
+            _ = rearWheelShape.ComputeInertia(0.25f);
             var rearWheelShapeIndex = simulation.Shapes.Add(rearWheelShape);
 
             float wheelDistX = 0.05f;
@@ -345,12 +345,12 @@ namespace RoboScapeSimulator.Entities.Robots
                 return;
             }
 
-            // TODO: send to client 
             // Determine which LED was requested
             var which = msg[1];
             var status = msg[2];
 
             Debug.WriteLine($"Set LED {which} {status}");
+            room.SendToClients("led", Name, which, status);
         }
 
         unsafe public void OnGetRange(byte[] msg)
