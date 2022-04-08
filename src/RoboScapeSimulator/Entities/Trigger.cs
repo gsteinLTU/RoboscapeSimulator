@@ -1,29 +1,61 @@
 using System.Numerics;
 using BepuPhysics;
 using BepuPhysics.Collidables;
-using RoboScapeSimulator;
-using RoboScapeSimulator.Entities;
 
+namespace RoboScapeSimulator.Entities;
+
+/// <summary>
+/// A non-solid box that tracks other Entities entering its volume
+/// </summary>
 class Trigger : DynamicEntity, IResettable
 {
     private static uint ID = 0;
 
+    /// <summary>
+    /// Should the Trigger only fire OnTriggerEnter once
+    /// </summary>    
     public bool OneTime = false;
 
     private bool triggered = false;
 
+    /// <summary>
+    /// Invoked when an Entity enters the Trigger
+    /// </summary>
     public event EventHandler<Entity>? OnTriggerEnter;
 
+    /// <summary>
+    /// Invoked onces for each Entity in the Trigger each Update
+    /// </summary>
     public event EventHandler<Entity>? OnTriggerStay;
 
+    /// <summary>
+    /// Invoked when an Entity leaves the Trigger
+    /// </summary>
     public event EventHandler<Entity>? OnTriggerExit;
 
+    /// <summary>
+    /// Invoked when the last Entity in the Trigger leaves
+    /// </summary>
     public event EventHandler? OnTriggerEmpty;
 
+    /// <summary>
+    /// Entities currently in the Trigger
+    /// </summary>
     public List<Entity> InTrigger = new List<Entity>();
 
     private List<Entity> lastInTrigger = new List<Entity>();
 
+    /// <summary>
+    /// Create a new Trigger
+    /// </summary>
+    /// <param name="room">Room to add the Trigger to</param>
+    /// <param name="initialPosition">Position of the Trigger at start</param>
+    /// <param name="initialOrientation">Orientation of the Trigger at start</param>
+    /// <param name="width">X size</param>
+    /// <param name="height">Y size</param>
+    /// <param name="depth">Z size</param>
+    /// <param name="oneTime">Should the Trigger only track the entry of the first Entity that enters</param>
+    /// <param name="debug">Sets the Trigger to be visible in the client</param>
     public Trigger(Room room, in Vector3 initialPosition, in Quaternion initialOrientation, float width = 1, float height = 1, float depth = 1, bool oneTime = false, bool debug = false)
     {
         if (debug)
@@ -56,7 +88,7 @@ class Trigger : DynamicEntity, IResettable
         room.SimInstance.Entities.Add(this);
     }
 
-    public void EntityInside(Entity e)
+    internal void EntityInside(Entity e)
     {
         lock (InTrigger)
         {
@@ -82,7 +114,7 @@ class Trigger : DynamicEntity, IResettable
 
         lock (InTrigger)
         {
-            // Compare lists
+            // Find entities that are newly in the trigger this Update
             if (InTrigger.Any(o => !lastInTrigger.Contains(o)))
             {
                 // OnEnter Event only occurs once if OneTime is set
@@ -100,6 +132,7 @@ class Trigger : DynamicEntity, IResettable
                 }
             }
 
+            // Find entities that left in this Update
             foreach (var e in lastInTrigger.Where(o => !InTrigger.Contains(o)))
             {
                 if (e != null)
@@ -108,6 +141,7 @@ class Trigger : DynamicEntity, IResettable
                 }
             }
 
+            // Find entities that are currently in the trigger
             if (InTrigger.Count > 0)
             {
                 InTrigger.ForEach(e =>

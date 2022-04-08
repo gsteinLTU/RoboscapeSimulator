@@ -150,6 +150,7 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
             var triggerHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.A.BodyHandle : pair.B.BodyHandle;
             var otherHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.B.BodyHandle : pair.A.BodyHandle;
 
+            // If environments begin to get very complex, this search may need to be replaced with a Dictionary lookup keyed on handle values
             var triggerEntity = SimInstance.Entities.Find(e =>
                 {
                     if (e is DynamicEntity d)
