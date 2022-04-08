@@ -148,6 +148,7 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
             pairMaterial.SpringSettings = new SpringSettings(30, 1);
 
             var triggerHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.A.BodyHandle : pair.B.BodyHandle;
+            var otherHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.B.BodyHandle : pair.A.BodyHandle;
 
             var triggerEntity = SimInstance.Entities.Find(e =>
                 {
@@ -163,8 +164,16 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
             {
                 if (triggerEntity is Trigger trigger)
                 {
-                    //
-                    Console.WriteLine(SimInstance.Time + "Triggered " + trigger.Name);
+                    var other = SimInstance.Entities.Find(e =>
+                        {
+                            if (e is DynamicEntity d)
+                            {
+                                return d.BodyReference.Handle.Value == otherHandle.Value;
+                            }
+                            return false;
+                        }
+                    );
+                    trigger.EntityInside(other!);
                 }
             }
 
