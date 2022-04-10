@@ -33,7 +33,7 @@ namespace RoboScapeSimulator.Environments
 
             // Demo robot
             var robot = new ParallaxRobot(room, new(1, 0.2f, 1), Quaternion.Identity);
-            var lidar = new LIDARSensor(robot) { Offset = new(0, 0.1f, 0.07f), NumRays = 16, MinAngle = MathF.PI / 4, MaxAngle = 3f * MathF.PI / 4 };
+            var lidar = new LIDARSensor(robot) { Offset = new(0, 0.1f, 0.07f), NumRays = 16, StartAngle = MathF.PI / 2, AngleRange = MathF.PI };
             lidar.Setup(room);
         }
     }

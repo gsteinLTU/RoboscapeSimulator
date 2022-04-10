@@ -39,12 +39,12 @@ namespace RoboScapeSimulator.IoTScape.Devices
         /// <summary>
         /// Start angle for LIDAR rays
         /// </summary>
-        public float MinAngle = 0;
+        public float StartAngle = 0;
 
         /// <summary>
-        /// End angle for LIDAR rays
+        /// Sum of angles for LIDAR rays
         /// </summary>
-        public float MaxAngle = MathF.PI * 2;
+        public float AngleRange = MathF.PI * 2;
 
         /// <summary>
         /// Amount to multiply distance by to change units from meters
@@ -99,7 +99,8 @@ namespace RoboScapeSimulator.IoTScape.Devices
 
                     Vector3 axis = Vector3.Transform(Vector3.UnitY, trackedBody.Pose.Orientation);
 
-                    float angleDelta = MathF.Abs(MaxAngle - MinAngle) / NumRays;
+
+                    float angleDelta = AngleRange / MathF.Max(1, NumRays - 1);
 
                     for (int i = 0; i < NumRays; i++)
                     {
@@ -112,7 +113,7 @@ namespace RoboScapeSimulator.IoTScape.Devices
                             IntersectionCount = &intersectionCount
                         };
 
-                        Vector3 direction = Vector3.Transform(Vector3.Transform(Vector3.UnitZ, Quaternion.CreateFromAxisAngle(axis, -angleDelta * i + MinAngle)), trackedBody.Pose.Orientation);
+                        Vector3 direction = Vector3.Transform(Vector3.Transform(Vector3.UnitZ, Quaternion.CreateFromAxisAngle(axis, -angleDelta * i + StartAngle)), trackedBody.Pose.Orientation);
                         simulation.RayCast(trackedBody.Pose.Position + Vector3.Transform(Offset, trackedBody.Pose.Orientation) + direction * MinDistance,
                                            direction, MaxDistance, ref hitHandler);
 
