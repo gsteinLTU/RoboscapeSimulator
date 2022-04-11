@@ -17,6 +17,7 @@ struct BodyCollisionProperties
 
     public SubgroupCollisionFilter Filter;
     public float Friction;
+    public bool NoCollide = false;
     public bool IsTrigger = false;
 }
 
@@ -141,40 +142,44 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe bool ConfigureContactManifold<TManifold>(int workerIndex, CollidablePair pair, ref TManifold manifold, out PairMaterialProperties pairMaterial) where TManifold : unmanaged, IContactManifold<TManifold>
     {
-        if (pair.B.Mobility != CollidableMobility.Static && (Properties[pair.A.BodyHandle].IsTrigger || Properties[pair.B.BodyHandle].IsTrigger))
+        if (pair.B.Mobility != CollidableMobility.Static && (Properties[pair.A.BodyHandle].NoCollide || Properties[pair.B.BodyHandle].NoCollide || Properties[pair.A.BodyHandle].IsTrigger || Properties[pair.B.BodyHandle].IsTrigger))
         {
             pairMaterial.FrictionCoefficient = 0;
             pairMaterial.MaximumRecoveryVelocity = 2f;
             pairMaterial.SpringSettings = new SpringSettings(30, 1);
 
-            var triggerHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.A.BodyHandle : pair.B.BodyHandle;
-            var otherHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.B.BodyHandle : pair.A.BodyHandle;
-
-            // If environments begin to get very complex, this search may need to be replaced with a Dictionary lookup keyed on handle values
-            var triggerEntity = SimInstance.Entities.Find(e =>
-                {
-                    if (e is DynamicEntity d)
-                    {
-                        return d.BodyReference.Handle.Value == triggerHandle.Value;
-                    }
-                    return false;
-                }
-            );
-
-            if (triggerEntity != null)
+            // Handle triggers
+            if (Properties[pair.A.BodyHandle].IsTrigger || Properties[pair.B.BodyHandle].IsTrigger)
             {
-                if (triggerEntity is Trigger trigger)
-                {
-                    var other = SimInstance.Entities.Find(e =>
+                var triggerHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.A.BodyHandle : pair.B.BodyHandle;
+                var otherHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.B.BodyHandle : pair.A.BodyHandle;
+
+                // If environments begin to get very complex, this search may need to be replaced with a Dictionary lookup keyed on handle values
+                var triggerEntity = SimInstance.Entities.Find(e =>
+                    {
+                        if (e is DynamicEntity d)
                         {
-                            if (e is DynamicEntity d)
-                            {
-                                return d.BodyReference.Handle.Value == otherHandle.Value;
-                            }
-                            return false;
+                            return d.BodyReference.Handle.Value == triggerHandle.Value;
                         }
-                    );
-                    trigger.EntityInside(other!);
+                        return false;
+                    }
+                );
+
+                if (triggerEntity != null)
+                {
+                    if (triggerEntity is Trigger trigger)
+                    {
+                        var other = SimInstance.Entities.Find(e =>
+                            {
+                                if (e is DynamicEntity d)
+                                {
+                                    return d.BodyReference.Handle.Value == otherHandle.Value;
+                                }
+                                return false;
+                            }
+                        );
+                        trigger.EntityInside(other!);
+                    }
                 }
             }
 
