@@ -7,12 +7,18 @@ using BepuPhysics.Collidables;
 using BepuPhysics.CollisionDetection;
 using BepuPhysics.Constraints;
 using BepuUtilities;
-using BepuUtilities.Memory;
+using RoboScapeSimulator.Entities;
+
+namespace RoboScapeSimulator;
 
 struct BodyCollisionProperties
 {
+    public BodyCollisionProperties() { Friction = 0.5f; Filter = new SubgroupCollisionFilter(); }
+
     public SubgroupCollisionFilter Filter;
     public float Friction;
+    public bool NoCollide = false;
+    public bool IsTrigger = false;
 }
 
 public struct SubgroupCollisionFilter
@@ -96,16 +102,20 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
     public float MaximumRecoveryVelocity;
     public float FrictionCoefficient;
 
+    public SimulationInstance SimInstance;
+
+    public SimulationInstanceCallbacks(SimulationInstance simInstance, CollidableProperty<BodyCollisionProperties> properties)
+    {
+        SimInstance = simInstance;
+        Properties = properties;
+        ContactSpringiness = new(30, 1);
+        MaximumRecoveryVelocity = 2f;
+        FrictionCoefficient = 2f;
+    }
+
     public void Initialize(Simulation simulation)
     {
         Properties.Initialize(simulation);
-        //Use a default if the springiness value wasn't initialized... at least until struct field initializers are supported outside of previews.
-        if (ContactSpringiness.AngularFrequency == 0 && ContactSpringiness.TwiceDampingRatio == 0)
-        {
-            ContactSpringiness = new(30, 1);
-            MaximumRecoveryVelocity = 2f;
-            FrictionCoefficient = 2f;
-        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -132,6 +142,50 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe bool ConfigureContactManifold<TManifold>(int workerIndex, CollidablePair pair, ref TManifold manifold, out PairMaterialProperties pairMaterial) where TManifold : unmanaged, IContactManifold<TManifold>
     {
+        if (pair.B.Mobility != CollidableMobility.Static && (Properties[pair.A.BodyHandle].NoCollide || Properties[pair.B.BodyHandle].NoCollide || Properties[pair.A.BodyHandle].IsTrigger || Properties[pair.B.BodyHandle].IsTrigger))
+        {
+            pairMaterial.FrictionCoefficient = 0;
+            pairMaterial.MaximumRecoveryVelocity = 2f;
+            pairMaterial.SpringSettings = new SpringSettings(30, 1);
+
+            // Handle triggers
+            if (Properties[pair.A.BodyHandle].IsTrigger || Properties[pair.B.BodyHandle].IsTrigger)
+            {
+                var triggerHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.A.BodyHandle : pair.B.BodyHandle;
+                var otherHandle = Properties[pair.A.BodyHandle].IsTrigger ? pair.B.BodyHandle : pair.A.BodyHandle;
+
+                // If environments begin to get very complex, this search may need to be replaced with a Dictionary lookup keyed on handle values
+                var triggerEntity = SimInstance.Entities.Find(e =>
+                    {
+                        if (e is DynamicEntity d)
+                        {
+                            return d.BodyReference.Handle.Value == triggerHandle.Value;
+                        }
+                        return false;
+                    }
+                );
+
+                if (triggerEntity != null)
+                {
+                    if (triggerEntity is Trigger trigger)
+                    {
+                        var other = SimInstance.Entities.Find(e =>
+                            {
+                                if (e is DynamicEntity d)
+                                {
+                                    return d.BodyReference.Handle.Value == otherHandle.Value;
+                                }
+                                return false;
+                            }
+                        );
+                        trigger.EntityInside(other!);
+                    }
+                }
+            }
+
+            return false;
+        }
+
         pairMaterial.FrictionCoefficient = Properties[pair.A.BodyHandle].Friction;
         if (pair.B.Mobility != CollidableMobility.Static)
         {
@@ -240,6 +294,6 @@ public struct SimulationInstanceIntegratorCallbacks : IPoseIntegratorCallbacks
         //The types are laid out in array-of-structures-of-arrays (AOSOA) format. That's because this function is frequently called from vectorized contexts within the solver.
         //Transforming to "array of structures" (AOS) format for the callback and then back to AOSOA would involve a lot of overhead, so instead the callback works on the AOSOA representation directly.
         velocity.Linear = (velocity.Linear + gravityWideDt) * linearDampingDt;
-        velocity.Angular = velocity.Angular * angularDampingDt;
+        velocity.Angular *= angularDampingDt;
     }
 }

@@ -8,7 +8,7 @@ namespace RoboScapeSimulator.Environments
 {
     class LIDARRoadEnvironment : EnvironmentConfiguration
     {
-        private string _courseType;
+        readonly private string _courseType;
 
         public LIDARRoadEnvironment(string courseType = Courses.Easy)
         {
@@ -22,6 +22,7 @@ namespace RoboScapeSimulator.Environments
         {
             public const string Easy = "Easy";
             public const string Hard = "Hard";
+            public const string VeryHard = "VeryHard";
         }
 
         public override object Clone()
@@ -34,11 +35,11 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine($"Setting up {Name} environment");
 
             // Ground
-            var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
+            float endPosZ;
+            float endPosX;
 
-            float endPosZ = 7;
-            float endPosX = 0;
             switch (_courseType)
             {
                 case Courses.Hard:
@@ -81,31 +82,58 @@ namespace RoboScapeSimulator.Environments
                     endPosX = 2;
 
                     break;
-                case Courses.Easy:
-                default:
-
+                case Courses.VeryHard:
                     // left
                     AddPath(room, new()
                     {
                         new(-0.5f, 0, 0),
-                        new(-0.5f, 0, 1),
-                        new(-1f, 0, 2.25f),
-                        new(-1f, 0, 2.75f),
-                        new(0.25f, 0, 4.75f),
-                        new(0.25f, 0, 5.25f),
-                        new(-0.5f, 0, 7f),
+                        new(-0.5f, 0, 1f),
+                        new(0f, 0, 2f),
+                        new(0f, 0, 2.25f),
+                        new(1.25f, 0, 3f),
+                        new(2.5f, 0, 2.75f),
+                        new(3.5f, 0, 2.75f),
+                        new(3.5f, 0, 1f),
+                        new(4f, 0, 0f),
+                        new(3.75f, 0, -1f),
+                        new(3.25f, 0, -2f),
+                        new(1.5f, 0, -2.25f),
+                        new(-1.25f, 0, -2.25f),
+                        new(-2.25f, 0, -1f),
+                        new(-2.5f, 0, 0.25f),
+                        new(-2.5f, 0, 1f),
                     });
 
                     // right
                     AddPath(room, new()
                     {
                         new(0.5f, 0, 0),
-                        new(0.5f, 0, 1),
-                        new(0f, 0, 2.25f),
-                        new(0f, 0, 2.75f),
-                        new(1.25f, 0, 4.75f),
-                        new(1.25f, 0, 5.25f),
-                        new(0.5f, 0, 7f),
+                        new(0.5f, 0, 1f),
+                        new(1.5f, 0, 2f),
+                        new(1.5f, 0, 2.25f),
+                        new(2.5f, 0, 2f),
+                        new(2.5f, 0, 1f),
+                        new(3f, 0, 0f),
+                        new(2.75f, 0, -1f),
+                        new(1.5f, 0, -1.25f),
+                        new(-1.25f, 0, -1.25f),
+                        new(-1.5f, 0, -0.75f),
+                        new(-1.5f, 0, 1f),
+                    });
+
+                    // Spikes
+                    AddPath(room, new()
+                    {
+                        new(0.5f, -0.1f, -1.25f),
+                        new(0f, -0.1f, -1.75f),
+                        new(-0.5f, -0.1f, -1.25f),
+                    });
+
+                    AddPath(room, new()
+                    {
+                        new(0.5f, -0.1f, -2.25f),
+                        new(1f, -0.1f, -1.75f),
+                        new(1.5f, -0.1f, -2.25f),
                     });
 
                     // start area
@@ -116,16 +144,62 @@ namespace RoboScapeSimulator.Environments
                         new(0.5f, 0, -0.5f),
                         new(0.5f, 0, 0f),
                     });
+
+                    endPosZ = 0.5f;
+                    endPosX = -2f;
+
+                    break;
+                case Courses.Easy:
+                default:
+
+                    // left
+                    AddPath(room, new()
+                    {
+                        new(-0.5f, 0, 0),
+                        new(-0.5f, 0, 1),
+                        new(-1.25f, 0, 2.25f),
+                        new(-1f, 0, 2.75f),
+                        new(0.25f, 0, 4.75f),
+                        new(0.25f, 0, 5.25f),
+                        new(-0.5f, 0, 7f),
+                        new(-0.5f, 0, 7.5f),
+                    });
+
+                    // right
+                    AddPath(room, new()
+                    {
+                        new(0.5f, 0, 0),
+                        new(0.5f, 0, 1),
+                        new(-0.25f, 0, 2.25f),
+                        new(0f, 0, 2.75f),
+                        new(1.25f, 0, 4.75f),
+                        new(1.25f, 0, 5.25f),
+                        new(0.5f, 0, 7f),
+                        new(0.5f, 0, 7.5f),
+                    });
+
+                    // start area
+                    AddPath(room, new()
+                    {
+                        new(-0.5f, 0, 0),
+                        new(-0.5f, 0, -0.5f),
+                        new(0.5f, 0, -0.5f),
+                        new(0.5f, 0, 0f),
+                    });
+
+                    endPosZ = 8;
+                    endPosX = 0;
+
                     break;
             }
 
-            // Start and end areas
-            var start = new Cube(room, 1, 0.01f, 1.1f, new(0, 0.005f, 0f), Quaternion.CreateFromYawPitchRoll(0, 0.005f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
-            var end = new Cube(room, 1, 0.01f, 1.1f, new(endPosX, 0.005f, endPosZ), Quaternion.CreateFromYawPitchRoll(0, -0.005f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
+            // Start and end areas 
+            _ = new Cube(room, 1, 0.01f, 1.1f, new(0, 0.0025f, 0f), Quaternion.CreateFromYawPitchRoll(0, 0.005f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
+            _ = new Cube(room, 1, 0.01f, 1.1f, new(endPosX, 0.0025f, endPosZ), Quaternion.CreateFromYawPitchRoll(0, -0.005f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
 
             // Demo robot
             var robot = new ParallaxRobot(room, new(0, 0.25f, 0), Quaternion.Identity);
-            var lidar = new LIDARSensor(robot) { Offset = new(0, 0.1f, 0.07f), NumRays = 3, MinAngle = -2 * MathF.PI / 6f + MathF.PI / 2, MaxAngle = 2f * MathF.PI / 6 + MathF.PI / 2, MaxDistance = 5 };
+            var lidar = new LIDARSensor(robot) { Offset = new(0, 0.08f, 0.0f), NumRays = 3, StartAngle = MathF.PI / 4, AngleRange = 2 * MathF.PI / 4, MaxDistance = 5 };
             lidar.Setup(room);
 
             static void AddPath(Room room, List<Vector3> points, float thickness = 0.1f, float height = 0.5f)
@@ -138,7 +212,7 @@ namespace RoboScapeSimulator.Environments
                 }
             }
 
-            static Cube? AddWall(Room room, Vector3 p1, Vector3 p2, float thickness = 0.1f, float height = 0.5f, float padding = 0.025f)
+            static Cube? AddWall(Room room, Vector3 p1, Vector3 p2, float thickness = 0.1f, float height = 0.5f, float padding = 0.05f)
             {
                 var length = (p2 - p1).Length();
 

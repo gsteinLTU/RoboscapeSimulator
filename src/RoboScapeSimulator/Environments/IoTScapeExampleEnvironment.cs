@@ -106,8 +106,10 @@ namespace RoboScapeSimulator.Environments
 
             cubeObject.Setup(room);
 
-            locationSensor = new(robot.BodyReference, "");
-            locationSensor.IDOverride = robot.ID;
+            locationSensor = new(robot.BodyReference, "")
+            {
+                IDOverride = robot.ID
+            };
             locationSensor.Setup(room);
         }
     }

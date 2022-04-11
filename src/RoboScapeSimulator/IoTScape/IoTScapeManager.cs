@@ -9,25 +9,27 @@ namespace RoboScapeSimulator.IoTScape
 {
     public class IoTScapeManager
     {
-        public static IoTScapeManager? Manager;
+        private static IoTScapeManager? manager;
+        public static IoTScapeManager? Manager { get => manager; set => manager = value; }
 
-        private IPAddress hostIpAddress;
+        private readonly Socket _socket;
 
-        private Socket _socket;
+        readonly private int idprefix;
 
-        private int idprefix;
+        readonly private ConcurrentDictionary<string, IoTScapeObject> objects = new();
+        readonly private ConcurrentDictionary<string, int> lastIDs = new();
 
-        private ConcurrentDictionary<string, IoTScapeObject> objects = new();
-        private ConcurrentDictionary<string, int> lastIDs = new();
+        readonly private EndPoint hostEndPoint;
 
-        private EndPoint hostEndPoint;
         // Wait time in seconds.
-        private float waitTime = 30.0f;
+        private const float announcePeriod = 30.0f;
+
         private float timer = 0.0f;
+
 
         public IoTScapeManager()
         {
-            hostIpAddress = Dns.GetHostAddresses(SettingsManager.RoboScapeHostWithoutPort)[0];
+            var hostIpAddress = Dns.GetHostAddresses(SettingsManager.RoboScapeHostWithoutPort)[0];
             hostEndPoint = new IPEndPoint(hostIpAddress, SettingsManager.IoTScapePort);
 
             idprefix = Random.Shared.Next(0, 0x10000);
@@ -41,7 +43,7 @@ namespace RoboScapeSimulator.IoTScape
         /// Announces all services to server
         /// </summary>
         /// <param name="o">IoTScapeObject to announce</param>
-        void announce(IoTScapeObject o)
+        void Announce(IoTScapeObject o)
         {
             string serviceJson = JsonConvert.SerializeObject(new Dictionary<string, IoTScapeServiceDefinition>() { { o.Definition.name, o.Definition } });
             Debug.WriteLine($"Announcing service {o.Definition.name} from object with ID {o.Definition.id}");
@@ -52,9 +54,9 @@ namespace RoboScapeSimulator.IoTScape
         /// <summary>
         /// Announce all object-services to server
         /// </summary>
-        void announceAll()
+        void AnnounceAll()
         {
-            objects.Values.ToList().ForEach(announce);
+            objects.Values.ToList().ForEach(Announce);
         }
 
         /// <summary>
@@ -115,7 +117,7 @@ namespace RoboScapeSimulator.IoTScape
             }
 
             objects.TryAdd(o.Definition.name + ":" + o.Definition.id, o);
-            announce(o);
+            Announce(o);
 
             return o.Definition.id;
         }
@@ -125,7 +127,7 @@ namespace RoboScapeSimulator.IoTScape
         /// </summary>
         /// <param name="o">IoTScapeObject to register</param>
         /// <returns>ID of IoTScapeObject</returns>
-        public void Unregister(IoTScapeObject o)
+        public void Unregister(in IoTScapeObject o)
         {
             if (IsRegistered(o))
             {
@@ -133,13 +135,13 @@ namespace RoboScapeSimulator.IoTScape
             }
         }
 
-        public bool IsRegistered(IoTScapeObject o)
+        public bool IsRegistered(in IoTScapeObject o)
         {
             return objects.ContainsKey(o.Definition.name + ":" + o.Definition.id);
         }
 
         // Update is called once per frame
-        public void Update(float dt)
+        public void Update(in float dt)
         {
             // Parse incoming messages
             if (_socket.Available > 0)
@@ -150,11 +152,11 @@ namespace RoboScapeSimulator.IoTScape
                 string incomingString = Encoding.UTF8.GetString(incoming, 0, len);
 
                 var json = JsonSerializer.Create();
-                IoTScapeRequest request = json.Deserialize<IoTScapeRequest>(new JsonTextReader(new StringReader(incomingString)));
+                var request = json.Deserialize<IoTScapeRequest>(new JsonTextReader(new StringReader(incomingString)));
                 Debug.WriteLine(request);
 
                 // Verify device exists
-                if (objects.ContainsKey(request.service + ":" + request.device))
+                if (request != null && objects.ContainsKey(request.service + ":" + request.device))
                 {
                     var device = objects[request.service + ":" + request.device];
 
@@ -177,9 +179,9 @@ namespace RoboScapeSimulator.IoTScape
 
             timer += dt;
 
-            if (timer > waitTime)
+            if (timer > announcePeriod)
             {
-                announceAll();
+                AnnounceAll();
                 timer = 0.0f;
             }
         }
@@ -189,14 +191,14 @@ namespace RoboScapeSimulator.IoTScape
         /// </summary>
         /// <param name="request">Request to respond to</param>
         /// <param name="result">Result to send to server for request's response</param>
-        private void SendResponse(IoTScapeRequest request, string[] result)
+        private void SendResponse(in IoTScapeRequest request, in string[] result)
         {
-            IoTScapeResponse response = new IoTScapeResponse
+            IoTScapeResponse response = new()
             {
                 id = request.device,
                 request = request.id,
                 service = request.service,
-                response = (result ?? new string[] { }).ToList()
+                response = (result ?? Array.Empty<string>()).ToList()
             };
 
             SendToServer(response);
@@ -206,7 +208,7 @@ namespace RoboScapeSimulator.IoTScape
         /// Send an IoTScapeResponse object to the server as JSON
         /// </summary>
         /// <param name="response">Response to send to server</param>
-        internal void SendToServer(IoTScapeResponse response)
+        internal void SendToServer(in IoTScapeResponse response)
         {
             // Send response
             string responseJson = JsonConvert.SerializeObject(response,

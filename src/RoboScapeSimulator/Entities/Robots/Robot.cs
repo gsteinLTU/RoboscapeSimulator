@@ -41,7 +41,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// Instantiate a Robot inside a given simulation instance
         /// </summary>
         /// <param name="room">Room this Robot exists inside</param>
-        public Robot(Room room, Vector3? position = null, Quaternion? rotation = null, Vector3? size = null, float mass = 2, VisualInfo? visualInfo = null, float spawnHeight = 0.4f)
+        public Robot(Room room, in Vector3? position = null, in Quaternion? rotation = null, in Vector3? size = null, float mass = 2, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f)
         {
             this.room = room;
             simulation = room.SimInstance.Simulation;
@@ -49,17 +49,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
             Box box;
 
-            if (visualInfo != null)
-            {
-                VisualInfo = (VisualInfo)visualInfo;
-            }
-            else
-            {
-                VisualInfo = new VisualInfo()
-                {
-                    ModelName = "parallax_robot.gltf"
-                };
-            }
+            VisualInfo = visualInfo ?? new VisualInfo() { ModelName = "parallax_robot.gltf" };
 
             if (size == null)
             {
@@ -95,8 +85,8 @@ namespace RoboScapeSimulator.Entities.Robots
             SetupRobot();
             time.Start();
 
-            room.SimInstance.NamedBodies.Add("robot_" + BytesToHexstring(MacAddress, ""), BodyReference);
             Name = "robot_" + BytesToHexstring(MacAddress, "");
+            room.SimInstance.NamedBodies.Add(Name, BodyReference);
             room.SimInstance.Entities.Add(this);
         }
 
@@ -154,6 +144,8 @@ namespace RoboScapeSimulator.Entities.Robots
         /// Methods to use as handlers for message types received by this robot
         /// </summary>
         public readonly Dictionary<char, Action<byte[]>> MessageHandlers = new();
+
+        public event EventHandler? OnReset;
 
         /// <summary>
         /// Add a message handler for a certain message type
@@ -336,6 +328,8 @@ namespace RoboScapeSimulator.Entities.Robots
             time.Restart();
             lastMessageTime = 0;
             SendRoboScapeMessage(new byte[] { (byte)'I' });
+
+            OnReset?.Invoke(this, EventArgs.Empty);
 
             Debug.WriteLine($"Reset Robot");
         }

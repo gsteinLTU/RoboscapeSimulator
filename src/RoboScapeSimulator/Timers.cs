@@ -1,7 +1,5 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace RoboScapeSimulator
 {
@@ -42,7 +40,7 @@ namespace RoboScapeSimulator
             return updateTimer;
         }
 
-        public static Timer CreateClientFullUpdateTimer(IDictionary<string, Room> rooms, JsonSerializer serializer)
+        public static Timer CreateClientFullUpdateTimer(IDictionary<string, Room> rooms)
         {
             return CreateClientUpdateTimer(1d / 60d, rooms, true);
         }
