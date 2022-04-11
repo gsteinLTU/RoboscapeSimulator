@@ -155,6 +155,8 @@ namespace RoboScapeSimulator.Entities.Robots
         /// </summary>
         public readonly Dictionary<char, Action<byte[]>> MessageHandlers = new();
 
+        public event EventHandler? OnReset;
+
         /// <summary>
         /// Add a message handler for a certain message type
         /// </summary>
@@ -336,6 +338,8 @@ namespace RoboScapeSimulator.Entities.Robots
             time.Restart();
             lastMessageTime = 0;
             SendRoboScapeMessage(new byte[] { (byte)'I' });
+
+            OnReset?.Invoke(this, EventArgs.Empty);
 
             Debug.WriteLine($"Reset Robot");
         }

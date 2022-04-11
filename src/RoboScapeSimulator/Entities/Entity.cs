@@ -52,7 +52,7 @@ public abstract class Entity : IDisposable
         GC.SuppressFinalize(this);
     }
 
-
+    public abstract BodyInfo GetBodyInfo(bool allData);
 }
 
 /// <summary>
@@ -107,6 +107,11 @@ public interface IResettable
     /// Restore this Entity to its original state
     /// </summary>
     public void Reset();
+
+    /// <summary>
+    /// Event to fire when resetting
+    /// </summary>
+    public event EventHandler? OnReset;
 }
 
 /// <summary>
@@ -118,6 +123,24 @@ public abstract class StaticEntity : Entity
     /// The reference to this object in the simulation
     /// </summary>
     public StaticReference StaticReference;
+
+    public override BodyInfo GetBodyInfo(bool allData)
+    {
+        return new BodyInfo
+        {
+            label = allData ? Name : null,
+            pos = {
+                            x = StaticReference.Pose.Position.X,
+                            y = StaticReference.Pose.Position.Y,
+                            z = StaticReference.Pose.Position.Z
+                        },
+            angle = StaticReference.Pose.Orientation,
+            width = allData ? StaticReference.BoundingBox.Max.X - StaticReference.BoundingBox.Min.X : null,
+            height = allData ? StaticReference.BoundingBox.Max.Y - StaticReference.BoundingBox.Min.Y : null,
+            depth = allData ? StaticReference.BoundingBox.Max.Z - StaticReference.BoundingBox.Min.Z : null,
+            visualInfo = allData ? VisualInfo : null
+        };
+    }
 }
 
 
@@ -136,4 +159,23 @@ public abstract class DynamicEntity : Entity
     public float Height = 1;
 
     public float Depth = 1;
+
+    public override BodyInfo GetBodyInfo(bool allData)
+    {
+        return new BodyInfo
+        {
+            label = allData ? Name : null,
+            pos = {
+                x = BodyReference.Pose.Position.X,
+                y = BodyReference.Pose.Position.Y,
+                z = BodyReference.Pose.Position.Z
+            },
+            angle = BodyReference.Pose.Orientation,
+            width = allData ? Width : null,
+            height = allData ? Height : null,
+            depth = allData ? Depth : null,
+            visualInfo = allData ? VisualInfo : null,
+            vel = BodyReference.Velocity.Linear
+        };
+    }
 }

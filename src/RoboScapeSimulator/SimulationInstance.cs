@@ -98,38 +98,11 @@ namespace RoboScapeSimulator
             {
                 if (!onlyAwake && entity is StaticEntity staticEntity)
                 {
-                    output.Add(entity.Name, new BodyInfo
-                    {
-                        label = allData ? entity.Name : null,
-                        pos = {
-                            x = staticEntity.StaticReference.Pose.Position.X,
-                            y = staticEntity.StaticReference.Pose.Position.Y,
-                            z = staticEntity.StaticReference.Pose.Position.Z
-                        },
-                        angle = staticEntity.StaticReference.Pose.Orientation,
-                        width = allData ? staticEntity.StaticReference.BoundingBox.Max.X - staticEntity.StaticReference.BoundingBox.Min.X : null,
-                        height = allData ? staticEntity.StaticReference.BoundingBox.Max.Y - staticEntity.StaticReference.BoundingBox.Min.Y : null,
-                        depth = allData ? staticEntity.StaticReference.BoundingBox.Max.Z - staticEntity.StaticReference.BoundingBox.Min.Z : null,
-                        visualInfo = allData ? staticEntity.VisualInfo : null
-                    });
+                    output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }
                 else if (entity is DynamicEntity dynamicEntity && (!onlyAwake || dynamicEntity.BodyReference.Awake))
                 {
-                    output.Add(entity.Name, new BodyInfo
-                    {
-                        label = allData ? entity.Name : null,
-                        pos = {
-                        x = dynamicEntity.BodyReference.Pose.Position.X,
-                        y = dynamicEntity.BodyReference.Pose.Position.Y,
-                        z = dynamicEntity.BodyReference.Pose.Position.Z
-                    },
-                        angle = dynamicEntity.BodyReference.Pose.Orientation,
-                        width = allData ? dynamicEntity.Width : null,
-                        height = allData ? dynamicEntity.Height : null,
-                        depth = allData ? dynamicEntity.Depth : null,
-                        visualInfo = allData ? entity.VisualInfo : null,
-                        vel = dynamicEntity.BodyReference.Velocity.Linear
-                    });
+                    output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }
             }
 

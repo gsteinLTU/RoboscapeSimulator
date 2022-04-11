@@ -79,6 +79,8 @@ class Cube : DynamicEntity, IResettable
         room.SimInstance.Entities.Add(this);
     }
 
+    public event EventHandler? OnReset;
+
     public void Reset()
     {
         if (AllowReset)
@@ -87,6 +89,7 @@ class Cube : DynamicEntity, IResettable
             BodyReference.Pose.Orientation = initialOrientation;
             BodyReference.Velocity.Linear = new Vector3();
             BodyReference.Velocity.Angular = new Vector3();
+            OnReset?.Invoke(this, EventArgs.Empty);
         }
     }
 }

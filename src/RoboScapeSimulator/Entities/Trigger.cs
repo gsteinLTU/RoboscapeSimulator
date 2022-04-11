@@ -37,6 +37,7 @@ class Trigger : DynamicEntity, IResettable
     /// Invoked when the last Entity in the Trigger leaves
     /// </summary>
     public event EventHandler? OnTriggerEmpty;
+    public event EventHandler? OnReset;
 
     /// <summary>
     /// Entities currently in the Trigger
@@ -105,6 +106,7 @@ class Trigger : DynamicEntity, IResettable
         {
             triggered = false;
             InTrigger.Clear();
+            OnReset?.Invoke(this, EventArgs.Empty);
         }
     }
 
