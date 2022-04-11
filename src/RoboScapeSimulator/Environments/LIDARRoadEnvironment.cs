@@ -22,6 +22,7 @@ namespace RoboScapeSimulator.Environments
         {
             public const string Easy = "Easy";
             public const string Hard = "Hard";
+            public const string VeryHard = "VeryHard";
         }
 
         public override object Clone()
@@ -79,6 +80,73 @@ namespace RoboScapeSimulator.Environments
 
                     endPosZ = 8;
                     endPosX = 2;
+
+                    break;
+                case Courses.VeryHard:
+                    // left
+                    AddPath(room, new()
+                    {
+                        new(-0.5f, 0, 0),
+                        new(-0.5f, 0, 1f),
+                        new(0f, 0, 2f),
+                        new(0f, 0, 2.25f),
+                        new(1.25f, 0, 3f),
+                        new(2.5f, 0, 2.75f),
+                        new(3.5f, 0, 2.75f),
+                        new(3.5f, 0, 1f),
+                        new(4f, 0, 0f),
+                        new(3.75f, 0, -1f),
+                        new(3.25f, 0, -2f),
+                        new(1.5f, 0, -2.25f),
+                        new(-1.25f, 0, -2.25f),
+                        new(-2.25f, 0, -1f),
+                        new(-2.5f, 0, 0.25f),
+                        new(-2.5f, 0, 1f),
+                    });
+
+                    // right
+                    AddPath(room, new()
+                    {
+                        new(0.5f, 0, 0),
+                        new(0.5f, 0, 1f),
+                        new(1.5f, 0, 2f),
+                        new(1.5f, 0, 2.25f),
+                        new(2.5f, 0, 2f),
+                        new(2.5f, 0, 1f),
+                        new(3f, 0, 0f),
+                        new(2.75f, 0, -1f),
+                        new(1.5f, 0, -1.25f),
+                        new(-1.25f, 0, -1.25f),
+                        new(-1.5f, 0, -0.75f),
+                        new(-1.5f, 0, 1f),
+                    });
+
+                    // Spikes
+                    AddPath(room, new()
+                    {
+                        new(0.5f, -0.1f, -1.25f),
+                        new(0f, -0.1f, -1.75f),
+                        new(-0.5f, -0.1f, -1.25f),
+                    });
+
+                    AddPath(room, new()
+                    {
+                        new(0.5f, -0.1f, -2.25f),
+                        new(1f, -0.1f, -1.75f),
+                        new(1.5f, -0.1f, -2.25f),
+                    });
+
+                    // start area
+                    AddPath(room, new()
+                    {
+                        new(-0.5f, 0, 0),
+                        new(-0.5f, 0, -0.5f),
+                        new(0.5f, 0, -0.5f),
+                        new(0.5f, 0, 0f),
+                    });
+
+                    endPosZ = 0.5f;
+                    endPosX = -2f;
 
                     break;
                 case Courses.Easy:
