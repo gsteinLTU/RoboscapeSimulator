@@ -104,6 +104,10 @@ namespace RoboScapeSimulator
                 {
                     output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }
+                else if (allData)
+                {
+                    output.Add(entity.Name, entity.GetBodyInfo(allData));
+                }
             }
 
             return output;

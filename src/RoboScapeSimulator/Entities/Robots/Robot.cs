@@ -49,17 +49,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
             Box box;
 
-            if (visualInfo != null)
-            {
-                VisualInfo = (VisualInfo)visualInfo;
-            }
-            else
-            {
-                VisualInfo = new VisualInfo()
-                {
-                    ModelName = "parallax_robot.gltf"
-                };
-            }
+            VisualInfo = visualInfo ?? new VisualInfo() { ModelName = "parallax_robot.gltf" };
 
             if (size == null)
             {
@@ -95,8 +85,8 @@ namespace RoboScapeSimulator.Entities.Robots
             SetupRobot();
             time.Start();
 
-            room.SimInstance.NamedBodies.Add("robot_" + BytesToHexstring(MacAddress, ""), BodyReference);
             Name = "robot_" + BytesToHexstring(MacAddress, "");
+            room.SimInstance.NamedBodies.Add(Name, BodyReference);
             room.SimInstance.Entities.Add(this);
         }
 
