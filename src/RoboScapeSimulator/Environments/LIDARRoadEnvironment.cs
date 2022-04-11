@@ -124,16 +124,16 @@ namespace RoboScapeSimulator.Environments
                     // Spikes
                     AddPath(room, new()
                     {
-                        new(0.5f, -0.1f, -1.25f),
-                        new(0f, -0.1f, -1.75f),
-                        new(-0.5f, -0.1f, -1.25f),
+                        new(0.5f, 0f, -1.25f),
+                        new(0f, 0f, -1.75f),
+                        new(-0.5f, 0f, -1.25f),
                     });
 
                     AddPath(room, new()
                     {
-                        new(0.5f, -0.1f, -2.25f),
-                        new(1f, -0.1f, -1.75f),
-                        new(1.5f, -0.1f, -2.25f),
+                        new(0.5f, 0f, -2.25f),
+                        new(1f, 0f, -1.75f),
+                        new(1.5f, 0f, -2.25f),
                     });
 
                     // start area
