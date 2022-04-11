@@ -53,6 +53,8 @@ public abstract class Entity : IDisposable
     }
 
     public abstract BodyInfo GetBodyInfo(bool allData);
+
+    public abstract bool ShouldUpdate { get; }
 }
 
 /// <summary>
@@ -141,6 +143,8 @@ public abstract class StaticEntity : Entity
             visualInfo = allData ? VisualInfo : null
         };
     }
+
+    public override bool ShouldUpdate => false;
 }
 
 
@@ -178,4 +182,6 @@ public abstract class DynamicEntity : Entity
             vel = BodyReference.Velocity.Linear
         };
     }
+
+    public override bool ShouldUpdate => BodyReference.Awake;
 }

@@ -70,6 +70,8 @@ namespace RoboScapeSimulator
         /// <param name="dt">Delta time in s</param>
         public void Update(float dt)
         {
+            if (dt <= 0)
+                return;
             Time += dt;
             Simulation.Timestep(dt);
             foreach (var entity in Entities)
@@ -104,7 +106,7 @@ namespace RoboScapeSimulator
                 {
                     output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }
-                else if (allData)
+                else if (allData || entity.ShouldUpdate)
                 {
                     output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }

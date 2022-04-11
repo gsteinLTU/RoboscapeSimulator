@@ -59,9 +59,13 @@ class Trigger : DynamicEntity, IResettable
     /// <param name="debug">Sets the Trigger to be visible in the client</param>
     public Trigger(Room room, in Vector3 initialPosition, in Quaternion initialOrientation, float width = 1, float height = 1, float depth = 1, bool oneTime = false, bool debug = false)
     {
-        if (debug)
+        if (!debug)
         {
             VisualInfo = VisualInfo.None;
+        }
+        else
+        {
+            VisualInfo = VisualInfo.DefaultCube;
         }
 
         Name = $"trigger_{ID++}";
