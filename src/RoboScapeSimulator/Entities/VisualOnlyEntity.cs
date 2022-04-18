@@ -33,7 +33,6 @@ class VisualOnlyEntity : Entity
     public float Height;
     public float Depth;
 
-
     private static uint ID = 1;
 
     /// <summary>
@@ -78,6 +77,7 @@ class VisualOnlyEntity : Entity
     }
 
     private bool _moved = true;
+
     public override bool ShouldUpdate
     {
         get

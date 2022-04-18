@@ -74,7 +74,7 @@ namespace RoboScapeSimulator
                 return;
             Time += dt;
             Simulation.Timestep(dt);
-            foreach (var entity in Entities)
+            foreach (var entity in Entities.ToList())
             {
                 try
                 {

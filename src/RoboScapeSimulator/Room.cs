@@ -67,6 +67,11 @@ namespace RoboScapeSimulator
         public event EventHandler? OnRoomClose;
 
         /// <summary>
+        /// Event called when this room updates
+        /// </summary>
+        public event EventHandler<float>? OnUpdate;
+
+        /// <summary>
         /// ID of the environment used to launch this Room
         /// </summary>
         public string EnvironmentID;
@@ -313,7 +318,9 @@ namespace RoboScapeSimulator
             new LIDARRoadEnvironment(),
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.Hard),
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.VeryHard),
-            new WaypointNavigationEnvironment()
+            new WaypointNavigationEnvironment(),
+            new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Easy),
+            new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard)
         };
 
         public DateTime LastInteractionTime
@@ -386,6 +393,8 @@ namespace RoboScapeSimulator
 
                 return;
             }
+
+            OnUpdate?.Invoke(this, dt);
 
             SimInstance.Update(dt);
         }

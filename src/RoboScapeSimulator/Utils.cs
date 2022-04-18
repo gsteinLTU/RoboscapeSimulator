@@ -19,9 +19,30 @@ namespace RoboScapeSimulator
             roll = MathF.Atan2(2.0f * (r.X * r.Y + r.Z * r.W), 1.0f - 2.0f * (r.X * r.X + r.Z * r.Z));
         }
 
-        public static Vector3 PointOnCircle(this Random rng, float radius = 1, float height = 0)
+        /// <summary>
+        /// Returns a random point on a circle on the XZ plane
+        /// </summary>
+        /// <param name="radius">Radius of circle</param>
+        /// <param name="height">Additional Y-value of circle</param>
+        /// <param name="center">Center of circle, (0,0,0) if null</param>
+        /// <returns></returns>
+        public static Vector3 PointOnCircle(this Random rng, float radius = 1, float height = 0, Vector3? center = null)
         {
-            return new(radius * MathF.Cos(rng.NextSingle() * 2 * MathF.PI), height, radius * MathF.Sin(rng.NextSingle() * 2 * MathF.PI));
+            return new Vector3(radius * MathF.Cos(rng.NextSingle() * 2 * MathF.PI), height, radius * MathF.Sin(rng.NextSingle() * 2 * MathF.PI)) + (center ?? Vector3.Zero);
+        }
+
+
+        /// <summary>
+        /// Returns a random point on a circle on the XZ plane
+        /// </summary>
+        /// <param name="radius">Radius of circle</param>
+        /// <param name="height">Additional Y-value of circle</param>
+        /// <param name="center">Center of circle, (0,0,0) if null</param>
+        /// <returns></returns>
+        public static Vector3 PointOnLine(this Random rng, Vector3 p1, Vector3 p2)
+        {
+            var d = p2 - p1;
+            return p1 + d * rng.NextSingle();
         }
 
         /// <summary>
