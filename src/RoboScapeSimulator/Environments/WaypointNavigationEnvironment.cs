@@ -61,14 +61,18 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
                     Markers[waypoint_idx].Position = waypoint.BodyReference.Pose.Position;
                 }
 
-                if (waypoint_idx < waypoints.Count)
+                if (waypoint_idx < waypoints.Count - 1)
                 {
+                    waypoint_idx++;
                     waypoint.BodyReference.Pose.Position = waypoints[waypoint_idx];
-                    waypoint_X_1.Position = waypoint.BodyReference.Pose.Position;
-                    waypoint_X_2.Position = waypoint.BodyReference.Pose.Position;
+                    waypoint_X_1.Position = waypoints[waypoint_idx];
+                    waypoint_X_2.Position = waypoints[waypoint_idx];
+                }
+                else
+                {
+                    waypoint_idx++;
                 }
 
-                waypoint_idx++;
             }
         };
 
