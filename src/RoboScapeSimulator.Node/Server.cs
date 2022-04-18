@@ -337,7 +337,7 @@ public class Socket
         buffer += ID;
         buffer += eventName;
         buffer += " ";
-        buffer += data.ToJsonString(new JsonSerializerOptions() { WriteIndented = false });
+        buffer += data.ToJsonString(new JsonSerializerOptions() { IncludeFields = true, WriteIndented = false });
         server.Send(buffer);
     }
 

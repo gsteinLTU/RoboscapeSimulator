@@ -211,7 +211,7 @@ namespace RoboScapeSimulator.IoTScape
         {
             // Send response
             _socket.SendTo(JsonSerializer.SerializeToUtf8Bytes(response,
-                new JsonSerializerOptions { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }), SocketFlags.None, hostEndPoint);
+                new JsonSerializerOptions { IncludeFields = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }), SocketFlags.None, hostEndPoint);
         }
     }
 
