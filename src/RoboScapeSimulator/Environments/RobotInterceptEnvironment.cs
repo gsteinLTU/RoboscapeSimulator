@@ -44,6 +44,7 @@ namespace RoboScapeSimulator.Environments
 
             var rng = new Random();
             var targetRobot = new ParallaxRobot(room, rng.PointOnCircle(1.5f, 0.25f), Quaternion.Identity, debug: false, internalUse: true);
+            Vector3 robotTarget;
 
             PositionSensor s1 = new(robot);
             PositionSensor s2 = new(targetRobot);
@@ -53,7 +54,7 @@ namespace RoboScapeSimulator.Environments
 
             room.OnUpdate += (room, dt) =>
             {
-
+                // 
             };
         }
     }
