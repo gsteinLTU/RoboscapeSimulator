@@ -40,7 +40,7 @@ namespace RoboScapeSimulator.Environments
             var robot = new ParallaxRobot(room, new(0, 0.25f, 0), Quaternion.Identity, debug: false);
 
             // Target robot
-            float targetSpeed = _difficulty == Difficulties.Hard ? 80 : 40;
+            float targetSpeed = _difficulty == Difficulties.Hard ? 90 : 50;
 
             var rng = new Random();
 
@@ -51,17 +51,40 @@ namespace RoboScapeSimulator.Environments
             var startMarker = new VisualOnlyEntity(room, initialPosition: initialPosition, initialOrientation: Quaternion.Identity, width: 0.1f, height: 0.025f, depth: 0.1f, visualInfo: new VisualInfo() { Color = "#363" });
             var endMarker = new VisualOnlyEntity(room, initialPosition: robotTarget, initialOrientation: Quaternion.Identity, width: 0.1f, height: 0.025f, depth: 0.1f, visualInfo: new VisualInfo() { Color = "#633" });
 
+            var trigger = new Trigger(room, initialPosition, Quaternion.Identity, 0.15f, 0.15f, 0.15f);
+
+            trigger.OnTriggerEnter += (trigger, ent) =>
+            {
+                if (ent is Robot r)
+                {
+                    if (r.ID == robot.ID)
+                    {
+                        targetRobot.ResetSpeed();
+                    }
+                }
+            };
+
             PositionSensor s1 = new(robot);
             PositionSensor s2 = new(targetRobot);
 
             s1.Setup(room);
             s2.Setup(room);
 
+            bool resetting = false;
+
             room.OnUpdate += (room, dt) =>
             {
+                if (resetting)
+                {
+                    resetting = false;
+                    return;
+                }
+
                 // Stop if at destination
                 if (targetRobot.Speed.Left != 0)
                 {
+                    trigger.BodyReference.Pose.Position = targetRobot.BodyReference.Pose.Position;
+
                     // Update heading
                     targetRobot.BodyReference.Pose.Orientation.ExtractYawPitchRoll(out var yaw, out var _, out var _);
                     if (MathF.Abs(yaw - getHeading(targetRobot.BodyReference.Pose.Position, robotTarget)) > MathF.PI / 10f)
@@ -71,7 +94,7 @@ namespace RoboScapeSimulator.Environments
 
                     // Stop on target
                     var distSqr = (targetRobot.BodyReference.Pose.Position - robotTarget).LengthSquared();
-                    if (distSqr < 0.03f)
+                    if (distSqr < 0.0025f)
                     {
                         targetRobot.ResetSpeed();
                     }
@@ -89,13 +112,15 @@ namespace RoboScapeSimulator.Environments
                 endMarker.Position = robotTarget;
 
                 targetRobot.Reset();
+
                 targetRobot.SetSpeed(targetSpeed, targetSpeed);
+                resetting = true;
             };
 
             static (Vector3, Vector3) robotGen(Random rng)
             {
-                Vector3 initialPosition = rng.PointOnLine(new(1, 0.075f, 2.5f), new(3, 0.075f, 2));
-                Vector3 robotTarget = rng.PointOnLine(new(1, 0.05f, -4), new(3, 0.05f, -4));
+                Vector3 initialPosition = rng.PointOnLine(new(1.5f, 0.075f, 2.5f), new(3, 0.075f, 2));
+                Vector3 robotTarget = rng.PointOnLine(new(2, 0.05f, -4), new(4, 0.05f, -4));
                 return (initialPosition, robotTarget);
             }
 
