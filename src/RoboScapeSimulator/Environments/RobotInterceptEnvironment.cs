@@ -64,9 +64,9 @@ namespace RoboScapeSimulator.Environments
                 {
                     // Update heading
                     targetRobot.BodyReference.Pose.Orientation.ExtractYawPitchRoll(out var yaw, out var _, out var _);
-                    if (MathF.Abs(yaw - getHeading(targetRobot.BodyReference.Pose.Position, robotTarget)) > MathF.PI / 8f)
+                    if (MathF.Abs(yaw - getHeading(targetRobot.BodyReference.Pose.Position, robotTarget)) > MathF.PI / 10f)
                     {
-                        targetRobot.BodyReference.Pose.Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, getHeading(initialPosition, robotTarget));
+                        targetRobot.BodyReference.Pose.Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, getHeading(targetRobot.BodyReference.Pose.Position, robotTarget));
                     }
 
                     // Stop on target
