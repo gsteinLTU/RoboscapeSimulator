@@ -1,12 +1,23 @@
+using System.Text.Json.Serialization;
+
 namespace RoboScapeSimulator.IoTScape
 {
     [Serializable]
     public class IoTScapeServiceDefinition
     {
+        [JsonInclude]
         public string name = "";
+
+        [JsonInclude]
         public IoTScapeServiceDescription service;
+
+        [JsonInclude]
         public string id = "";
+
+        [JsonInclude]
         public Dictionary<string, IoTScapeMethodDescription> methods = new();
+
+        [JsonInclude]
         public Dictionary<string, IoTScapeEventDescription> events = new();
 
         public IoTScapeServiceDefinition()

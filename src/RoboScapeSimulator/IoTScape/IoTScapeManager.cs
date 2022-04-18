@@ -3,7 +3,8 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RoboScapeSimulator.IoTScape
 {
@@ -26,7 +27,6 @@ namespace RoboScapeSimulator.IoTScape
 
         private float timer = 0.0f;
 
-
         public IoTScapeManager()
         {
             var hostIpAddress = Dns.GetHostAddresses(SettingsManager.RoboScapeHostWithoutPort)[0];
@@ -45,10 +45,10 @@ namespace RoboScapeSimulator.IoTScape
         /// <param name="o">IoTScapeObject to announce</param>
         void Announce(IoTScapeObject o)
         {
-            string serviceJson = JsonConvert.SerializeObject(new Dictionary<string, IoTScapeServiceDefinition>() { { o.Definition.name, o.Definition } });
             Debug.WriteLine($"Announcing service {o.Definition.name} from object with ID {o.Definition.id}");
-
-            _socket.SendTo(serviceJson.Select(c => (byte)c).ToArray(), SocketFlags.None, hostEndPoint);
+            var jsonBytes = JsonSerializer.SerializeToUtf8Bytes(new Dictionary<string, IoTScapeServiceDefinition>() { { o.Definition.name, o.Definition } });
+            Debug.WriteLine(Encoding.UTF8.GetString(jsonBytes));
+            _socket.SendTo(jsonBytes, SocketFlags.None, hostEndPoint);
         }
 
         /// <summary>
@@ -151,8 +151,7 @@ namespace RoboScapeSimulator.IoTScape
 
                 string incomingString = Encoding.UTF8.GetString(incoming, 0, len);
 
-                var json = JsonSerializer.Create();
-                var request = json.Deserialize<IoTScapeRequest>(new JsonTextReader(new StringReader(incomingString)));
+                var request = JsonSerializer.Deserialize<IoTScapeRequest>(incomingString);
                 Debug.WriteLine(request);
 
                 // Verify device exists
@@ -211,19 +210,15 @@ namespace RoboScapeSimulator.IoTScape
         internal void SendToServer(in IoTScapeResponse response)
         {
             // Send response
-            string responseJson = JsonConvert.SerializeObject(response,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-
-            Debug.WriteLine(responseJson);
-
-            _socket.SendTo(responseJson.Select(c => (byte)c).ToArray(), SocketFlags.None, hostEndPoint);
+            _socket.SendTo(JsonSerializer.SerializeToUtf8Bytes(response,
+                new JsonSerializerOptions { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }), SocketFlags.None, hostEndPoint);
         }
     }
 
     [Serializable]
     public class IoTScapeEventDescription
     {
-        [JsonProperty(PropertyName = "params")]
+        [JsonPropertyName("params")]
         public List<string> paramsList = new();
     }
 
@@ -241,38 +236,61 @@ namespace RoboScapeSimulator.IoTScape
     [Serializable]
     public class IoTScapeMethodDescription
     {
+        [JsonInclude]
         public string? documentation;
 
-        [JsonProperty(PropertyName = "params")]
+        [JsonInclude]
+        [JsonPropertyName("params")]
         public List<IoTScapeMethodParams> paramsList = new();
+
+        [JsonInclude]
         public IoTScapeMethodReturns returns = new();
     }
 
     [Serializable]
     public class IoTScapeMethodParams
     {
+
+        [JsonInclude]
         public string name = "param";
+
+        [JsonInclude]
         public string? documentation;
+
+        [JsonInclude]
         public string type = "string";
+
+        [JsonInclude]
         public bool optional;
     }
 
     [Serializable]
     public class IoTScapeMethodReturns
     {
+        [JsonInclude]
         public string? documentation;
+
+        [JsonInclude]
         public List<string> type = new();
     }
 
     [Serializable]
     public class IoTScapeRequest
     {
+        [JsonInclude]
         public string id = "";
+
+        [JsonInclude]
         public string service = "";
+
+        [JsonInclude]
         public string device = "";
+
+        [JsonInclude]
         public string? function;
 
-        [JsonProperty(PropertyName = "params")]
+        [JsonInclude]
+        [JsonPropertyName("params")]
         public List<string> ParamsList = new();
 
         public override string ToString()
@@ -284,21 +302,33 @@ namespace RoboScapeSimulator.IoTScape
     [Serializable]
     public class IoTScapeResponse
     {
+        [JsonInclude]
         public string id = "";
+
+        [JsonInclude]
         public string request = "";
+
+        [JsonInclude]
         public string service = "";
+
+        [JsonInclude]
         public List<string>? response;
 
-        [JsonProperty(PropertyName = "event")]
+        [JsonInclude]
+        [JsonPropertyName("event")]
         public IoTScapeEventResponse? EventResponse;
 
+        [JsonInclude]
         public string? error;
     }
 
     [Serializable]
     public class IoTScapeEventResponse
     {
+        [JsonInclude]
         public string? type;
+
+        [JsonInclude]
         public string[]? args;
     }
 }
