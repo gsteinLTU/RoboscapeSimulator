@@ -41,7 +41,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// Instantiate a Robot inside a given simulation instance
         /// </summary>
         /// <param name="room">Room this Robot exists inside</param>
-        public Robot(Room room, in Vector3? position = null, in Quaternion? rotation = null, in Vector3? size = null, float mass = 2, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f)
+        public Robot(Room room, in Vector3? position = null, in Quaternion? rotation = null, in Vector3? size = null, float mass = 2, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f, bool internalUse = false)
         {
             this.room = room;
             simulation = room.SimInstance.Simulation;
@@ -82,10 +82,11 @@ namespace RoboScapeSimulator.Entities.Robots
             _initialPosition = BodyReference.Pose.Position;
             _initialOrientation = BodyReference.Pose.Orientation;
 
-            SetupRobot();
+            SetupRobot(internalUse);
             time.Start();
 
             Name = "robot_" + BytesToHexstring(MacAddress, "");
+
             room.SimInstance.NamedBodies.Add(Name, BodyReference);
             room.SimInstance.Entities.Add(this);
         }
@@ -171,14 +172,17 @@ namespace RoboScapeSimulator.Entities.Robots
             MessageHandlers.Remove(messageCode);
         }
 
-        private void SetupRobot()
+        private void SetupRobot(bool internalUse = false)
         {
-            socket = new UdpClient();
+            if (!internalUse)
+            {
+                socket = new UdpClient();
 
-            // Remove port from host to make localhost use easier
-            string host = SettingsManager.RoboScapeHostWithoutPort;
+                // Remove port from host to make localhost use easier
+                string host = SettingsManager.RoboScapeHostWithoutPort;
 
-            socket.Connect(host, SettingsManager.RoboScapePort);
+                socket.Connect(host, SettingsManager.RoboScapePort);
+            }
 
             if (MacAddress?.Length != 6)
             {
@@ -261,7 +265,7 @@ namespace RoboScapeSimulator.Entities.Robots
         public override void Update(float dt)
         {
             // Setup robots
-            if (socket == null)
+            if (MacAddress == Array.Empty<byte>())
             {
                 SetupRobot();
             }

@@ -74,7 +74,7 @@ namespace RoboScapeSimulator
                 return;
             Time += dt;
             Simulation.Timestep(dt);
-            foreach (var entity in Entities)
+            foreach (var entity in Entities.ToList())
             {
                 try
                 {
@@ -98,7 +98,7 @@ namespace RoboScapeSimulator
 
             foreach (var entity in Entities)
             {
-                if (!onlyAwake && entity is StaticEntity staticEntity)
+                if (!onlyAwake && entity is StaticEntity)
                 {
                     output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }
