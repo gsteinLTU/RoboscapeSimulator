@@ -33,14 +33,16 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
         var robot = new ParallaxRobot(room, new Vector3(0, 0.25f, 0), Quaternion.Identity, debug: false);
 
         // Waypoints
-        List<Vector3> waypoints = new List<Vector3>();
-        waypoints.Add(rng.PointOnLine(new(-3f, 0, 2), new(2, 0, 2)));
-        waypoints.Add(rng.PointOnLine(new(-2, 0, 4), new(3f, 0, 4)));
-        waypoints.Add(rng.PointOnLine(new(-2.5f, 0, 6), new(2.5f, 0, 6)));
+        List<Vector3> waypoints = new()
+        {
+            rng.PointOnLine(new(-3f, 0, 2), new(2, 0, 2)),
+            rng.PointOnLine(new(-2, 0, 4), new(3f, 0, 4)),
+            rng.PointOnLine(new(-2.5f, 0, 6), new(2.5f, 0, 6))
+        };
 
         int waypoint_idx = 0;
 
-        List<VisualOnlyEntity> Markers = new List<VisualOnlyEntity>();
+        List<VisualOnlyEntity> Markers = new();
 
         // Waypoint trigger
         var waypoint = new Trigger(room, waypoints[0], Quaternion.Identity, 0.2f, 0.1f, 0.2f);
@@ -52,7 +54,7 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
             // Move waypoint
             if (waypoint_idx <= waypoints.Count)
             {
-                if (Markers.Count() <= waypoint_idx)
+                if (Markers.Count <= waypoint_idx)
                 {
                     Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint.BodyReference.Pose.Position, initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
                 }

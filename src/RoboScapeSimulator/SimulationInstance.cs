@@ -98,7 +98,7 @@ namespace RoboScapeSimulator
 
             foreach (var entity in Entities)
             {
-                if (!onlyAwake && entity is StaticEntity staticEntity)
+                if (!onlyAwake && entity is StaticEntity)
                 {
                     output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }

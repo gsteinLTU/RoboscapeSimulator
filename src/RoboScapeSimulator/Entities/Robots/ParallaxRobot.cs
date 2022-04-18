@@ -310,13 +310,19 @@ namespace RoboScapeSimulator.Entities.Robots
                 return;
             }
 
-            leftSpeed = BitConverter.ToInt16(msg, 1);
-            rightSpeed = BitConverter.ToInt16(msg, 3);
-
-            driveState = DriveState.SetSpeed;
+            SetSpeed(BitConverter.ToInt16(msg, 1), BitConverter.ToInt16(msg, 3));
 
             Debug.WriteLine($"Set Speed {leftSpeed} {rightSpeed}");
         }
+
+        public void SetSpeed(float left, float right)
+        {
+            leftSpeed = left;
+            rightSpeed = right;
+            driveState = DriveState.SetSpeed;
+        }
+
+        public (float Left, float Right) Speed { get => (leftSpeed, rightSpeed); }
 
         public void OnBeep(byte[] msg)
         {
@@ -413,9 +419,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// </summary>
         public void ResetSpeed()
         {
-            leftSpeed = 0;
-            rightSpeed = 0;
-            driveState = DriveState.SetSpeed;
+            SetSpeed(0, 0);
         }
 
         public new void Dispose()

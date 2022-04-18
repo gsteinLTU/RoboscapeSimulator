@@ -42,9 +42,9 @@ class Trigger : DynamicEntity, IResettable
     /// <summary>
     /// Entities currently in the Trigger
     /// </summary>
-    public List<Entity> InTrigger = new List<Entity>();
+    public List<Entity> InTrigger = new();
 
-    private List<Entity> lastInTrigger = new List<Entity>();
+    private readonly List<Entity> lastInTrigger = new();
 
     /// <summary>
     /// Create a new Trigger
