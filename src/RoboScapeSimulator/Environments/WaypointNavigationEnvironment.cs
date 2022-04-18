@@ -89,5 +89,19 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
 
         PositionSensor positionSensor = new(robot);
         positionSensor.Setup(room);
+
+        room.OnReset += (room, _) =>
+        {
+            waypoints.Clear();
+
+            waypoints.Add(rng.PointOnLine(new(-3f, 0, 2), new(2, 0, 2)));
+            waypoints.Add(rng.PointOnLine(new(-2, 0, 4), new(3f, 0, 4)));
+            waypoints.Add(rng.PointOnLine(new(-2.5f, 0, 6), new(2.5f, 0, 6)));
+
+            waypoint_idx = 0;
+            waypoint.BodyReference.Pose.Position = waypoints[waypoint_idx];
+            waypoint_X_1.Position = waypoint.BodyReference.Pose.Position;
+            waypoint_X_2.Position = waypoint.BodyReference.Pose.Position;
+        };
     }
 }

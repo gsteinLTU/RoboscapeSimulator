@@ -72,6 +72,11 @@ namespace RoboScapeSimulator
         public event EventHandler<float>? OnUpdate;
 
         /// <summary>
+        /// Event called when this room has a reset requested
+        /// </summary>
+        public event EventHandler? OnReset;
+
+        /// <summary>
         /// ID of the environment used to launch this Room
         /// </summary>
         public string EnvironmentID;
@@ -237,6 +242,8 @@ namespace RoboScapeSimulator
                     resettable.Reset();
                 }
             }
+
+            OnReset?.Invoke(this, EventArgs.Empty);
         }
 
         private void HandleRobotButton(JsonNode[] args)
