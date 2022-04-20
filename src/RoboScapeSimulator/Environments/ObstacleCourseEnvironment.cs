@@ -6,11 +6,14 @@ namespace RoboScapeSimulator.Environments
 {
     class ObstacleCourseEnvironment : EnvironmentConfiguration
     {
+        readonly Stopwatch sw;
+
         public ObstacleCourseEnvironment()
         {
             Name = "Obstacle Course";
             ID = "obstaclecourse1";
             Description = "Obstacle course and one robot";
+            sw = new Stopwatch();
         }
 
         public override object Clone()
@@ -56,6 +59,22 @@ namespace RoboScapeSimulator.Environments
                 _ = new Cube(room, leftSize, 0.5f, 0.1f, new Vector3(-wallX / 2 + leftSize / 2, 0.25f, -wallZ / 2 + zPos), Quaternion.Identity, true, nameOverride: "walll", visualInfo: new VisualInfo() { Color = "#633" });
                 _ = new Cube(room, wallX - leftSize - gapSize, 0.5f, 0.1f, new Vector3(wallX / 2 - (wallX - leftSize - gapSize) / 2, 0.25f, -wallZ / 2 + zPos), Quaternion.Identity, true, nameOverride: "wallr", visualInfo: new VisualInfo() { Color = "#633" });
             }
+
+            room.OnReset += (o, _) =>
+            {
+                sw.Reset();
+                sw.Start();
+            };
+
+            room.OnUpdate += (o, dt) =>
+            {
+                if (sw.Elapsed.Milliseconds * 10 % 10 == 0)
+                {
+                    room.SendToClients("showText", sw.Elapsed.TotalSeconds.ToString(), "timer", "");
+                }
+            };
+
+            sw.Start();
         }
     }
 }
