@@ -1,5 +1,5 @@
+using System.Text.Json.Serialization;
 using BepuPhysics;
-using Newtonsoft.Json;
 
 namespace RoboScapeSimulator.Entities;
 
@@ -68,25 +68,25 @@ public struct VisualInfo
     /// <summary>
     /// Name of the model to be displayed, if any
     /// </summary>
-    [JsonProperty("model")]
+    [JsonPropertyName("model")]
     public string ModelName = "";
 
     /// <summary>
     /// Uniform scale to apply to model
     /// </summary>
-    [JsonProperty("modelScale")]
+    [JsonPropertyName("modelScale")]
     public float ModelScale = 1;
 
     /// <summary>
     /// Color to apply to cube mesh if no model is used
     /// </summary>
-    [JsonProperty("color")]
+    [JsonPropertyName("color")]
     public string Color = "#fff";
 
     /// <summary>
     /// Texture to apply to cube mesh if no model is used
     /// </summary>
-    [JsonProperty("image")]
+    [JsonPropertyName("image")]
     public string Image = "";
 
     /// <summary>

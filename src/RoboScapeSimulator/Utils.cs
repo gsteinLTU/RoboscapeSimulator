@@ -1,12 +1,13 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPhysics.Trees;
 using BepuUtilities.Memory;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 namespace RoboScapeSimulator
 {
     public static class Utils
@@ -48,18 +49,18 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Helper function to print a JToken
         /// </summary>
-        public static void PrintJSON(JToken token)
+        public static void PrintJSON(JsonNode token)
         {
             if (token != null)
             {
-                Debug.WriteLine(JsonConvert.SerializeObject(token, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Converters = new List<JsonConverter>() { new SmallerFloatFormatConverter() } }));
+                Debug.WriteLine(JsonSerializer.Serialize(token, new JsonSerializerOptions() { IncludeFields = true, Converters = { new SmallerFloatFormatConverter() } }));
             }
         }
 
         /// <summary>
         /// Helper function to print a JToken
         /// </summary>
-        public static void PrintJSONArray(JToken[] tokens)
+        public static void PrintJSONArray(JsonNode[] tokens)
         {
             Array.ForEach(tokens, PrintJSON);
         }
@@ -70,9 +71,9 @@ namespace RoboScapeSimulator
             {
                 try
                 {
-                    socket.Emit(eventName, JsonConvert.SerializeObject(data, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Converters = new List<JsonConverter>() { new SmallerFloatFormatConverter() } }));
+                    socket.Emit(eventName, JsonSerializer.Serialize(data, new JsonSerializerOptions() { IncludeFields = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Converters = { new SmallerFloatFormatConverter() } }));
                 }
-                catch (System.Exception e)
+                catch (Exception e)
                 {
                     if (data is IDictionary<string, object> dict)
                     {
@@ -110,38 +111,20 @@ namespace RoboScapeSimulator
             return intersectionCount > 0;
         }
 
-        private class SmallerFloatFormatConverter : JsonConverter
+        private class SmallerFloatFormatConverter : JsonConverter<float>
         {
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(float) || objectType == typeof(double) || objectType == typeof(Half);
-            }
+            public override float Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.GetSingle();
 
-            public override void WriteJson(JsonWriter writer, object? value,
-                                           JsonSerializer serializer)
+            public override void Write(Utf8JsonWriter writer, float value, JsonSerializerOptions options)
             {
-                if (value is float f)
+                if (MathF.Abs(value) < 0.001f)
                 {
-                    if (MathF.Abs(f) < 0.001f)
-                    {
-                        writer.WriteValue("0");
-                    }
-                    else
-                    {
-                        writer.WriteValue(string.Format("{0:G" + (int)Math.Max(4, Math.Round(4 + MathF.Log10(MathF.Abs(f)))) + "}", value));
-                    }
+                    writer.WriteStringValue("0");
                 }
-            }
-
-            public override bool CanRead
-            {
-                get { return false; }
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType,
-                                         object? existingValue, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
+                else
+                {
+                    writer.WriteStringValue(string.Format("{0:G" + (int)Math.Max(4, Math.Round(4 + MathF.Log10(MathF.Abs(value)))) + "}", value));
+                }
             }
         }
     }
