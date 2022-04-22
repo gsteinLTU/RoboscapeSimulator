@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Text.Json.Serialization;
 using BepuPhysics;
 
@@ -13,6 +14,17 @@ public abstract class Entity : IDisposable
     /// </summary>
     /// <param name="dt">Time delta in seconds</param>
     public virtual void Update(float dt) { }
+
+
+    public Vector3 Position
+    {
+        get;
+    }
+
+    public Quaternion Orientation
+    {
+        get;
+    }
 
     /// <summary>
     /// The name of this Entity
@@ -126,6 +138,16 @@ public abstract class StaticEntity : Entity
     /// </summary>
     public StaticReference StaticReference;
 
+    public new Vector3 Position
+    {
+        get => StaticReference.Pose.Position;
+    }
+
+    public new Quaternion Orientation
+    {
+        get => StaticReference.Pose.Orientation;
+    }
+
     public override BodyInfo GetBodyInfo(bool allData)
     {
         return new BodyInfo
@@ -158,6 +180,16 @@ public abstract class DynamicEntity : Entity
     /// </summary>
     public BodyReference BodyReference;
 
+    public new Vector3 Position
+    {
+        get => BodyReference.Pose.Position; set => BodyReference.Pose.Position = value;
+    }
+
+    public new Quaternion Orientation
+    {
+        get => BodyReference.Pose.Orientation; set => BodyReference.Pose.Orientation = value;
+    }
+
     public float Width = 1;
 
     public float Height = 1;
@@ -170,11 +202,11 @@ public abstract class DynamicEntity : Entity
         {
             label = allData ? Name : null,
             pos = {
-                x = BodyReference.Pose.Position.X,
-                y = BodyReference.Pose.Position.Y,
-                z = BodyReference.Pose.Position.Z
+                x = Position.X,
+                y = Position.Y,
+                z = Position.Z
             },
-            angle = BodyReference.Pose.Orientation,
+            angle = Orientation,
             width = allData ? Width : null,
             height = allData ? Height : null,
             depth = allData ? Depth : null,

@@ -46,8 +46,8 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
 
         // Waypoint trigger
         var waypoint = new Trigger(room, waypoints[0], Quaternion.Identity, 0.2f, 0.1f, 0.2f);
-        var waypoint_X_1 = new VisualOnlyEntity(room, initialPosition: waypoint.BodyReference.Pose.Position, initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, 45), width: 0.1f, height: 0.05f, depth: 0.5f, visualInfo: new VisualInfo() { Color = "#633" });
-        var waypoint_X_2 = new VisualOnlyEntity(room, initialPosition: waypoint.BodyReference.Pose.Position, initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, -45), width: 0.1f, height: 0.05f, depth: 0.5f, visualInfo: new VisualInfo() { Color = "#633" });
+        var waypoint_X_1 = new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, 45), width: 0.1f, height: 0.05f, depth: 0.5f, visualInfo: new VisualInfo() { Color = "#633" });
+        var waypoint_X_2 = new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, -45), width: 0.1f, height: 0.05f, depth: 0.5f, visualInfo: new VisualInfo() { Color = "#633" });
 
         waypoint.OnTriggerEnter += (o, e) =>
         {
@@ -56,17 +56,17 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
             {
                 if (Markers.Count <= waypoint_idx)
                 {
-                    Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint.BodyReference.Pose.Position, initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
+                    Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
                 }
                 else
                 {
-                    Markers[waypoint_idx].Position = waypoint.BodyReference.Pose.Position;
+                    Markers[waypoint_idx].Position = waypoint.Position;
                 }
 
                 if (waypoint_idx < waypoints.Count - 1)
                 {
                     waypoint_idx++;
-                    waypoint.BodyReference.Pose.Position = waypoints[waypoint_idx];
+                    waypoint.Position = waypoints[waypoint_idx];
                     waypoint_X_1.Position = waypoints[waypoint_idx];
                     waypoint_X_2.Position = waypoints[waypoint_idx];
                 }
@@ -98,7 +98,7 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
         IoTScapeObject waypointService = new(waypointServiceDefinition, robot.ID);
         waypointService.Methods["getNextWaypoint"] = (string[] args) =>
         {
-            return new string[] { waypoint.BodyReference.Pose.Position.X.ToString(), waypoint.BodyReference.Pose.Position.Y.ToString(), waypoint.BodyReference.Pose.Position.Z.ToString() };
+            return new string[] { waypoint.Position.X.ToString(), waypoint.Position.Y.ToString(), waypoint.Position.Z.ToString() };
         };
         waypointService.Setup(room);
 
@@ -114,9 +114,9 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
             waypoints.Add(rng.PointOnLine(new(-2.5f, 0, 6), new(2.5f, 0, 6)));
 
             waypoint_idx = 0;
-            waypoint.BodyReference.Pose.Position = waypoints[waypoint_idx];
-            waypoint_X_1.Position = waypoint.BodyReference.Pose.Position;
-            waypoint_X_2.Position = waypoint.BodyReference.Pose.Position;
+            waypoint.Position = waypoints[waypoint_idx];
+            waypoint_X_1.Position = waypoint.Position;
+            waypoint_X_2.Position = waypoint.Position;
 
             Markers.ForEach(marker =>
             {

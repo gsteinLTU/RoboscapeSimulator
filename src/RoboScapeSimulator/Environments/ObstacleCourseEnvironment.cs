@@ -40,7 +40,16 @@ namespace RoboScapeSimulator.Environments
 
             // Start and end areas
             _ = new Cube(room, wallX, 0.01f, 1, new(0, 0.005f, -wallZ / 2 + 0.5f), Quaternion.CreateFromYawPitchRoll(0, 0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
-            _ = new Cube(room, wallX, 0.01f, 1, new(0, 0.005f, wallZ / 2 - 0.5f), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
+            var end = new Cube(room, wallX, 0.01f, 1, new(0, 0.005f, wallZ / 2 - 0.5f), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
+            var endTrigger = new Trigger(room, end.Position, Quaternion.Identity, end.Width, 2, end.Depth);
+
+            endTrigger.OnTriggerEnter += (trigger, ent) =>
+            {
+                if (ent is Robot r)
+                {
+                    sw.Stop();
+                }
+            };
 
             // Inner walls
             AddObstacleWall(room, wallX, wallZ, 1.5f, 1f, 1.5f);
@@ -70,7 +79,7 @@ namespace RoboScapeSimulator.Environments
             {
                 if (sw.Elapsed.Milliseconds * 10 % 10 == 0)
                 {
-                    room.SendToClients("showText", sw.Elapsed.TotalSeconds.ToString(), "timer", "");
+                    room.SendToClients("showText", $"Time: {sw.Elapsed.TotalSeconds:F2}", "timer", "");
                 }
             };
 
