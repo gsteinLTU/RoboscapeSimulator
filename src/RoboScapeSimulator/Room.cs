@@ -229,12 +229,15 @@ namespace RoboScapeSimulator
 
         private void HandleResetRobot(JsonNode[] args)
         {
+            LastInteractionTime = DateTime.Now;
             string robotID = args[0].ToString();
             ResetRobot(robotID);
         }
 
         private void HandleResetAll(JsonNode[] args)
         {
+            LastInteractionTime = DateTime.Now;
+
             foreach (var entity in SimInstance.Entities)
             {
                 if (entity is IResettable resettable)
