@@ -41,7 +41,7 @@ namespace RoboScapeSimulator.Environments
             // Start and end areas
             _ = new Cube(room, wallX, 0.01f, 1, new(0, 0.005f, -wallZ / 2 + 0.5f), Quaternion.CreateFromYawPitchRoll(0, 0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
             var end = new Cube(room, wallX, 0.01f, 1, new(0, 0.005f, wallZ / 2 - 0.5f), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
-            var endTrigger = new Trigger(room, end.Position, Quaternion.Identity, end.Width, 2, end.Depth);
+            var endTrigger = new Trigger(room, end.Position + new Vector3(0, 0, 0.3f), end.Orientation, end.Width, 2, end.Depth);
 
             endTrigger.OnTriggerEnter += (trigger, ent) =>
             {
