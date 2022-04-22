@@ -200,6 +200,11 @@ namespace RoboScapeSimulator
         /// </summary>
         public bool SkipNextUpdate = false;
 
+        /// <summary>
+        /// Send an event to all clients in the room
+        /// </summary>
+        /// <param name="eventName">Name of event</param>
+        /// <param name="args">Arguments for event</param>
         public void SendToClients(string eventName, params object[] args)
         {
             lock (activeSockets)
@@ -227,6 +232,10 @@ namespace RoboScapeSimulator
             socket.On("robotButton", HandleRobotButton);
         }
 
+        /// <summary>
+        /// Handles a request to reset a robot
+        /// </summary>
+        /// <param name="args">Input from event</param>
         private void HandleResetRobot(JsonNode[] args)
         {
             LastInteractionTime = DateTime.Now;
@@ -234,6 +243,10 @@ namespace RoboScapeSimulator
             ResetRobot(robotID);
         }
 
+        /// <summary>
+        /// Handles a request to reset the entire environment
+        /// </summary>
+        /// <param name="args">Input from event</param>
         private void HandleResetAll(JsonNode[] args)
         {
             LastInteractionTime = DateTime.Now;
@@ -249,6 +262,10 @@ namespace RoboScapeSimulator
             OnReset?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Handles a request to press the button on a robot
+        /// </summary>
+        /// <param name="args">Input from event</param>
         private void HandleRobotButton(JsonNode[] args)
         {
             string robotID = args[0].ToString();
@@ -329,8 +346,8 @@ namespace RoboScapeSimulator
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.Hard),
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.VeryHard),
             new WaypointNavigationEnvironment(),
-            new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Easy),
-            new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard)
+            // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Easy),
+            // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard)
         };
 
         public DateTime LastInteractionTime
