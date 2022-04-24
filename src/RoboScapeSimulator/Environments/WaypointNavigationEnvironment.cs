@@ -35,6 +35,8 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
         // robot
         var robot = new ParallaxRobot(room, new Vector3(0, 0.25f, 0), Quaternion.Identity, debug: false);
 
+        List<VisualOnlyEntity> Markers = new();
+
         // Waypoints
         List<Vector3> waypoints = new()
         {
@@ -43,9 +45,12 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
             rng.PointOnLine(new(-2.5f, 0, 6), new(2.5f, 0, 6))
         };
 
-        int waypoint_idx = 0;
+        waypoints.ForEach((waypoint) =>
+        {
+            Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint - new Vector3(0, 1, 0), initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
+        });
 
-        List<VisualOnlyEntity> Markers = new();
+        int waypoint_idx = 0;
 
         // Waypoint trigger
         var waypoint = new Trigger(room, waypoints[0], Quaternion.Identity, 0.2f, 0.1f, 0.2f);
