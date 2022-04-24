@@ -2,9 +2,12 @@ using System.Diagnostics;
 
 namespace RoboScapeSimulator.Environments.Helpers;
 
+/// <summary>
+/// Adds a timer to a room with optional text shown on the client
+/// </summary>
 internal class StopwatchTimer
 {
-    readonly Stopwatch sw = new();
+    public readonly Stopwatch timer = new();
 
     public bool ShowText = true;
 
@@ -12,31 +15,31 @@ internal class StopwatchTimer
     {
         room.OnReset += (o, _) =>
         {
-            sw.Reset();
-            sw.Start();
+            timer.Reset();
+            timer.Start();
         };
 
         room.OnUpdate += (o, dt) =>
         {
-            if (ShowText && sw.Elapsed.Milliseconds * 10 % 10 == 0)
+            if (ShowText && timer.Elapsed.Milliseconds * 10 % 10 == 0)
             {
-                room.SendToClients("showText", $"Time: {sw.Elapsed.TotalSeconds:F2}", "timer", "");
+                room.SendToClients("showText", $"Time: {timer.Elapsed.TotalSeconds:F2}", "timer", "");
             }
         };
     }
 
     public void Stop()
     {
-        sw.Stop();
+        timer.Stop();
     }
 
     public void Start()
     {
-        sw.Start();
+        timer.Start();
     }
 
     public void Reset()
     {
-        sw.Stop();
+        timer.Stop();
     }
 }
