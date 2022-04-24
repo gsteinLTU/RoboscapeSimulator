@@ -346,6 +346,7 @@ namespace RoboScapeSimulator
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.Hard),
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.VeryHard),
             new WaypointNavigationEnvironment(),
+            new WaypointNavigationEnvironment(3),
             // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Easy),
             // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard)
         };

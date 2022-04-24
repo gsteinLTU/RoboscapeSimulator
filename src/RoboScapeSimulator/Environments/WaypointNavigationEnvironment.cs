@@ -9,16 +9,19 @@ namespace RoboScapeSimulator.Environments;
 
 class WaypointNavigationEnvironment : EnvironmentConfiguration
 {
-    public WaypointNavigationEnvironment()
+    uint _waittime = 0;
+
+    public WaypointNavigationEnvironment(uint waittime = 0)
     {
-        Name = "Waypoint Navigation";
-        ID = "WaypointNavigation";
-        Description = "Robot must find waypoints";
+        _waittime = waittime;
+        Name = "Waypoint Navigation" + (_waittime > 0 ? $" (wait for {_waittime} s)" : "");
+        ID = "WaypointNavigation_" + _waittime;
+        Description = $"Robot must find waypoints and stay at them for {_waittime} seconds";
     }
 
     public override object Clone()
     {
-        return new WaypointNavigationEnvironment();
+        return new WaypointNavigationEnvironment(_waittime);
     }
 
     public override void Setup(Room room)
@@ -49,33 +52,50 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
         var waypoint_X_1 = new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, 45), width: 0.1f, height: 0.05f, depth: 0.5f, visualInfo: new VisualInfo() { Color = "#633" });
         var waypoint_X_2 = new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, -45), width: 0.1f, height: 0.05f, depth: 0.5f, visualInfo: new VisualInfo() { Color = "#633" });
 
+        Stopwatch waypointTimer = new();
+
         waypoint.OnTriggerEnter += (o, e) =>
         {
-            // Move waypoint
-            if (waypoint_idx <= waypoints.Count)
+            waypointTimer.Start();
+        };
+
+        waypoint.OnTriggerStay += (o, e) =>
+        {
+            if (waypointTimer.IsRunning && waypointTimer.Elapsed.Seconds > _waittime)
             {
-                if (Markers.Count <= waypoint_idx)
+                // Move waypoint
+                if (waypoint_idx <= waypoints.Count)
                 {
-                    Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
-                }
-                else
-                {
-                    Markers[waypoint_idx].Position = waypoint.Position;
+                    if (Markers.Count <= waypoint_idx)
+                    {
+                        Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
+                    }
+                    else
+                    {
+                        Markers[waypoint_idx].Position = waypoint.Position;
+                    }
+
+                    if (waypoint_idx < waypoints.Count - 1)
+                    {
+                        waypoint_idx++;
+                        waypoint.Position = waypoints[waypoint_idx];
+                        waypoint_X_1.Position = waypoints[waypoint_idx];
+                        waypoint_X_2.Position = waypoints[waypoint_idx];
+                    }
+                    else
+                    {
+                        waypoint_idx++;
+                    }
+
                 }
 
-                if (waypoint_idx < waypoints.Count - 1)
-                {
-                    waypoint_idx++;
-                    waypoint.Position = waypoints[waypoint_idx];
-                    waypoint_X_1.Position = waypoints[waypoint_idx];
-                    waypoint_X_2.Position = waypoints[waypoint_idx];
-                }
-                else
-                {
-                    waypoint_idx++;
-                }
-
+                waypointTimer.Reset();
             }
+        };
+
+        waypoint.OnTriggerExit += (o, e) =>
+        {
+            waypointTimer.Reset();
         };
 
         // IoTScape setup
@@ -122,6 +142,8 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
             {
                 marker.Position = -Vector3.UnitY;
             });
+
+            waypointTimer.Reset();
         };
     }
 }
