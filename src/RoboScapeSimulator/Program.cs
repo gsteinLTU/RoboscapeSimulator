@@ -10,12 +10,12 @@ Trace.WriteLine("Starting RoboScapeSimulator...");
 /// <summary>
 /// Frequency to send update messages to users
 /// </summary>
-const int updateFPS = 9;
+const int updateFPS = 8;
 
 /// <summary>
 /// Frequency to run simulation at
 /// </summary> 
-const int simFPS = 45;
+const int simFPS = 30;
 
 /// <summary>
 /// Mapping of room IDs to Room objects

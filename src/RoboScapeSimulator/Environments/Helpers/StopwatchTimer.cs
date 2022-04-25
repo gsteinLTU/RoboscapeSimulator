@@ -23,7 +23,7 @@ internal class StopwatchTimer
 
         room.OnUpdate += (o, dt) =>
         {
-            if (ShowText && timer.Elapsed.Milliseconds * 10 % 10 == 0)
+            if (ShowText && (timer.Elapsed.Milliseconds * 50) % 50 <= 1)
             {
                 room.SendToClients("showText", $"Time: {timer.Elapsed.TotalSeconds:F2}", "timer", "");
             }
