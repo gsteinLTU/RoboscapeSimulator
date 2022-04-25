@@ -125,7 +125,7 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
         EnvironmentUtils.AddPath(room, leftWalls, padding: 0.05f);
         EnvironmentUtils.AddPath(room, innerWalls, padding: 0.05f);
 
-        _ = new Cube(room, 4, 1, 4, new Vector3(0f, 3f, 15f) * miniScale, Quaternion.Identity, isKinematic: true);
+        _ = new Cube(room, 4, 1, 4, new Vector3(0f, 3f, 15f) * (_mini ? miniScale : Vector3.One), Quaternion.Identity, isKinematic: true);
 
         Vector3 cubePos = rng.PointOnCircle(1f);
 
