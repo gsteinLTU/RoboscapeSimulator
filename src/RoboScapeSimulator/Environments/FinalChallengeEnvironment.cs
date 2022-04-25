@@ -186,6 +186,7 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
             firstBlock.Position = new Vector3(0f, 3.75f, 1f);
             firstBlock.forceUpdate = true;
             secondBlock.Position = new Vector3(0f, -3f, 6.75f);
+            secondBlock.BodyReference.Awake = true;
             secondBlock.forceUpdate = true;
         };
     }
