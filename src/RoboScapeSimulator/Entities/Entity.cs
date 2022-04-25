@@ -215,5 +215,18 @@ public abstract class DynamicEntity : Entity
         };
     }
 
-    public override bool ShouldUpdate => BodyReference.Awake;
+    internal bool forceUpdate = false;
+
+    public override bool ShouldUpdate
+    {
+        get
+        {
+            if (forceUpdate)
+            {
+                forceUpdate = false;
+                return true;
+            }
+            return BodyReference.Awake;
+        }
+    }
 }

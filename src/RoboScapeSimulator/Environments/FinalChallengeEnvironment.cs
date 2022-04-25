@@ -32,7 +32,7 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
         // Ground
         _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
 
-        List<Vector3> centerPoints = new()
+        List<Vector3> centerPoints1 = new()
         {
             new Vector3(0f, 3.25f, -0.5f),
             new Vector3(0f, 3.25f, 2f),
@@ -41,6 +41,12 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
             new Vector3(1.75f, 3.25f, 4.5f),
             new Vector3(1.75f, 3.25f, 5f),
             new Vector3(0f, 3.25f, 6f),
+            new Vector3(0f, 3.25f, 6.25f),
+        };
+
+        List<Vector3> centerPoints2 = new()
+        {
+            new Vector3(0f, 3.25f, 7.25f),
             new Vector3(0f, 3.25f, 7.5f),
             new Vector3(-2f, 3.25f, 9f),
             new Vector3(-2f, 3.25f, 9.5f),
@@ -96,7 +102,8 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
             new Vector3(0f, 3.75f, 8f),
         };
 
-        EnvironmentUtils.AddPath(room, centerPoints, 1, 0.5f, 0.5f, visualInfo: VisualInfo.DefaultCube);
+        EnvironmentUtils.AddPath(room, centerPoints1, 1, 0.5f, 0.5f, visualInfo: VisualInfo.DefaultCube);
+        EnvironmentUtils.AddPath(room, centerPoints2, 1, 0.5f, 0.5f, visualInfo: VisualInfo.DefaultCube);
         EnvironmentUtils.AddPath(room, otherPath, 1, 0.5f, 0.5f, visualInfo: VisualInfo.DefaultCube);
 
         EnvironmentUtils.AddPath(room, rightWalls, padding: 0.05f);
@@ -131,11 +138,13 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
 
         // First obstacle
         var firstBlock = new Cube(room, 1, 1, 1, new Vector3(0f, 3.75f, 1f), Quaternion.Identity, isKinematic: true);
+        var secondBlock = new Cube(room, 1.25f, 1, 1.25f, new Vector3(0f, -3.75f, 1f), Quaternion.Identity, isKinematic: true);
 
         Waypoints lowWaypoints = new(room, () =>
         {
             return new List<Vector3>() {
-                new Vector3(0f, 0f, 1f)
+                new Vector3(0f, 0f, 1f),
+                new Vector3(0f, 0f, 5.75f),
             };
         }, lowBot.ID, 3);
 
@@ -143,7 +152,14 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
         {
             if (idx == 0)
             {
-                firstBlock.Position = new Vector3(0f, -3.75f, 1f);
+                firstBlock.Position = new Vector3(0.25f, -3.75f, 1f);
+                firstBlock.forceUpdate = true;
+            }
+            if (idx == 1)
+            {
+                secondBlock.Position = new Vector3(0f, 3f, 6.75f);
+                secondBlock.BodyReference.Awake = true;
+                secondBlock.forceUpdate = true;
             }
         };
 
@@ -151,7 +167,7 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
         Waypoints highWaypoints = new(room, () =>
         {
             return new List<Vector3>() {
-                new Vector3(0f, 3.5f, 5.75f),
+                new Vector3(0.25f, 3.5f, 5.75f),
                 new Vector3(0f, 3.5f, 11.75f),
             };
         }, highBot.ID);
@@ -169,6 +185,9 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
             targetCube.Position = cubePos;
 
             firstBlock.Position = new Vector3(0f, 3.75f, 1f);
+            firstBlock.forceUpdate = true;
+            secondBlock.Position = new Vector3(0f, -3f, 6.75f);
+            secondBlock.forceUpdate = true;
         };
     }
 }

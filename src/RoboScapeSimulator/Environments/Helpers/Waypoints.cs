@@ -33,7 +33,7 @@ internal class Waypoints
 
         waypoints.ForEach((waypoint) =>
         {
-            Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint - new Vector3(0, 1, 0), initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
+            Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint - new Vector3(0, 100, 0), initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
         });
 
         // Waypoint trigger
