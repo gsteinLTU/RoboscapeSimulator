@@ -110,9 +110,6 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
         EnvironmentUtils.AddPath(room, leftWalls, padding: 0.05f);
         EnvironmentUtils.AddPath(room, innerWalls, padding: 0.05f);
 
-
-
-
         _ = new Cube(room, 5, 1, 4, new Vector3(0f, 3f, 15f), Quaternion.Identity, isKinematic: true);
 
         Vector3 cubePos = rng.PointOnCircle(1.5f);
@@ -129,10 +126,10 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
         var highBot = new ParallaxRobot(room, new Vector3(0, 3.75f, 0f), Quaternion.Identity, visualInfo: new() { ModelName = "car1_red.gltf" }, debug: false);
         var lowBot = new ParallaxRobot(room, new Vector3(-1.25f, 0.25f, 0), Quaternion.Identity, visualInfo: new() { ModelName = "car1_green.gltf" }, debug: false);
 
-        var highLidar = new LIDARSensor(highBot);
+        var highLidar = new LIDARSensor(highBot) { Offset = new(0, 0.08f, 0.0f), NumRays = 3, StartAngle = MathF.PI / 4, AngleRange = 2 * MathF.PI / 4, MaxDistance = 5 };
         highLidar.Setup(room);
 
-        var lowLidar = new LIDARSensor(lowBot);
+        var lowLidar = new LIDARSensor(lowBot) { Offset = new(0, 0.08f, 0.0f), NumRays = 3, StartAngle = MathF.PI / 4, AngleRange = 2 * MathF.PI / 4, MaxDistance = 5 };
         lowLidar.Setup(room);
 
 
@@ -143,8 +140,9 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
         Waypoints lowWaypoints = new(room, () =>
         {
             return new List<Vector3>() {
-                new Vector3(0f, 0f, 1f),
-                new Vector3(0f, 0f, 5.75f),
+                new Vector3(0f, 0f, 1f) + rng.PointOnCircle(0.5f),
+                new Vector3(0f, 0f, 5.75f) + rng.PointOnCircle(1f),
+                new Vector3(0f, 0f, 14.75f) + rng.PointOnCircle(1f),
             };
         }, lowBot.ID, 3);
 
