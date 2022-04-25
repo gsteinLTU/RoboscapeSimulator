@@ -25,7 +25,7 @@ internal class Waypoints
 
     bool robotsOnly = true;
 
-    public Waypoints(Room room, Func<List<Vector3>> waypointGenerator, string id, uint waitTime = 0, bool robotsOnly = true)
+    public Waypoints(Room room, Func<List<Vector3>> waypointGenerator, string id, uint waitTime = 0, bool robotsOnly = true, float threshold = 0.2f)
     {
         waypoints = waypointGenerator();
 
@@ -37,7 +37,7 @@ internal class Waypoints
         });
 
         // Waypoint trigger
-        waypoint = new Trigger(room, waypoints[0], Quaternion.Identity, 0.2f, 0.1f, 0.2f);
+        waypoint = new Trigger(room, waypoints[0], Quaternion.Identity, threshold, 0.1f, threshold);
         waypoint_X_1 = new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, 45), width: 0.1f, height: 0.05f, depth: 0.5f, visualInfo: new VisualInfo() { Color = "#633" });
         waypoint_X_2 = new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, -45), width: 0.1f, height: 0.05f, depth: 0.5f, visualInfo: new VisualInfo() { Color = "#633" });
 

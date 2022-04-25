@@ -169,7 +169,7 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
                 new Vector3(0f, 3.5f, 11.75f),
                 new Vector3(0f, 3.5f, 13f),
             };
-        }, highBot.ID);
+        }, highBot.ID, threshold: 0.25f);
 
         room.OnReset += (o, e) =>
         {
