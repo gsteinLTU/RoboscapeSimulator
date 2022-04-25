@@ -121,6 +121,8 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
 
         cubePos += new Vector3(0f, 3.6f, 15f);
         var targetCube = new Cube(room, 1, 1, 1, cubePos, Quaternion.Identity, visualInfo: new VisualInfo() { Color = "#363" });
+        var targetTrigger = new Trigger(room, targetCube.Position, targetCube.Orientation, 1.1f, 1.1f, 1.1f);
+
 
         // Robots
         var highBot = new ParallaxRobot(room, new Vector3(0, 3.75f, 0f), Quaternion.Identity, visualInfo: new() { ModelName = "car1_red.gltf" }, debug: false);
@@ -131,7 +133,6 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
 
         var lowLidar = new LIDARSensor(lowBot) { Offset = new(0, 0.08f, 0.0f), NumRays = 3, StartAngle = MathF.PI / 4, AngleRange = 2 * MathF.PI / 4, MaxDistance = 5 };
         lowLidar.Setup(room);
-
 
         // First obstacle
         var firstBlock = new Cube(room, 1, 1, 1, new Vector3(0f, 3.75f, 1f), Quaternion.Identity, isKinematic: true);
@@ -169,7 +170,25 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
                 new Vector3(0f, 3.5f, 11.75f),
                 new Vector3(0f, 3.5f, 13f),
             };
-        }, highBot.ID, threshold: 0.25f);
+        }, highBot.ID, threshold: 0.75f);
+
+        targetTrigger.OnTriggerEnter += (o, e) =>
+        {
+            if (e is Robot r)
+            {
+                if (r.ID == lowBot.ID)
+                {
+                    // Win condition for now
+                    timer.Stop();
+                }
+            }
+        };
+
+        room.OnUpdate += (e, dt) =>
+        {
+            targetTrigger.Position = targetCube.Position;
+            targetTrigger.Orientation = targetCube.Orientation;
+        };
 
         room.OnReset += (o, e) =>
         {
