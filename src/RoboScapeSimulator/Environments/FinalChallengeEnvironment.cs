@@ -167,6 +167,7 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
             return new List<Vector3>() {
                 new Vector3(0.25f, 3.5f, 5.75f),
                 new Vector3(0f, 3.5f, 11.75f),
+                new Vector3(0f, 3.5f, 13f),
             };
         }, highBot.ID);
 
