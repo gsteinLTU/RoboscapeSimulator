@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Environments.Helpers;
 using RoboScapeSimulator.IoTScape.Devices;
 
 namespace RoboScapeSimulator.Environments
@@ -44,7 +45,7 @@ namespace RoboScapeSimulator.Environments
             {
                 case Courses.Hard:
                     // left
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(-0.5f, 0, 0),
                         new(-0.5f, 0, 1.75f),
@@ -57,7 +58,7 @@ namespace RoboScapeSimulator.Environments
                     });
 
                     // right
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(0.5f, 0, 0),
                         new(0.5f, 0, 0.75f),
@@ -70,7 +71,7 @@ namespace RoboScapeSimulator.Environments
                     });
 
                     // start area
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(-0.5f, 0, 0),
                         new(-0.5f, 0, -0.5f),
@@ -84,7 +85,7 @@ namespace RoboScapeSimulator.Environments
                     break;
                 case Courses.VeryHard:
                     // left
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(-0.5f, 0, 0),
                         new(-0.5f, 0, 1f),
@@ -105,7 +106,7 @@ namespace RoboScapeSimulator.Environments
                     });
 
                     // right
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(0.5f, 0, 0),
                         new(0.5f, 0, 1f),
@@ -122,14 +123,14 @@ namespace RoboScapeSimulator.Environments
                     });
 
                     // Spikes
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(0.5f, 0f, -1.25f),
                         new(0f, 0f, -1.75f),
                         new(-0.5f, 0f, -1.25f),
                     });
 
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(0.5f, 0f, -2.25f),
                         new(1f, 0f, -1.75f),
@@ -137,7 +138,7 @@ namespace RoboScapeSimulator.Environments
                     });
 
                     // start area
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(-0.5f, 0, 0),
                         new(-0.5f, 0, -0.5f),
@@ -153,7 +154,7 @@ namespace RoboScapeSimulator.Environments
                 default:
 
                     // left
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(-0.5f, 0, 0),
                         new(-0.5f, 0, 1),
@@ -166,7 +167,7 @@ namespace RoboScapeSimulator.Environments
                     });
 
                     // right
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(0.5f, 0, 0),
                         new(0.5f, 0, 1),
@@ -179,7 +180,7 @@ namespace RoboScapeSimulator.Environments
                     });
 
                     // start area
-                    AddPath(room, new()
+                    EnvironmentUtils.AddPath(room, new()
                     {
                         new(-0.5f, 0, 0),
                         new(-0.5f, 0, -0.5f),
@@ -201,31 +202,6 @@ namespace RoboScapeSimulator.Environments
             var robot = new ParallaxRobot(room, new(0, 0.25f, 0), Quaternion.Identity);
             var lidar = new LIDARSensor(robot) { Offset = new(0, 0.08f, 0.0f), NumRays = 3, StartAngle = MathF.PI / 4, AngleRange = 2 * MathF.PI / 4, MaxDistance = 5 };
             lidar.Setup(room);
-
-            static void AddPath(Room room, List<Vector3> points, float thickness = 0.1f, float height = 0.5f)
-            {
-                Vector3 previous = points[0];
-                foreach (var point in points)
-                {
-                    AddWall(room, previous, point, thickness, height);
-                    previous = point;
-                }
-            }
-
-            static Cube? AddWall(Room room, Vector3 p1, Vector3 p2, float thickness = 0.1f, float height = 0.5f, float padding = 0.05f)
-            {
-                var length = (p2 - p1).Length();
-
-                if (length < 0.0001)
-                {
-                    return null;
-                }
-
-                var center = p1 + ((p2 - p1) * 0.5f);
-                var angle = MathF.Atan2(p2.Z - p1.Z, p2.X - p1.X);
-                return new Cube(room, length + padding, height, thickness, center, Quaternion.CreateFromAxisAngle(Vector3.UnitY, -angle), true, visualInfo: new VisualInfo() { Color = "#633" });
-            }
-
         }
     }
 }
