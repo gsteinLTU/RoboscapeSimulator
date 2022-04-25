@@ -243,10 +243,10 @@ namespace RoboScapeSimulator.Entities.Robots
             {
                 // Do whisker tests
                 const int whiskerRange = 11;
-                var whiskerTestL = Utils.QuickRayCast(simulation, BodyReference.Pose.Position + Vector3.Transform(new Vector3(-0.05f, 0.05f, 0.15f), BodyReference.Pose.Orientation),
-                               Vector3.Transform(new Vector3(0, 0, 1), BodyReference.Pose.Orientation), whiskerRange);
-                var whiskerTestR = Utils.QuickRayCast(simulation, BodyReference.Pose.Position + Vector3.Transform(new Vector3(0.05f, 0.05f, 0.15f), BodyReference.Pose.Orientation),
-                               Vector3.Transform(new Vector3(0, 0, 1), BodyReference.Pose.Orientation), whiskerRange);
+                var whiskerTestL = Utils.QuickRayCast(simulation, Position + Vector3.Transform(new Vector3(-0.05f, 0.05f, 0.15f), Orientation),
+                               Vector3.Transform(new Vector3(0, 0, 1), Orientation), whiskerRange);
+                var whiskerTestR = Utils.QuickRayCast(simulation, Position + Vector3.Transform(new Vector3(0.05f, 0.05f, 0.15f), Orientation),
+                               Vector3.Transform(new Vector3(0, 0, 1), Orientation), whiskerRange);
 
                 if (whiskerTestL != whiskerL || whiskerTestR != whiskerR)
                 {
@@ -369,8 +369,8 @@ namespace RoboScapeSimulator.Entities.Robots
                 Hits = results,
                 IntersectionCount = &intersectionCount
             };
-            simulation.RayCast(BodyReference.Pose.Position + Vector3.Transform(new Vector3(0, 0.05f, 0.15f), BodyReference.Pose.Orientation),
-                               Vector3.Transform(new Vector3(0, 0, 1), BodyReference.Pose.Orientation),
+            simulation.RayCast(Position + Vector3.Transform(new Vector3(0, 0.05f, 0.15f), Orientation),
+                               Vector3.Transform(new Vector3(0, 0, 1), Orientation),
                                (float)MAX_RANGE / 100f, ref hitHandler);
 
             if (intersectionCount > 0)

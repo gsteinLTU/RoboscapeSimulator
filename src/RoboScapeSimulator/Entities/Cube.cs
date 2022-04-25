@@ -66,7 +66,7 @@ class Cube : DynamicEntity, IResettable
         bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 0) };
 
         this.initialPosition = position;
-        this.initialOrientation = BodyReference.Pose.Orientation;
+        this.initialOrientation = Orientation;
 
         room.SimInstance.NamedBodies.Add(Name, BodyReference);
         room.SimInstance.Entities.Add(this);
@@ -78,8 +78,8 @@ class Cube : DynamicEntity, IResettable
     {
         if (AllowReset)
         {
-            BodyReference.Pose.Position = initialPosition;
-            BodyReference.Pose.Orientation = initialOrientation;
+            Position = initialPosition;
+            Orientation = initialOrientation;
             BodyReference.Velocity.Linear = new Vector3();
             BodyReference.Velocity.Angular = new Vector3();
             OnReset?.Invoke(this, EventArgs.Empty);

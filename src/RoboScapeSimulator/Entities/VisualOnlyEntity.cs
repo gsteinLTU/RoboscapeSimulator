@@ -8,7 +8,7 @@ namespace RoboScapeSimulator.Entities;
 class VisualOnlyEntity : Entity
 {
     private Vector3 position;
-    public Vector3 Position
+    public new Vector3 Position
     {
         get => position;
         set
@@ -19,7 +19,7 @@ class VisualOnlyEntity : Entity
     }
 
     private Quaternion orientation;
-    public Quaternion Orientation
+    public new Quaternion Orientation
     {
         get => orientation;
         set

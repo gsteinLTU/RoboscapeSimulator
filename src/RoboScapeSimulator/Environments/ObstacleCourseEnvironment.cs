@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Environments.Helpers;
+
 namespace RoboScapeSimulator.Environments
 {
     class ObstacleCourseEnvironment : EnvironmentConfiguration
@@ -20,7 +22,9 @@ namespace RoboScapeSimulator.Environments
 
         public override void Setup(Room room)
         {
-            Trace.WriteLine($"Setting up {this.Name} environment");
+            Trace.WriteLine($"Setting up {Name} environment");
+
+            StopwatchTimer sw = new(room);
 
             // Ground
             _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
@@ -37,7 +41,16 @@ namespace RoboScapeSimulator.Environments
 
             // Start and end areas
             _ = new Cube(room, wallX, 0.01f, 1, new(0, 0.005f, -wallZ / 2 + 0.5f), Quaternion.CreateFromYawPitchRoll(0, 0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#D22" });
-            _ = new Cube(room, wallX, 0.01f, 1, new(0, 0.005f, wallZ / 2 - 0.5f), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
+            var end = new Cube(room, wallX, 0.01f, 1, new(0, 0.005f, wallZ / 2 - 0.5f), Quaternion.CreateFromYawPitchRoll(0, -0.05f, 0), isKinematic: true, visualInfo: new VisualInfo() { Color = "#2D2" });
+            var endTrigger = new Trigger(room, end.Position + new Vector3(0, 0, 0.3f), end.Orientation, end.Width, 2, end.Depth);
+
+            endTrigger.OnTriggerEnter += (trigger, ent) =>
+            {
+                if (ent is Robot r)
+                {
+                    sw.Stop();
+                }
+            };
 
             // Inner walls
             AddObstacleWall(room, wallX, wallZ, 1.5f, 1f, 1.5f);
@@ -56,6 +69,8 @@ namespace RoboScapeSimulator.Environments
                 _ = new Cube(room, leftSize, 0.5f, 0.1f, new Vector3(-wallX / 2 + leftSize / 2, 0.25f, -wallZ / 2 + zPos), Quaternion.Identity, true, nameOverride: "walll", visualInfo: new VisualInfo() { Color = "#633" });
                 _ = new Cube(room, wallX - leftSize - gapSize, 0.5f, 0.1f, new Vector3(wallX / 2 - (wallX - leftSize - gapSize) / 2, 0.25f, -wallZ / 2 + zPos), Quaternion.Identity, true, nameOverride: "wallr", visualInfo: new VisualInfo() { Color = "#633" });
             }
+
+            sw.Start();
         }
     }
 }

@@ -72,15 +72,15 @@ namespace RoboScapeSimulator.Entities.Robots
 
             if (rotation == null)
             {
-                BodyReference.Pose.Orientation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
+                Orientation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
             }
             else
             {
-                BodyReference.Pose.Orientation = rotation.GetValueOrDefault();
+                Orientation = rotation.GetValueOrDefault();
             }
 
-            _initialPosition = BodyReference.Pose.Position;
-            _initialOrientation = BodyReference.Pose.Orientation;
+            _initialPosition = Position;
+            _initialOrientation = Orientation;
 
             SetupRobot(internalUse);
             time.Start();
@@ -324,8 +324,8 @@ namespace RoboScapeSimulator.Entities.Robots
         {
             // Put robot in initial position
             // Later scenarios may provide more complex handling for this
-            BodyReference.Pose.Position = _initialPosition;
-            BodyReference.Pose.Orientation = _initialOrientation;
+            Position = _initialPosition;
+            Orientation = _initialOrientation;
             BodyReference.Velocity.Linear = new Vector3();
             BodyReference.Velocity.Angular = new Vector3();
 

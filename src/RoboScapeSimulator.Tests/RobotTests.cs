@@ -1,7 +1,5 @@
-using System;
 using System.Linq;
 using System.Numerics;
-using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 using Xunit;
 namespace RoboScapeSimulator.Tests;
@@ -20,7 +18,7 @@ public class RobotTests
         }
 
         // Did robot go to floor
-        Assert.InRange(robot.BodyReference.Pose.Position.Y, -0.1f, 0.1f);
+        Assert.InRange(robot.Position.Y, -0.1f, 0.1f);
     }
 
     [Fact]
@@ -36,7 +34,7 @@ public class RobotTests
 
         robot.MessageHandlers['S'](new byte[] { (byte)'S', 0x64, 0, 0x64, 0 });
 
-        Vector3 initialPosition = new(robot.BodyReference.Pose.Position.X, robot.BodyReference.Pose.Position.Y, robot.BodyReference.Pose.Position.Z);
+        Vector3 initialPosition = new(robot.Position.X, robot.Position.Y, robot.Position.Z);
 
         for (int i = 0; i < 250; i++)
         {
@@ -44,7 +42,7 @@ public class RobotTests
         }
 
 
-        double distance = (robot.BodyReference.Pose.Position - initialPosition).Length();
+        double distance = (robot.Position - initialPosition).Length();
 
         // Did robot go forward
         Assert.InRange(distance, 0.5, double.PositiveInfinity);
@@ -68,7 +66,7 @@ public class RobotTests
         // Send set speed 100 100
         robot.MessageHandlers['S'](new byte[] { (byte)'S', 0x64, 0, 0x64, 0 });
 
-        Vector3 initialPosition = new(robot.BodyReference.Pose.Position.X, robot.BodyReference.Pose.Position.Y, robot.BodyReference.Pose.Position.Z);
+        Vector3 initialPosition = new(robot.Position.X, robot.Position.Y, robot.Position.Z);
 
         for (int i = 0; i < 250; i++)
         {
@@ -77,7 +75,7 @@ public class RobotTests
 
 
         // Did robot move
-        double distance = (robot.BodyReference.Pose.Position - initialPosition).Length();
+        double distance = (robot.Position - initialPosition).Length();
         Assert.InRange(distance, 0.1, double.PositiveInfinity);
 
         // Did ticks go up
@@ -91,7 +89,7 @@ public class RobotTests
             testRoom.Update(1.0f / 60.0f);
         }
 
-        distance = (robot.BodyReference.Pose.Position - initialPosition).Length();
+        distance = (robot.Position - initialPosition).Length();
 
         // Did robot go back
         Assert.InRange(distance, 0, 0.05);
@@ -113,7 +111,7 @@ public class RobotTests
             testRoom.Update(1.0f / 60.0f);
         }
 
-        Vector3 initialPosition = new(robot.BodyReference.Pose.Position.X, robot.BodyReference.Pose.Position.Y, robot.BodyReference.Pose.Position.Z);
+        Vector3 initialPosition = new(robot.Position.X, robot.Position.Y, robot.Position.Z);
 
         // Send set speed 100 100
         robot.MessageHandlers['S'](new byte[] { (byte)'S', 0x64, 0, 0x64, 0 });
@@ -124,7 +122,7 @@ public class RobotTests
         }
 
         // Did robot move
-        double distance = (robot.BodyReference.Pose.Position - initialPosition).Length();
+        double distance = (robot.Position - initialPosition).Length();
         Assert.InRange(distance, 0.1, double.PositiveInfinity);
 
         // Did ticks go up
@@ -138,7 +136,7 @@ public class RobotTests
             testRoom.Update(1.0f / 60.0f);
         }
 
-        distance = (robot.BodyReference.Pose.Position - initialPosition).Length();
+        distance = (robot.Position - initialPosition).Length();
 
         // Did robot go back
         Assert.InRange(distance, 0, 0.05);
@@ -155,7 +153,7 @@ public class RobotTests
             testRoom.Update(1.0f / 60.0f);
         }
 
-        distance = (robot.BodyReference.Pose.Position - initialPosition).Length();
+        distance = (robot.Position - initialPosition).Length();
 
         // Did robot move
         Assert.InRange(distance, 0.1, double.PositiveInfinity);

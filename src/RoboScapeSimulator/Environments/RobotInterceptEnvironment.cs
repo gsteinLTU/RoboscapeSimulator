@@ -83,17 +83,17 @@ namespace RoboScapeSimulator.Environments
                 // Stop if at destination
                 if (targetRobot.Speed.Left != 0)
                 {
-                    trigger.BodyReference.Pose.Position = targetRobot.BodyReference.Pose.Position;
+                    trigger.Position = targetRobot.Position;
 
                     // Update heading
-                    targetRobot.BodyReference.Pose.Orientation.ExtractYawPitchRoll(out var yaw, out var _, out var _);
-                    if (MathF.Abs(yaw - getHeading(targetRobot.BodyReference.Pose.Position, robotTarget)) > MathF.PI / 10f)
+                    targetRobot.Orientation.ExtractYawPitchRoll(out var yaw, out var _, out var _);
+                    if (MathF.Abs(yaw - getHeading(targetRobot.Position, robotTarget)) > MathF.PI / 10f)
                     {
-                        targetRobot.BodyReference.Pose.Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, getHeading(targetRobot.BodyReference.Pose.Position, robotTarget));
+                        targetRobot.Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, getHeading(targetRobot.Position, robotTarget));
                     }
 
                     // Stop on target
-                    var distSqr = (targetRobot.BodyReference.Pose.Position - robotTarget).LengthSquared();
+                    var distSqr = (targetRobot.Position - robotTarget).LengthSquared();
                     if (distSqr < 0.0025f)
                     {
                         targetRobot.ResetSpeed();
