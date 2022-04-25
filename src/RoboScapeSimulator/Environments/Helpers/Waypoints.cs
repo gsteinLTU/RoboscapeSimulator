@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
+using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.IoTScape;
 
 namespace RoboScapeSimulator.Environments.Helpers;
@@ -20,7 +21,11 @@ internal class Waypoints
 
     List<Vector3> waypoints = new();
 
-    public Waypoints(Room room, Func<List<Vector3>> waypointGenerator, string id, uint waitTime = 0)
+    public EventHandler<int>? OnWaypointActivated;
+
+    bool robotsOnly = true;
+
+    public Waypoints(Room room, Func<List<Vector3>> waypointGenerator, string id, uint waitTime = 0, bool robotsOnly = true)
     {
         waypoints = waypointGenerator();
 
@@ -38,46 +43,57 @@ internal class Waypoints
 
         waypoint.OnTriggerEnter += (o, e) =>
         {
-            waypointTimer.Start();
+            if (!robotsOnly || e is Robot)
+            {
+                waypointTimer.Start();
+            }
         };
 
         waypoint.OnTriggerStay += (o, e) =>
         {
-            if (waypointTimer.IsRunning && waypointTimer.Elapsed.Seconds > _waittime)
+            if (!robotsOnly || e is Robot)
             {
-                // Move waypoint
-                if (waypoint_idx <= waypoints.Count)
+                if (waypointTimer.IsRunning && waypointTimer.Elapsed.Seconds > _waittime)
                 {
-                    if (Markers.Count <= waypoint_idx)
+                    // Move waypoint
+                    if (waypoint_idx <= waypoints.Count)
                     {
-                        Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
-                    }
-                    else
-                    {
-                        Markers[waypoint_idx].Position = waypoint.Position;
+                        if (Markers.Count <= waypoint_idx)
+                        {
+                            Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint.Position, initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
+                        }
+                        else
+                        {
+                            Markers[waypoint_idx].Position = waypoint.Position;
+                        }
+
+                        OnWaypointActivated?.Invoke(this, waypoint_idx);
+
+                        if (waypoint_idx < waypoints.Count - 1)
+                        {
+                            waypoint_idx++;
+                            waypoint.Position = waypoints[waypoint_idx];
+                            waypoint_X_1.Position = waypoints[waypoint_idx];
+                            waypoint_X_2.Position = waypoints[waypoint_idx];
+                        }
+                        else
+                        {
+                            waypoint_idx++;
+                        }
+
                     }
 
-                    if (waypoint_idx < waypoints.Count - 1)
-                    {
-                        waypoint_idx++;
-                        waypoint.Position = waypoints[waypoint_idx];
-                        waypoint_X_1.Position = waypoints[waypoint_idx];
-                        waypoint_X_2.Position = waypoints[waypoint_idx];
-                    }
-                    else
-                    {
-                        waypoint_idx++;
-                    }
-
+                    waypointTimer.Reset();
                 }
-
-                waypointTimer.Reset();
             }
         };
 
         waypoint.OnTriggerExit += (o, e) =>
         {
-            waypointTimer.Reset();
+            if (!robotsOnly || e is Robot)
+            {
+                waypointTimer.Reset();
+            }
         };
 
         // IoTScape setup 

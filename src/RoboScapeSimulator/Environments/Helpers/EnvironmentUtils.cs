@@ -16,14 +16,21 @@ public static class EnvironmentUtils
     /// <param name="thickness">Thickness of path</param>
     /// <param name="height">Height of path</param>
     /// <param name="visualInfo">VisualInfo for path blocks, or null for default red</param>
-    public static void AddPath(Room room, List<Vector3> points, float thickness = 0.1f, float height = 0.5f, VisualInfo? visualInfo = null)
+    internal static List<Cube> AddPath(Room room, List<Vector3> points, float thickness = 0.1f, float height = 0.5f, float padding = 0.05f, VisualInfo? visualInfo = null)
     {
+        List<Cube> path = new();
         Vector3 previous = points[0];
         foreach (var point in points)
         {
-            AddWall(room, previous, point, thickness, height, 0.05f, visualInfo);
+            var wall = AddWall(room, previous, point, thickness, height, padding, visualInfo);
+            if (wall != null)
+            {
+                path.Add(wall);
+            }
             previous = point;
         }
+
+        return path;
     }
 
     /// <summary>

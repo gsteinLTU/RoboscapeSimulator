@@ -348,7 +348,8 @@ namespace RoboScapeSimulator
             new WaypointNavigationEnvironment(),
             new WaypointNavigationEnvironment(3),
             // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Easy),
-            // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard)
+            // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard),
+            new FinalChallengeEnvironment()
         };
 
         public DateTime LastInteractionTime

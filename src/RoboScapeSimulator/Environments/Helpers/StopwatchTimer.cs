@@ -11,6 +11,8 @@ internal class StopwatchTimer
 
     public bool ShowText = true;
 
+    bool shouldRun = true;
+
     public StopwatchTimer(Room room)
     {
         room.OnReset += (o, _) =>
@@ -26,6 +28,22 @@ internal class StopwatchTimer
                 room.SendToClients("showText", $"Time: {timer.Elapsed.TotalSeconds:F2}", "timer", "");
             }
         };
+
+        room.OnHibernateStart += (o, e) =>
+        {
+            shouldRun = timer.IsRunning;
+            timer.Stop();
+        };
+
+        room.OnHibernateEnd += (o, e) =>
+        {
+            if (shouldRun)
+            {
+                timer.Start();
+            }
+        };
+
+        timer.Start();
     }
 
     public void Stop()
