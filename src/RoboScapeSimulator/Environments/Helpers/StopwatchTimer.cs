@@ -13,19 +13,23 @@ internal class StopwatchTimer
 
     bool shouldRun = true;
 
+    long? lastSend = null;
+
     public StopwatchTimer(Room room)
     {
         room.OnReset += (o, _) =>
         {
             timer.Reset();
             timer.Start();
+            lastSend = null;
         };
 
         room.OnUpdate += (o, dt) =>
         {
-            if (ShowText && timer.Elapsed.Milliseconds * 10 % 10 == 0)
+            if (ShowText && (timer.ElapsedMillis - (lastSend ?? -1000)) >= 120)
             {
                 room.SendToClients("showText", $"Time: {timer.ElapsedSeconds:F2}", "timer", "");
+                lastSend = timer.ElapsedMillis;
             }
         };
 
@@ -59,5 +63,6 @@ internal class StopwatchTimer
     public void Reset()
     {
         timer.Stop();
+        lastSend = null;
     }
 }
