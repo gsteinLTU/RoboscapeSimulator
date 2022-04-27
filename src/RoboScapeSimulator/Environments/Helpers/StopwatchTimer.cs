@@ -7,7 +7,7 @@ namespace RoboScapeSimulator.Environments.Helpers;
 /// </summary>
 internal class StopwatchTimer
 {
-    public readonly Stopwatch timer = new();
+    public readonly StopwatchLite timer = new();
 
     public bool ShowText = true;
 
@@ -25,7 +25,7 @@ internal class StopwatchTimer
         {
             if (ShowText && timer.Elapsed.Milliseconds * 10 % 10 == 0)
             {
-                room.SendToClients("showText", $"Time: {timer.Elapsed.TotalSeconds:F2}", "timer", "");
+                room.SendToClients("showText", $"Time: {timer.ElapsedSeconds:F2}", "timer", "");
             }
         };
 

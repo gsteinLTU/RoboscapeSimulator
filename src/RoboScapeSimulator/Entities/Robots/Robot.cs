@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Numerics;
 using BepuPhysics;
 using BepuPhysics.Collidables;
+using RoboScapeSimulator.Environments.Helpers;
 
 namespace RoboScapeSimulator.Entities.Robots
 {
@@ -35,7 +36,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <summary>
         /// Stopwatch for keeping track of this Robot's lifetime
         /// </summary>
-        internal Stopwatch time = new();
+        internal StopwatchLite time = new();
 
         /// <summary>
         /// Instantiate a Robot inside a given simulation instance
@@ -243,7 +244,7 @@ namespace RoboScapeSimulator.Entities.Robots
             MacAddress.CopyTo(finalMessageBytes, 0);
 
             // Add timestamp
-            BitConverter.GetBytes((int)(1000 * (float)time.Elapsed.TotalSeconds)).CopyTo(finalMessageBytes, 6);
+            BitConverter.GetBytes((int)time.ElapsedMillis).CopyTo(finalMessageBytes, 6);
 
             // Add actual message
             if (messageBytes.Length > 0)
@@ -270,11 +271,11 @@ namespace RoboScapeSimulator.Entities.Robots
                 SetupRobot();
             }
 
-            if ((lastHeartbeat + HeartbeatPeriod) < time.Elapsed.TotalSeconds || lastHeartbeat < 0)
+            if ((lastHeartbeat + HeartbeatPeriod) < time.ElapsedSeconds || lastHeartbeat < 0)
             {
                 // Send heartbeat if due
                 SendRoboScapeMessage(new[] { (byte)'I' });
-                lastHeartbeat = (float)time.Elapsed.TotalSeconds;
+                lastHeartbeat = (float)time.ElapsedSeconds;
             }
 
             if (socket?.Available > 0)
@@ -294,9 +295,9 @@ namespace RoboScapeSimulator.Entities.Robots
                     {
                         MessageHandlers[messageCode](msg);
                     }
-                    else if (MinTimeBetweenMessages <= 0 || time.Elapsed.TotalSeconds - lastMessageTime > MinTimeBetweenMessages)
+                    else if (MinTimeBetweenMessages <= 0 || time.ElapsedSeconds - lastMessageTime > MinTimeBetweenMessages)
                     {
-                        lastMessageTime = (float)time.Elapsed.TotalSeconds;
+                        lastMessageTime = time.ElapsedSeconds;
                         MessageHandlers[messageCode](msg);
                     }
                 }

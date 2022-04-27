@@ -9,7 +9,7 @@ namespace RoboScapeSimulator.Environments;
 
 class WaypointNavigationEnvironment : EnvironmentConfiguration
 {
-    uint _waittime = 0;
+    readonly uint _waittime = 0;
 
     public WaypointNavigationEnvironment(uint waittime = 0)
     {

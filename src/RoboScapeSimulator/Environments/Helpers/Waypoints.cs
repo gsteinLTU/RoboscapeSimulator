@@ -15,15 +15,12 @@ internal class Waypoints
     readonly VisualOnlyEntity waypoint_X_2;
 
     int waypoint_idx = 0;
-    Stopwatch waypointTimer = new();
-
-    uint _waittime;
+    readonly StopwatchLite waypointTimer = new();
+    readonly uint _waittime;
 
     List<Vector3> waypoints = new();
 
     public EventHandler<int>? OnWaypointActivated;
-
-    bool robotsOnly = true;
 
     public Waypoints(Room room, Func<List<Vector3>> waypointGenerator, string id, uint waitTime = 0, bool robotsOnly = true, float threshold = 0.2f)
     {
@@ -53,7 +50,7 @@ internal class Waypoints
         {
             if (!robotsOnly || e is Robot)
             {
-                if (waypointTimer.IsRunning && waypointTimer.Elapsed.Seconds > _waittime)
+                if (waypointTimer.IsRunning && waypointTimer.ElapsedSeconds > _waittime)
                 {
                     // Move waypoint
                     if (waypoint_idx <= waypoints.Count)

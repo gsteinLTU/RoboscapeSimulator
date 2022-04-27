@@ -9,7 +9,7 @@ namespace RoboScapeSimulator.Environments;
 
 internal class FinalChallengeEnvironment : EnvironmentConfiguration
 {
-    bool _mini = false;
+    readonly bool _mini = false;
 
     public FinalChallengeEnvironment(bool mini = false)
     {
@@ -30,7 +30,7 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
 
         Random rng = new();
 
-        StopwatchTimer timer = new StopwatchTimer(room);
+        StopwatchTimer timer = new(room);
 
         // Ground
         _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
