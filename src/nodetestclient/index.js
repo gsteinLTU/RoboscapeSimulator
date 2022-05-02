@@ -1,6 +1,8 @@
 const io = require("socket.io-client");
 
 const numClients = Number.parseInt(process.argv[2] ?? '1');
+const enviroment = process.argv[3] ?? 'default';
+
 console.log(`Starting ${numClients} client${numClients > 1 ? 's' : ''}...`);
 
 if (numClients <= 0) {
@@ -84,7 +86,7 @@ let createSocket = (i) => {
 
     let checkInRoom = () => {
         if (room == undefined) {
-            socket.emit('joinRoom', { roomID: 'create', env: 'default', password: '', namespace: user });
+            socket.emit('joinRoom', { roomID: 'create', env: enviroment, password: '', namespace: user });
             setTimeout(checkInRoom, 1000);
         }
     };
