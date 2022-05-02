@@ -101,7 +101,7 @@ namespace RoboScapeSimulator.IoTScape.Devices
         /// </summary>
         /// <param name="trackedBody">Body to track position/heading of</param>
         /// <param name="id">ID to assign sensor</param>
-        public PositionSensor(Entity trackedBody, string? id = null) : base(definition, id)
+        public PositionSensor(DynamicEntity trackedBody, string? id = null) : base(definition, id)
         {
             Methods["getX"] = (string[] args) =>
             {
