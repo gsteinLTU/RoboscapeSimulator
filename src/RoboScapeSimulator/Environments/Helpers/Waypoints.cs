@@ -22,7 +22,7 @@ internal class Waypoints
 
     public EventHandler<int>? OnWaypointActivated;
 
-    public Waypoints(Room room, Func<List<Vector3>> waypointGenerator, string id, uint waitTime = 0, bool robotsOnly = true, float threshold = 0.2f)
+    public Waypoints(Room room, Func<List<Vector3>> waypointGenerator, string id, uint waitTime = 0, bool robotsOnly = true, float threshold = 0.2f, bool debug = false)
     {
         waypoints = waypointGenerator();
 
@@ -32,6 +32,14 @@ internal class Waypoints
         {
             Markers.Add(new VisualOnlyEntity(room, initialPosition: waypoint - new Vector3(0, 100, 0), initialOrientation: Quaternion.Identity, width: 0.25f, height: 0.1f, depth: 0.25f, visualInfo: new VisualInfo() { Color = "#363" }));
         });
+
+        if (debug)
+        {
+            waypoints.ForEach((waypoint) =>
+            {
+                _ = new VisualOnlyEntity(room, initialPosition: waypoint, initialOrientation: Quaternion.Identity, width: 0.2f, height: 0.1f, depth: 0.2f, visualInfo: new VisualInfo() { Color = "#333" });
+            });
+        }
 
         // Waypoint trigger
         waypoint = new Trigger(room, waypoints[0], Quaternion.Identity, threshold, 0.1f, threshold);
