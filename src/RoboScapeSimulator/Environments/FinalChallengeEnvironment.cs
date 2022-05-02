@@ -187,8 +187,8 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
         {
             return new List<Vector3>() {
                 new Vector3(0.25f, 3.5f, 5.75f) * (_mini? miniScale : Vector3.One),
-                new Vector3(0f, 3.5f, 11.75f) * (_mini? miniScale : Vector3.One),
-                new Vector3(0f, 3.5f, 13f) * (_mini? miniScale : Vector3.One),
+                new Vector3(0f, 3.5f, 11.4f) * (_mini? miniScale : Vector3.One),
+                new Vector3(0f, 3.5f, 13.25f) * (_mini? miniScale : Vector3.One),
             };
         }, highBot.ID, threshold: 0.75f);
 
