@@ -1,4 +1,5 @@
 using BepuPhysics;
+using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 
 namespace RoboScapeSimulator.IoTScape.Devices
@@ -59,7 +60,7 @@ namespace RoboScapeSimulator.IoTScape.Devices
         /// Create PositionSensor attached to a Robot
         /// </summary>
         /// <param name="robot">Robot to attach sensor to</param>
-        public PositionSensor(Robot robot) : this(robot.BodyReference, robot.ID) { }
+        public PositionSensor(Robot robot) : this(robot, robot.ID) { }
 
         /// <summary>
         /// Create a PositionSensor tracking a BodyReference
@@ -91,6 +92,40 @@ namespace RoboScapeSimulator.IoTScape.Devices
             Methods["getHeading"] = (string[] args) =>
             {
                 trackedBody.Pose.Orientation.ExtractYawPitchRoll(out var yaw, out var _, out var _);
+                return new string[] { (yaw * 180.0f / MathF.PI).ToString() };
+            };
+        }
+
+        /// <summary>
+        /// Create a PositionSensor tracking an Entity
+        /// </summary>
+        /// <param name="trackedBody">Body to track position/heading of</param>
+        /// <param name="id">ID to assign sensor</param>
+        public PositionSensor(Entity trackedBody, string? id = null) : base(definition, id)
+        {
+            Methods["getX"] = (string[] args) =>
+            {
+                return new string[] { trackedBody.Position.X.ToString() };
+            };
+
+            Methods["getY"] = (string[] args) =>
+            {
+                return new string[] { trackedBody.Position.Y.ToString() };
+            };
+
+            Methods["getZ"] = (string[] args) =>
+            {
+                return new string[] { trackedBody.Position.Z.ToString() };
+            };
+
+            Methods["getPosition"] = (string[] args) =>
+            {
+                return new string[] { trackedBody.Position.X.ToString(), trackedBody.Position.Y.ToString(), trackedBody.Position.Z.ToString() };
+            };
+
+            Methods["getHeading"] = (string[] args) =>
+            {
+                trackedBody.Orientation.ExtractYawPitchRoll(out var yaw, out var _, out var _);
                 return new string[] { (yaw * 180.0f / MathF.PI).ToString() };
             };
         }
