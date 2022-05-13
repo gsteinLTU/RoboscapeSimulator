@@ -22,7 +22,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up default environment");
 
             // Ground
-            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room);
 
             // Demo robot
             _ = new ParallaxRobot(room, debug: false);

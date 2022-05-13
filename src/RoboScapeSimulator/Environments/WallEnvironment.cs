@@ -23,7 +23,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up wall environment");
 
             // Ground
-            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room);
 
             // Walls
             float wallsize = 15;

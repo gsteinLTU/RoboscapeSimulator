@@ -27,7 +27,7 @@ namespace RoboScapeSimulator.Environments
             StopwatchTimer sw = new(room);
 
             // Ground
-            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room);
 
             // Walls
             float wallX = 4f;

@@ -32,7 +32,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine($"Setting up {Name} environment");
 
             // Ground
-            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room);
 
             // Table
             _ = new Cube(room, 5.5f, 1, 5.5f, new Vector3(0, 0.5f, 0), Quaternion.Identity, true, nameOverride: "table");

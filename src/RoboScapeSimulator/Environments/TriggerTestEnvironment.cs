@@ -24,7 +24,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up trigger test environment");
 
             // Ground
-            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room);
 
             // Trigger volume
             var trigger = new Trigger(room, new(0, 0.5f, 2), Quaternion.Identity, 2, 1, 2, true);

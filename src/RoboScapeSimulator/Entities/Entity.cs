@@ -102,6 +102,16 @@ public struct VisualInfo
     public string Image = "";
 
     /// <summary>
+    /// U scale to apply to image
+    /// </summary>
+    public float? uScale = null;
+
+    /// <summary>
+    /// V scale to apply to image
+    /// </summary>
+    public float? vScale = null;
+
+    /// <summary>
     /// Empty VisualInfo to display a default white cube in the client
     /// </summary>
     public static readonly VisualInfo DefaultCube = new() { };

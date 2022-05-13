@@ -23,7 +23,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up square driving environment");
 
             // Ground
-            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room);
 
             // Demo robot
             _ = new ParallaxRobot(room, new Vector3(0, 0.25f, 0), Quaternion.Identity, debug: false);

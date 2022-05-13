@@ -25,7 +25,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up lidar test environment");
 
             // Ground
-            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room);
 
             // Wall
             float wallsize = 15;
