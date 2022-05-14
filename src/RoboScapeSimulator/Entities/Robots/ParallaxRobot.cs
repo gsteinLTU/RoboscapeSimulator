@@ -354,7 +354,16 @@ namespace RoboScapeSimulator.Entities.Robots
             var status = msg[2];
 
             Debug.WriteLine($"Set LED {which} {status}");
-            room.SendToClients("led", Name, which, status);
+
+            if (claimedBySocket == null)
+            {
+                room.SendToClients("led", Name, which, status);
+            }
+            else
+            {
+                // Only send to claimant
+                room.SendToClient(claimedBySocket, "led", Name, which, status);
+            }
         }
 
         unsafe public void OnGetRange(byte[] msg)

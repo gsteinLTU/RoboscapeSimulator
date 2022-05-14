@@ -218,6 +218,23 @@ namespace RoboScapeSimulator
         }
 
         /// <summary>
+        /// Send an event to one client in the room
+        /// </summary>
+        /// <param name="socketID">ID of target socket</param>
+        /// <param name="eventName">Name of event</param>
+        /// <param name="args">Arguments for event</param>
+        public void SendToClient(string socketID, string eventName, params object[] args)
+        {
+            lock (activeSockets)
+            {
+                foreach (var socket in activeSockets.Where(s => s.ID == socketID))
+                {
+                    Utils.SendAsJSON(socket, eventName, args);
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds a socket to active list and sets up message listeners
         /// </summary>
         /// <param name="socket">Socket to add to active sockets list</param>
@@ -277,13 +294,13 @@ namespace RoboScapeSimulator
         /// <param name="args">Input from event</param>
         private void HandleRobotButton(Socket s, JsonNode[] args)
         {
-            if (args.Length < 2)
+            if (args.Length < 3)
             {
                 return;
             }
 
             string robotID = args[0].ToString();
-            string userID = args[1].ToString();
+            string userID = args[2].ToString();
 
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot is ParallaxRobot parallaxRobot)
