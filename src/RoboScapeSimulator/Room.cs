@@ -317,6 +317,9 @@ namespace RoboScapeSimulator
                     if (robot.claimedBy == null)
                     {
                         robot.claimedBy = userID;
+
+                        // Send status to users
+                        SendToClients("robotClaimed", robotID, userID, true);
                     }
                 }
                 else
@@ -324,8 +327,12 @@ namespace RoboScapeSimulator
                     if (robot.claimedBy == userID)
                     {
                         robot.claimedBy = null;
+
+                        // Send status to users
+                        SendToClients("robotClaimed", robotID, userID, false);
                     }
                 }
+
             }
         }
 
