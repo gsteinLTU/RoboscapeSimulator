@@ -287,7 +287,7 @@ namespace RoboScapeSimulator
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot is ParallaxRobot parallaxRobot)
             {
-                if (!robot.claimable || robot.claimedBy == userID)
+                if (!robot.claimable || robot.claimedBy == null || robot.claimedBy == userID)
                 {
                     parallaxRobot.OnButtonPress((bool)args[1]);
                 }
@@ -346,7 +346,7 @@ namespace RoboScapeSimulator
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot != null)
             {
-                if (!robot.claimable || robot.claimedBy == userID)
+                if (!robot.claimable || robot.claimedBy == null || robot.claimedBy == userID)
                 {
                     robot.Reset();
                 }
