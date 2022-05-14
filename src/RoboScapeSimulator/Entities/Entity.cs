@@ -84,7 +84,12 @@ public abstract class Entity : IDisposable
     /// <summary>
     /// A user ID "claiming" the robot
     /// </summary>
-    public string? claimedBy;
+    public string? claimedByUser;
+
+    /// <summary>
+    /// A socket ID "claiming" the robot
+    /// </summary>
+    public string? claimedBySocket;
 
     /// <summary>
     /// Can this Entity be claimed by a user?
@@ -197,7 +202,7 @@ public abstract class StaticEntity : Entity
             depth = allData ? StaticReference.BoundingBox.Max.Z - StaticReference.BoundingBox.Min.Z : null,
             visualInfo = allData ? VisualInfo : null,
             claimable = allData ? claimable : null,
-            claimedBy = allData ? claimedBy : null
+            claimedBy = allData ? claimedByUser : null
         };
     }
 
@@ -248,7 +253,7 @@ public abstract class DynamicEntity : Entity
             visualInfo = allData ? VisualInfo : null,
             vel = BodyReference.Velocity.Linear,
             claimable = allData ? claimable : null,
-            claimedBy = allData ? claimedBy : null
+            claimedBy = allData ? claimedByUser : null
         };
     }
 

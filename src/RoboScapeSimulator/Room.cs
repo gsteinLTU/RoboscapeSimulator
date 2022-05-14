@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.Environments;
+using RoboScapeSimulator.Node;
 
 namespace RoboScapeSimulator
 {
@@ -237,7 +238,7 @@ namespace RoboScapeSimulator
         /// Handles a request to reset a robot
         /// </summary>
         /// <param name="args">Input from event</param>
-        private void HandleResetRobot(JsonNode[] args)
+        private void HandleResetRobot(Socket s, JsonNode[] args)
         {
             if (args.Length < 2)
             {
@@ -255,7 +256,7 @@ namespace RoboScapeSimulator
         /// Handles a request to reset the entire environment
         /// </summary>
         /// <param name="args">Input from event</param>
-        private void HandleResetAll(JsonNode[] args)
+        private void HandleResetAll(Socket s, JsonNode[] args)
         {
             LastInteractionTime = DateTime.Now;
 
@@ -274,7 +275,7 @@ namespace RoboScapeSimulator
         /// Handles a request to press the button on a robot
         /// </summary>
         /// <param name="args">Input from event</param>
-        private void HandleRobotButton(JsonNode[] args)
+        private void HandleRobotButton(Socket s, JsonNode[] args)
         {
             if (args.Length < 2)
             {
@@ -287,7 +288,7 @@ namespace RoboScapeSimulator
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot is ParallaxRobot parallaxRobot)
             {
-                if (!robot.claimable || robot.claimedBy == null || robot.claimedBy == userID)
+                if (!robot.claimable || robot.claimedByUser == null || robot.claimedByUser == userID)
                 {
                     parallaxRobot.OnButtonPress((bool)args[1]);
                 }
@@ -298,7 +299,7 @@ namespace RoboScapeSimulator
         /// Handles a request to claim a robot
         /// </summary>
         /// <param name="args">Input from event</param>
-        private void HandleClaimRobot(JsonNode[] args)
+        private void HandleClaimRobot(Socket s, JsonNode[] args)
         {
             if (args.Length < 3)
             {
@@ -314,9 +315,10 @@ namespace RoboScapeSimulator
             {
                 if (request)
                 {
-                    if (robot.claimedBy == null)
+                    if (robot.claimedByUser == null)
                     {
-                        robot.claimedBy = userID;
+                        robot.claimedByUser = userID;
+                        robot.claimedBySocket = s.ID;
 
                         // Send status to users
                         SendToClients("robotClaimed", robotID, userID, true);
@@ -324,9 +326,10 @@ namespace RoboScapeSimulator
                 }
                 else
                 {
-                    if (robot.claimedBy == userID)
+                    if (robot.claimedByUser == userID)
                     {
-                        robot.claimedBy = null;
+                        robot.claimedByUser = null;
+                        robot.claimedBySocket = null;
 
                         // Send status to users
                         SendToClients("robotClaimed", robotID, userID, false);
@@ -346,7 +349,7 @@ namespace RoboScapeSimulator
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot != null)
             {
-                if (!robot.claimable || robot.claimedBy == null || robot.claimedBy == userID)
+                if (!robot.claimable || robot.claimedByUser == null || robot.claimedByUser == userID)
                 {
                     robot.Reset();
                 }
@@ -368,6 +371,18 @@ namespace RoboScapeSimulator
             socket.Off("robotButton", HandleRobotButton);
             socket.Off("claimRobot", HandleClaimRobot);
             socket.Emit("roomLeft");
+
+            // Kick out of any claimed robots
+            foreach (var robot in SimInstance.Robots)
+            {
+                if (robot.claimedBySocket == socket.ID)
+                {
+                    SendToClients("robotClaimed", robot.ID, robot.claimedByUser ?? "", false);
+                    robot.claimedByUser = null;
+                    robot.claimedBySocket = null;
+                }
+            }
+
             lock (activeSockets)
             {
                 activeSockets.Remove(socket);

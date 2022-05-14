@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.Json.Nodes;
 using RoboScapeSimulator;
 using RoboScapeSimulator.IoTScape;
+using RoboScapeSimulator.Node;
 
 Trace.Listeners.Add(new ConsoleTraceListener());
 Trace.WriteLine("Starting RoboScapeSimulator...");
@@ -24,10 +25,10 @@ ConcurrentDictionary<string, Room> rooms = new();
 
 IoTScapeManager ioTScapeManager = new();
 
-using (RoboScapeSimulator.Node.Server server = new())
+using (Server server = new())
 {
     // Socket.io setup
-    server.OnConnection((RoboScapeSimulator.Node.Socket socket) =>
+    server.OnConnection((Socket socket) =>
     {
         string? socketRoom = "";
 
@@ -55,14 +56,14 @@ using (RoboScapeSimulator.Node.Server server = new())
         });
 
         // Send room info
-        socket.On("getRooms", (JsonNode[] args) =>
+        socket.On("getRooms", (Socket s, JsonNode[] args) =>
         {
             if (args.Length == 0) return;
             var user = args[0]?.ToString() ?? "";
             Messages.SendUserRooms(socket, user, rooms);
         });
 
-        socket.On("joinRoom", (JsonNode[] args) =>
+        socket.On("joinRoom", (Socket s, JsonNode[] args) =>
         {
             Messages.HandleJoinRoom(args, socket, rooms, ref socketRoom);
         });

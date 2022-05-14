@@ -129,11 +129,11 @@ public class Server : IDisposable
                                     if (jData is JsonArray arr)
                                     {
                                         JsonNode[] a = arr.Cast<JsonNode>().ToArray();
-                                        callback(a ?? Array.Empty<JsonNode>());
+                                        callback(sockets[socketID], a ?? Array.Empty<JsonNode>());
                                     }
                                     else
                                     {
-                                        callback(new JsonNode[] { jData });
+                                        callback(sockets[socketID], new JsonNode[] { jData });
                                     }
                                 });
                             }
@@ -273,14 +273,14 @@ public class Socket
     /// <summary>
     /// Callbacks for message types
     /// </summary>
-    internal readonly Dictionary<string, List<Action<JsonNode[]>>> callbacks = new();
+    internal readonly Dictionary<string, List<Action<Socket, JsonNode[]>>> callbacks = new();
 
     /// <summary>
     /// Add a callback for an event
     /// </summary>
     /// <param name="eventName">Name of event</param>
     /// <param name="callback">Callback to run when event occurs</param>
-    public void On(string eventName, Action<JsonNode[]> callback)
+    public void On(string eventName, Action<Socket, JsonNode[]> callback)
     {
         if (callbacks.ContainsKey(eventName))
         {
@@ -288,7 +288,7 @@ public class Socket
         }
         else
         {
-            callbacks.Add(eventName, new List<Action<JsonNode[]>>() { callback });
+            callbacks.Add(eventName, new List<Action<Socket, JsonNode[]>>() { callback });
         }
     }
 
@@ -299,7 +299,7 @@ public class Socket
     /// <param name="callback">Callback to run when event occurs</param>
     public void On(string eventName, Action callback)
     {
-        On(eventName, (JsonNode[] args) => callback());
+        On(eventName, (Socket sock, JsonNode[] args) => callback());
     }
 
     internal readonly List<Action> onDisconnect = new();
@@ -318,7 +318,7 @@ public class Socket
     /// </summary>
     /// <param name="eventName">Event to remove callback from</param>
     /// <param name="callback">Callback to remove</param>
-    public void Off(string eventName, Action<JsonNode[]> callback)
+    public void Off(string eventName, Action<Socket, JsonNode[]> callback)
     {
         if (callbacks.ContainsKey(eventName))
         {
