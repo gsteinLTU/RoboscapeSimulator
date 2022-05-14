@@ -230,6 +230,7 @@ namespace RoboScapeSimulator
             socket.On("resetRobot", HandleResetRobot);
             socket.On("resetAll", HandleResetAll);
             socket.On("robotButton", HandleRobotButton);
+            socket.On("claimRobot", HandleClaimRobot);
         }
 
         /// <summary>
@@ -238,9 +239,16 @@ namespace RoboScapeSimulator
         /// <param name="args">Input from event</param>
         private void HandleResetRobot(JsonNode[] args)
         {
+            if (args.Length < 2)
+            {
+                return;
+            }
+
             LastInteractionTime = DateTime.Now;
             string robotID = args[0].ToString();
-            ResetRobot(robotID);
+            string userID = args[1].ToString();
+
+            ResetRobot(robotID, userID);
         }
 
         /// <summary>
@@ -268,12 +276,56 @@ namespace RoboScapeSimulator
         /// <param name="args">Input from event</param>
         private void HandleRobotButton(JsonNode[] args)
         {
+            if (args.Length < 2)
+            {
+                return;
+            }
+
             string robotID = args[0].ToString();
+            string userID = args[1].ToString();
 
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot is ParallaxRobot parallaxRobot)
             {
-                parallaxRobot.OnButtonPress((bool)args[1]);
+                if (!robot.claimable || robot.claimedBy == userID)
+                {
+                    parallaxRobot.OnButtonPress((bool)args[1]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles a request to claim a robot
+        /// </summary>
+        /// <param name="args">Input from event</param>
+        private void HandleClaimRobot(JsonNode[] args)
+        {
+            if (args.Length < 3)
+            {
+                return;
+            }
+
+            string robotID = args[0].ToString();
+            bool request = (bool)args[1];
+            string userID = args[2].ToString();
+
+            Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
+            if (robot != null && robot.claimable)
+            {
+                if (request)
+                {
+                    if (robot.claimedBy == null)
+                    {
+                        robot.claimedBy = userID;
+                    }
+                }
+                else
+                {
+                    if (robot.claimedBy == userID)
+                    {
+                        robot.claimedBy = null;
+                    }
+                }
             }
         }
 
@@ -281,12 +333,16 @@ namespace RoboScapeSimulator
         /// Reset a robot based on its ID
         /// </summary>
         /// <param name="robotID">ID of robot to reset</param>
-        public void ResetRobot(string robotID)
+        /// <param name="userID">Optional, user ID requesting reset</param>
+        public void ResetRobot(string robotID, string? userID)
         {
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot != null)
             {
-                robot.Reset();
+                if (!robot.claimable || robot.claimedBy == userID)
+                {
+                    robot.Reset();
+                }
             }
             else
             {
@@ -303,6 +359,7 @@ namespace RoboScapeSimulator
             socket.Off("resetRobot", HandleResetRobot);
             socket.Off("resetAll", HandleResetAll);
             socket.Off("robotButton", HandleRobotButton);
+            socket.Off("claimRobot", HandleClaimRobot);
             socket.Emit("roomLeft");
             lock (activeSockets)
             {

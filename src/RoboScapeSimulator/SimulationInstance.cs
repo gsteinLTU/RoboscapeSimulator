@@ -122,13 +122,16 @@ namespace RoboScapeSimulator
     {
         public string? label;
         public Vec3 pos;
-        public Vec3 vel;
+        public Vec3? vel;
         public Quaternion angle;
         public float? anglevel;
         public float? width;
         public float? height;
         public float? depth;
         public VisualInfo? visualInfo;
+        public string? claimedBy;
+
+        public bool? claimable;
 
         public override string ToString()
         {
@@ -144,6 +147,7 @@ namespace RoboScapeSimulator
             builder.AppendLine("\theight:\t" + height ?? "null");
             builder.AppendLine("\tdepth:\t" + depth ?? "null");
             builder.AppendLine("\tvisualInfo:\t" + visualInfo ?? "null");
+            builder.AppendLine("\tclaimedBy:\t" + claimedBy ?? "null");
 
             return builder.ToString();
         }
