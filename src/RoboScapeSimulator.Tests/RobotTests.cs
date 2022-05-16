@@ -82,7 +82,7 @@ public class RobotTests
         Assert.InRange(robot.LeftTicks, 1d, double.PositiveInfinity);
         Assert.InRange(robot.RightTicks, 1d, double.PositiveInfinity);
 
-        testRoom.ResetRobot(robot.ID);
+        testRoom.ResetRobot(robot.ID, "");
 
         for (int i = 0; i < 60; i++)
         {
@@ -129,7 +129,7 @@ public class RobotTests
         Assert.InRange(robot.LeftTicks, 1d, double.PositiveInfinity);
         Assert.InRange(robot.RightTicks, 1d, double.PositiveInfinity);
 
-        testRoom.ResetRobot(robot.ID);
+        testRoom.ResetRobot(robot.ID, "");
 
         for (int i = 0; i < 60; i++)
         {
