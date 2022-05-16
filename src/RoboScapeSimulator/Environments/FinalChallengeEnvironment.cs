@@ -33,7 +33,7 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
         StopwatchTimer timer = new(room);
 
         // Ground
-        _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+        _ = new Ground(room);
 
         List<Vector3> centerPoints1 = new()
         {

@@ -90,6 +90,8 @@ namespace RoboScapeSimulator.Entities.Robots
 
             room.SimInstance.NamedBodies.Add(Name, BodyReference);
             room.SimInstance.Entities.Add(this);
+
+            claimable = true;
         }
 
         /// <summary>

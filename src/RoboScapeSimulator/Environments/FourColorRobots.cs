@@ -23,7 +23,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up four color robots environment");
 
             // Ground
-            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room);
 
             // Robots
             _ = new ParallaxRobot(room, new Vector3(0, 0.25f, 1.25f), Quaternion.Identity, visualInfo: new() { ModelName = "car1_red.gltf" }, debug: false);

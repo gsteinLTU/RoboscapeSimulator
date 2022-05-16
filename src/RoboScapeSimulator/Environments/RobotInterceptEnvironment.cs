@@ -34,7 +34,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine($"Setting up {Name} environment");
 
             // Ground
-            _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            _ = new Ground(room);
 
             // Main robot
             var robot = new ParallaxRobot(room, new(0, 0.25f, 0), Quaternion.Identity, debug: false);

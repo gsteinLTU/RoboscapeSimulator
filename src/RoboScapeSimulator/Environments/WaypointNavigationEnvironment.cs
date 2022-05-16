@@ -30,7 +30,7 @@ class WaypointNavigationEnvironment : EnvironmentConfiguration
         Random rng = new();
 
         // Ground
-        _ = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+        _ = new Ground(room);
 
         // robot
         var robot = new ParallaxRobot(room, new Vector3(0, 0.25f, 0), Quaternion.Identity, debug: false);

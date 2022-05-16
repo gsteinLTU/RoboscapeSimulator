@@ -29,7 +29,7 @@ namespace RoboScapeSimulator.Environments
             Trace.WriteLine("Setting up IoTScape Example 2 environment");
 
             // Ground
-            var ground = new Ground(room, visualInfo: new VisualInfo() { Color = "#222" });
+            var ground = new Ground(room);
 
             // Walls
             float wallsize = 15;

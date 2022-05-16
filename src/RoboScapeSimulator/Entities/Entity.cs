@@ -15,12 +15,17 @@ public abstract class Entity : IDisposable
     /// <param name="dt">Time delta in seconds</param>
     public virtual void Update(float dt) { }
 
-
+    /// <summary>
+    /// The position of this Entity
+    /// </summary>
     public Vector3 Position
     {
         get;
     }
 
+    /// <summary>
+    /// The orientation of this Entity
+    /// </summary>
     public Quaternion Orientation
     {
         get;
@@ -31,6 +36,9 @@ public abstract class Entity : IDisposable
     /// </summary>
     public string Name = "entity";
 
+    /// <summary>
+    /// VisualInfo describing this Entity's appearance
+    /// </summary>
     public VisualInfo VisualInfo = VisualInfo.DefaultCube;
 
     private bool disposedValue;
@@ -64,9 +72,29 @@ public abstract class Entity : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Create a BodyInfo for this Entity's current state
+    /// </summary>
+    /// <param name="allData">Should fields unlikely to change be included</param>
+    /// <returns>BodyInfo for this Entity</returns>
     public abstract BodyInfo GetBodyInfo(bool allData);
 
     public abstract bool ShouldUpdate { get; }
+
+    /// <summary>
+    /// A user ID "claiming" the robot
+    /// </summary>
+    public string? claimedByUser;
+
+    /// <summary>
+    /// A socket ID "claiming" the robot
+    /// </summary>
+    public string? claimedBySocket;
+
+    /// <summary>
+    /// Can this Entity be claimed by a user?
+    /// </summary>
+    public bool claimable;
 }
 
 /// <summary>
@@ -100,6 +128,16 @@ public struct VisualInfo
     /// </summary>
     [JsonPropertyName("image")]
     public string Image = "";
+
+    /// <summary>
+    /// U scale to apply to image
+    /// </summary>
+    public float? uScale = null;
+
+    /// <summary>
+    /// V scale to apply to image
+    /// </summary>
+    public float? vScale = null;
 
     /// <summary>
     /// Empty VisualInfo to display a default white cube in the client
@@ -162,7 +200,9 @@ public abstract class StaticEntity : Entity
             width = allData ? StaticReference.BoundingBox.Max.X - StaticReference.BoundingBox.Min.X : null,
             height = allData ? StaticReference.BoundingBox.Max.Y - StaticReference.BoundingBox.Min.Y : null,
             depth = allData ? StaticReference.BoundingBox.Max.Z - StaticReference.BoundingBox.Min.Z : null,
-            visualInfo = allData ? VisualInfo : null
+            visualInfo = allData ? VisualInfo : null,
+            claimable = allData ? claimable : null,
+            claimedBy = allData ? claimedByUser : null
         };
     }
 
@@ -211,7 +251,9 @@ public abstract class DynamicEntity : Entity
             height = allData ? Height : null,
             depth = allData ? Depth : null,
             visualInfo = allData ? VisualInfo : null,
-            vel = BodyReference.Velocity.Linear
+            vel = BodyReference.Velocity.Linear,
+            claimable = allData ? claimable : null,
+            claimedBy = allData ? claimedByUser : null
         };
     }
 
