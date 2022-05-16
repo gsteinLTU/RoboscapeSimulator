@@ -55,11 +55,11 @@ namespace RoboScapeSimulator.Environments
             // Inner walls
             AddObstacleWall(room, wallX, wallZ, 1.5f, 1f, 1.5f);
             AddObstacleWall(room, wallX, wallZ, 2.5f, 1f, 2.5f);
-            AddObstacleWall(room, wallX, wallZ, 0.25f, 1f, 3.75f);
-            AddObstacleWall(room, wallX, wallZ, wallX / 2 - 0.2f, 0.4f, 5f);
+            AddObstacleWall(room, wallX, wallZ, 0.25f, 1f, 3.5f);
+            AddObstacleWall(room, wallX, wallZ, wallX / 2 - 0.2f, 0.4f, 5.5f);
 
             // Block
-            _ = new Cube(room, 0.5f, 0.5f, 0.5f, new(0, 0.55f, -wallZ / 2 + 4.7f), Quaternion.Identity);
+            _ = new Cube(room, 0.5f, 0.5f, 0.5f, new(0, 0.55f, -wallZ / 2 + 5.2f), Quaternion.Identity);
 
             // Robot
             _ = new ParallaxRobot(room, new(0, 0.15f, -wallZ / 2 + 0.5f), Quaternion.Identity);

@@ -24,12 +24,14 @@ namespace RoboScapeSimulator.Environments
             // Ground
             _ = new Ground(room);
 
+            Random rng = new();
+
             // Demo robot
-            _ = new ParallaxRobot(room, debug: false);
+            _ = new ParallaxRobot(room, rng.PointOnCircle(1, 0.25f), debug: false);
 
             for (int i = 0; i < 3; i++)
             {
-                _ = new Cube(room, visualInfo: new VisualInfo() { Image = "crate.png" });
+                _ = new Cube(room, initialPosition: rng.PointOnCircle(1.5f + 0.5f * i, 0.5f), visualInfo: new VisualInfo() { Image = "crate.png" });
             }
         }
     }
