@@ -276,6 +276,7 @@ namespace RoboScapeSimulator.Entities.Robots
             AddHandler('L', OnSetLED);
             AddHandler('R', OnGetRange);
             AddHandler('T', OnGetTicks);
+            AddHandler('n', OnSetNumeric);
         }
 
         #region Command Handlers
@@ -363,6 +364,28 @@ namespace RoboScapeSimulator.Entities.Robots
             {
                 // Only send to claimant
                 room.SendToClient(claimedBySocket, "led", Name, which, status);
+            }
+        }
+        public void OnSetNumeric(byte[] msg)
+        {
+            if (msg.Length < 3)
+            {
+                Debug.WriteLine("Set Numeric message too short!");
+                return;
+            }
+
+            var status = (int)msg[1];
+
+            Debug.WriteLine($"Set Numeric {status}");
+
+            if (claimedBySocket == null)
+            {
+                room.SendToClients("numeric", Name, status);
+            }
+            else
+            {
+                // Only send to claimant
+                room.SendToClient(claimedBySocket, "numeric", Name, status);
             }
         }
 
