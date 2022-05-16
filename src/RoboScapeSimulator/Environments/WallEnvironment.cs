@@ -26,11 +26,11 @@ namespace RoboScapeSimulator.Environments
             _ = new Ground(room);
 
             // Walls
-            float wallsize = 15;
-            _ = new Cube(room, wallsize, 1, 0.1f, new Vector3(0, 0.5f, -wallsize / 2), Quaternion.Identity, true, nameOverride: "wall1", visualInfo: new VisualInfo() { Image = "bricks.png" });
+            float wallsize = 12;
+            _ = new Cube(room, wallsize, 1, 0.1f, new Vector3(0, 0.5f, wallsize / 4), Quaternion.Identity, true, nameOverride: "wall1", visualInfo: new VisualInfo() { Image = "bricks.png" });
 
             // Demo robots
-            _ = new ParallaxRobot(room);
+            _ = new ParallaxRobot(room, new Vector3(0, 0.25f, 0), Quaternion.Identity);
         }
     }
 }
