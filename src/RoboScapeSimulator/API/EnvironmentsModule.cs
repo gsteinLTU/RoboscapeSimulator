@@ -6,6 +6,9 @@ using EmbedIO.WebApi;
 
 namespace RoboScapeSimulator.API;
 
+/// <summary>
+/// API module providing information about the environments available on this server 
+/// </summary>
 public class EnvironmentsModule : WebApiModule
 {
     public EnvironmentsModule(string baseRoute) : base(baseRoute)
@@ -26,6 +29,4 @@ public class EnvironmentsModule : WebApiModule
             return context.SendStringAsync("Hello world!", "text/plain", Encoding.Default);
         }
     }
-
-
 }
