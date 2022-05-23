@@ -38,21 +38,23 @@ using (Server server = new())
         socket.OnDisconnect(() =>
         {
             Trace.WriteLine("Client disconnected!");
-            if (!string.IsNullOrEmpty(socketRoom))
+            if (!string.IsNullOrEmpty(socketRoom) && rooms.ContainsKey(socketRoom))
             {
                 rooms[socketRoom].RemoveSocket(socket);
             }
+
+            socketRoom = null;
         });
 
         // Cleanup a bit on disconnect
         socket.On("leaveRoom", () =>
         {
-            if (!string.IsNullOrEmpty(socketRoom))
+            if (!string.IsNullOrEmpty(socketRoom) && rooms.ContainsKey(socketRoom))
             {
                 Trace.WriteLine("Client left room!");
                 rooms[socketRoom].RemoveSocket(socket);
-                socketRoom = null;
             }
+            socketRoom = null;
         });
 
         // Send room info
