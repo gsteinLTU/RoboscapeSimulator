@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using RoboScapeSimulator;
+using RoboScapeSimulator.API;
 using RoboScapeSimulator.IoTScape;
 using RoboScapeSimulator.Node;
 
@@ -24,6 +25,8 @@ const int simFPS = 45;
 ConcurrentDictionary<string, Room> rooms = new();
 
 IoTScapeManager ioTScapeManager = new();
+
+APIServer.CreateWebServer(8000).RunAsync();
 
 using (Server server = new())
 {
