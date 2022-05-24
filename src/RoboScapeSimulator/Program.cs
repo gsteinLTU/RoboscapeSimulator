@@ -26,7 +26,7 @@ ConcurrentDictionary<string, Room> rooms = new();
 
 IoTScapeManager ioTScapeManager = new();
 
-APIServer.CreateWebServer(SettingsManager.APIPort).RunAsync();
+APIServer.CreateWebServer(SettingsManager.APIPort, rooms).RunAsync();
 
 using (Server server = new())
 {
