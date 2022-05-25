@@ -136,7 +136,7 @@ namespace RoboScapeSimulator
         {
             RoboScapeHost = "editor.netsblox.org",
             RoboScapePort = 1973,
-            IoTScapePort = 1975,
+            IoTScapePort = 1978,
             MaxRooms = 64,
             APIPort = 8000,
         };
