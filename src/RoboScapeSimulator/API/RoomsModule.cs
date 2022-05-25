@@ -1,5 +1,6 @@
 using EmbedIO;
 using EmbedIO.Routing;
+using EmbedIO.Utilities;
 using EmbedIO.WebApi;
 
 namespace RoboScapeSimulator.API;
@@ -16,6 +17,12 @@ public class RoomsModule : WebApiModule
 
     private Task GetList(IHttpContext context, RouteMatch route)
     {
+        // Allow query of specific-user-created rooms
+        if (context.GetRequestQueryData().ContainsKey("user"))
+        {
+            return context.SendAsJSON(Program.Rooms.Where(kvp => kvp.Value.Creator == context.GetRequestQueryData()["user"]).Select(kvp => kvp.Key));
+        }
+
         return context.SendAsJSON(Program.Rooms.Keys);
     }
 }
