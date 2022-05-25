@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -8,6 +9,8 @@ using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPhysics.Trees;
 using BepuUtilities.Memory;
+using EmbedIO;
+
 namespace RoboScapeSimulator
 {
     public static class Utils
@@ -18,6 +21,12 @@ namespace RoboScapeSimulator
             yaw = MathF.Atan2(2.0f * (r.Y * r.W + r.X * r.Z), 1.0f - 2.0f * (r.X * r.X + r.Y * r.Y));
             pitch = MathF.Asin(2.0f * (r.X * r.W - r.Y * r.Z));
             roll = MathF.Atan2(2.0f * (r.X * r.Y + r.Z * r.W), 1.0f - 2.0f * (r.X * r.X + r.Z * r.Z));
+        }
+
+        public static Task SendAsJSON<T>(this IHttpContext context, T data)
+        {
+            string output = JsonSerializer.Serialize(data, new JsonSerializerOptions() { IncludeFields = true });
+            return context.SendStringAsync(output, "application/json", Encoding.Default);
         }
 
         /// <summary>

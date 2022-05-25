@@ -19,18 +19,12 @@ public class ServerModule : WebApiModule
     {
         AddHandler(HttpVerbs.Get, RouteMatcher.Parse("/status", false), (context, route) =>
         {
-            string output = JsonSerializer.Serialize(new ServerStatus
+            return context.SendAsJSON(new ServerStatus
             {
                 activeRooms = rooms.Count(kvp => !kvp.Value.Hibernating),
                 hibernatingRooms = rooms.Count(kvp => kvp.Value.Hibernating),
                 maxRooms = SettingsManager.MaxRooms
-            },
-            new JsonSerializerOptions()
-            {
-                IncludeFields = true
             });
-
-            return context.SendStringAsync(output, "application/json", Encoding.Default);
         });
     }
 
