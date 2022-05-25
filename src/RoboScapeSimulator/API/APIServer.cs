@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
 using EmbedIO;
@@ -13,13 +12,11 @@ public class APIServer
     /// <summary>
     /// Creates a WebServer listening on a specific port, hosting this server's API content
     /// </summary>
-    /// <param name="port">Port for the server to listen on</param>
-    /// <param name="rooms">Rooms list</param>
     /// <returns>The WebServer created</returns>
-    public static WebServer CreateWebServer(int port, in ConcurrentDictionary<string, Room> rooms)
+    public static WebServer CreateWebServer()
     {
-        var server = new WebServer(port)
-            .WithModule(new ServerModule("/server", rooms))
+        var server = new WebServer(SettingsManager.APIPort)
+            .WithModule(new ServerModule("/server"))
             .WithModule(new EnvironmentsModule("/environments"))
             .WithModule(new RoomsModule("/rooms"));
 
