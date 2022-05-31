@@ -38,6 +38,11 @@ namespace RoboScapeSimulator
         public string? Creator;
 
         /// <summary>
+        /// List of users who have been in this room
+        /// </summary>
+        public HashSet<string> Visitors = new();
+
+        /// <summary>
         /// Time (in seconds) without interaction this room will stay alive for, default 15 minutes
         /// </summary>
         public float Timeout = 60 * 15;
@@ -238,7 +243,8 @@ namespace RoboScapeSimulator
         /// Adds a socket to active list and sets up message listeners
         /// </summary>
         /// <param name="socket">Socket to add to active sockets list</param>
-        internal void AddSocket(Node.Socket socket)
+        /// <param name="username">Username of user joining</param>
+        internal void AddSocket(Node.Socket socket, string? username)
         {
             LastInteractionTime = DateTime.Now;
             lock (activeSockets)
@@ -249,6 +255,11 @@ namespace RoboScapeSimulator
             socket.On("resetAll", HandleResetAll);
             socket.On("robotButton", HandleRobotButton);
             socket.On("claimRobot", HandleClaimRobot);
+
+            if (username != null)
+            {
+                Visitors.Add(username);
+            }
         }
 
         /// <summary>

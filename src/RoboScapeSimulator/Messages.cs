@@ -22,7 +22,7 @@ namespace RoboScapeSimulator
         /// </summary>
         internal static void SendUserRooms(Node.Socket socket, string user, IDictionary<string, Room> rooms)
         {
-            SendAvailableRooms(socket, rooms.Where(pair => pair.Value.Creator == user).ToDictionary(pair => pair.Key, pair => pair.Value));
+            SendAvailableRooms(socket, rooms.Where(pair => pair.Value.Visitors.Contains(user)).ToDictionary(pair => pair.Key, pair => pair.Value));
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace RoboScapeSimulator
 
                 Room newRoom = new("", args[0]["password"]?.ToString() ?? "", args[0]["env"]?.ToString() ?? "default");
 
-                string? roomNamespace = args[0]["namespace"]?.ToString();
+                string? roomNamespace = (args[0]["namespace"] ?? args[0]["username"])?.ToString();
                 if (roomNamespace != null)
                 {
                     newRoom.Name += "@" + roomNamespace;
@@ -93,7 +93,7 @@ namespace RoboScapeSimulator
             if (!string.IsNullOrWhiteSpace(socketRoom))
             {
                 // Setup updates for socket in new room 
-                rooms[socketRoom].AddSocket(socket);
+                rooms[socketRoom].AddSocket(socket, args[0]["username"]?.ToString());
                 Utils.SendAsJSON(socket, "roomJoined", socketRoom);
                 Utils.SendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
                 SendUpdate(socket, rooms[socketRoom], true);

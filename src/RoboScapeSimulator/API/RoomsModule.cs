@@ -18,9 +18,14 @@ public class RoomsModule : WebApiModule
     private Task GetList(IHttpContext context, RouteMatch route)
     {
         // Allow query of specific-user-created rooms
-        if (context.GetRequestQueryData().ContainsKey("user"))
+        if (context.GetRequestQueryData().ContainsKey("user") && context.GetRequestQueryData()["user"] != null)
         {
-            return context.SendAsJSON(Program.Rooms.Where(kvp => kvp.Value.Creator == context.GetRequestQueryData()["user"]).Select(kvp => kvp.Key));
+            var username = context.GetRequestQueryData()["user"];
+
+            if (username != null)
+            {
+                return context.SendAsJSON(Program.Rooms.Where(kvp => kvp.Value.Visitors.Contains(username)).Select(kvp => kvp.Key));
+            }
         }
 
         return context.SendAsJSON(Program.Rooms.Keys);
