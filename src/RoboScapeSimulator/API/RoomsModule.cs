@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Sockets;
 using EmbedIO;
 using EmbedIO.Routing;
 using EmbedIO.Utilities;
@@ -13,6 +15,7 @@ public class RoomsModule : WebApiModule
     public RoomsModule(string baseRoute) : base(baseRoute)
     {
         AddHandler(HttpVerbs.Get, RouteMatcher.Parse("/list", false), GetList);
+        AddHandler(HttpVerbs.Post, RouteMatcher.Parse("/create", false), PostCreate);
     }
 
     private Task GetList(IHttpContext context, RouteMatch route)
@@ -29,5 +32,11 @@ public class RoomsModule : WebApiModule
         }
 
         return context.SendAsJSON(Program.Rooms.Keys);
+    }
+
+    private Task PostCreate(IHttpContext context, RouteMatch route)
+    {
+
+        return context.SendAsJSON(new Dictionary<string, string>() { { "server", Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToString() }, { "room", "" } });
     }
 }

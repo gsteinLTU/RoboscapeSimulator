@@ -70,12 +70,12 @@ public static class Program
             {
                 if (args.Length == 0) return;
                 var user = args[0]?.ToString() ?? "";
-                Messages.SendUserRooms(socket, user, Rooms);
+                Messages.SendUserRooms(socket, user);
             });
 
             socket.On("joinRoom", (Socket s, JsonNode[] args) =>
             {
-                Messages.HandleJoinRoom(args, socket, Rooms, ref socketRoom);
+                Messages.HandleJoinRoom(args, socket, ref socketRoom);
             });
         });
 
@@ -87,9 +87,9 @@ public static class Program
         Trace.WriteLine("Server started");
 
         // Client update loops
-        var clientUpdateTimer = Timers.CreateClientUpdateTimer(updateFPS, Rooms);
-        var clientFullUpdateTimer = Timers.CreateClientFullUpdateTimer(Rooms);
-        var cleanDeadRoomsTimer = Timers.CreateCleanDeadRoomsTimer(Rooms);
+        var clientUpdateTimer = Timers.CreateClientUpdateTimer(updateFPS);
+        var clientFullUpdateTimer = Timers.CreateClientFullUpdateTimer();
+        var cleanDeadRoomsTimer = Timers.CreateCleanDeadRoomsTimer();
 
         var fpsSpan = TimeSpan.FromSeconds(1d / simFPS);
         Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));

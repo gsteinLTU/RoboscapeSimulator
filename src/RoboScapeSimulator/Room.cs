@@ -535,5 +535,23 @@ namespace RoboScapeSimulator
 
             SimInstance.Update(dt);
         }
+
+        public static Room Create(string name, string password, string environment, string creator, string roomNamespace = "anonymous")
+        {
+            // Verify we have capacity
+            if (Program.Rooms.Count(r => !r.Value.Hibernating) >= SettingsManager.MaxRooms)
+            {
+                throw new Exception("Failed to create room: insufficient resources");
+            }
+
+            var newRoom = new Room(name, password, environment);
+
+            newRoom.Name += "@" + roomNamespace;
+            newRoom.Creator = creator;
+
+            Program.Rooms[newRoom.Name] = newRoom;
+
+            return newRoom;
+        }
     }
 }
