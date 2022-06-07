@@ -90,6 +90,7 @@ public static class Program
         var clientUpdateTimer = Timers.CreateClientUpdateTimer(updateFPS);
         var clientFullUpdateTimer = Timers.CreateClientFullUpdateTimer();
         var cleanDeadRoomsTimer = Timers.CreateCleanDeadRoomsTimer();
+        var apiAnnounceTimer = Timers.CreateMainAPIServerAnnounceTimer();
 
         var fpsSpan = TimeSpan.FromSeconds(1d / simFPS);
         Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));

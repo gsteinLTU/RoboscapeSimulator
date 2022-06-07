@@ -88,6 +88,22 @@ namespace RoboScapeSimulator
             }
         }
 
+        /// <summary>
+        /// The Main API server to connect to
+        /// </summary>
+        public static string MainAPIServer
+        {
+            get
+            {
+                if (loadedSettings == null)
+                {
+                    LoadSettings();
+                }
+
+                return (loadedSettings?.MainAPIServer) ?? DefaultSettings.MainAPIServer ?? "";
+            }
+        }
+
         static RoboScapeSimSettings? loadedSettings;
 
         /// <summary>
@@ -127,6 +143,11 @@ namespace RoboScapeSimulator
             {
                 loadedSettings.APIPort = DefaultSettings.APIPort;
             }
+
+            if (string.IsNullOrWhiteSpace(loadedSettings.MainAPIServer))
+            {
+                loadedSettings.MainAPIServer = DefaultSettings.MainAPIServer;
+            }
         }
 
         /// <summary>
@@ -139,6 +160,7 @@ namespace RoboScapeSimulator
             IoTScapePort = 1978,
             MaxRooms = 64,
             APIPort = 8000,
+            MainAPIServer = "roboscapeonline.netsblox.org"
         };
     }
 
@@ -152,5 +174,6 @@ namespace RoboScapeSimulator
         public int? IoTScapePort { get; set; }
         public int? MaxRooms { get; set; }
         public int? APIPort { get; set; }
+        public string? MainAPIServer { get; set; }
     }
 }

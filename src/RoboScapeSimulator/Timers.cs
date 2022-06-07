@@ -1,5 +1,8 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RoboScapeSimulator
 {
@@ -67,6 +70,31 @@ namespace RoboScapeSimulator
             deadRoomTimer.Change(period, period);
 
             return deadRoomTimer;
+        }
+
+        public static Timer CreateMainAPIServerAnnounceTimer()
+        {
+            TimeSpan period = TimeSpan.FromSeconds(5 * 60 * 10);
+
+            static void apiAnnounce(object? e)
+            {
+                HttpClient client = new();
+
+                var request = new HttpRequestMessage(HttpMethod.Post, SettingsManager.MainAPIServer + "/server/announce")
+                {
+                    Content = JsonContent.Create(new Dictionary<string, string>() { { "maxRooms", SettingsManager.MaxRooms.ToString() } })
+                };
+
+                client.SendAsync(request);
+            }
+
+            var apiAnnounceTimer = new Timer(apiAnnounce);
+
+            apiAnnounceTimer.Change(period, period);
+
+            apiAnnounce(null);
+
+            return apiAnnounceTimer;
         }
     }
 }
