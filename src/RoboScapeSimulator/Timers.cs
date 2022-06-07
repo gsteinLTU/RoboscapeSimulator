@@ -1,8 +1,4 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace RoboScapeSimulator
 {
@@ -82,7 +78,7 @@ namespace RoboScapeSimulator
 
                 var request = new HttpRequestMessage(HttpMethod.Post, SettingsManager.MainAPIServer + "/server/announce")
                 {
-                    Content = JsonContent.Create(new Dictionary<string, string>() { { "maxRooms", SettingsManager.MaxRooms.ToString() } })
+                    Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "maxRooms", SettingsManager.MaxRooms.ToString() } })
                 };
 
                 client.SendAsync(request);
