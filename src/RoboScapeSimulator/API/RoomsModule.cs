@@ -31,7 +31,8 @@ public class RoomsModule : WebApiModule
             }
         }
 
-        return context.SendAsJSON(Program.Rooms.Values.Select(room => room.GetRoomInfo()));
+        // Not allowing requests without username for now
+        return context.SendAsJSON(Array.Empty<string>());
     }
 
     private Task PostCreate(IHttpContext context, RouteMatch route)
