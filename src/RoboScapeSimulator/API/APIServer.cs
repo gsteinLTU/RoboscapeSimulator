@@ -16,6 +16,7 @@ public class APIServer
     public static WebServer CreateWebServer()
     {
         var server = new WebServer(SettingsManager.APIPort)
+            .WithCors()
             .WithModule(new ServerModule("/server"))
             .WithModule(new EnvironmentsModule("/environments"))
             .WithModule(new RoomsModule("/rooms"));

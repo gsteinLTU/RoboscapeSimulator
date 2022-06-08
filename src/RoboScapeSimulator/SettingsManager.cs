@@ -160,7 +160,7 @@ namespace RoboScapeSimulator
             IoTScapePort = 1978,
             MaxRooms = 64,
             APIPort = 8000,
-            MainAPIServer = "roboscapeonline.netsblox.org"
+            MainAPIServer = "roboscapeonlineapi.netsblox.org"
         };
     }
 

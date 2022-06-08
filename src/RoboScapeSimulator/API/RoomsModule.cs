@@ -27,11 +27,11 @@ public class RoomsModule : WebApiModule
 
             if (username != null)
             {
-                return context.SendAsJSON(Program.Rooms.Where(kvp => kvp.Value.Visitors.Contains(username)).Select(kvp => kvp.Key));
+                return context.SendAsJSON(Program.Rooms.Where(kvp => kvp.Value.Visitors.Contains(username)).Select(kvp => kvp.Value.GetRoomInfo()));
             }
         }
 
-        return context.SendAsJSON(Program.Rooms.Keys);
+        return context.SendAsJSON(Program.Rooms.Values.Select(room => room.GetRoomInfo()));
     }
 
     private Task PostCreate(IHttpContext context, RouteMatch route)
