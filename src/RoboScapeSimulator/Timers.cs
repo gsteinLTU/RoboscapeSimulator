@@ -71,14 +71,17 @@ namespace RoboScapeSimulator
 
         public static Timer CreateMainAPIServerAnnounceTimer()
         {
-            TimeSpan period = TimeSpan.FromSeconds(5 * 60 * 10);
+            TimeSpan period = TimeSpan.FromSeconds(30);
 
             static async void apiAnnounce(object? e)
             {
                 try
                 {
-                    HttpClient client = new();
-                    client.BaseAddress = new Uri(SettingsManager.MainAPIServer);
+                    HttpClient client = new()
+                    {
+                        BaseAddress = new Uri(SettingsManager.MainAPIServer)
+                    };
+
                     var request = new HttpRequestMessage(HttpMethod.Post, "/server/announce")
                     {
                         Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "maxRooms", SettingsManager.MaxRooms.ToString() } })

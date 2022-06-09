@@ -48,8 +48,7 @@ public class RoomsModule : WebApiModule
 
         Trace.WriteLine($"Creating Room for {formData["username"]}");
 
-        var newRoom = Room.Create("", formData["password"] ?? "", formData["environment"] ?? "", formData["username"] ?? "anonymous", formData["namespace"] ?? formData["username"] ?? "anonymous");
-        newRoom.Hibernating = true;
+        var newRoom = Room.Create("", formData["password"] ?? "", formData["environment"] ?? "", formData["username"] ?? "anonymous", formData["namespace"] ?? formData["username"] ?? "anonymous", true);
         await context.SendAsJSON(new Dictionary<string, string>() { { "server", Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToString() }, { "room", newRoom.Name } });
     }
 }

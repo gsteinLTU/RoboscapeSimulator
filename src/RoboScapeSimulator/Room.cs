@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
@@ -489,6 +490,8 @@ namespace RoboScapeSimulator
             public bool isHibernating;
 
             public string creator;
+
+            public List<string> visitors;
         }
 
         /// <summary>
@@ -504,7 +507,8 @@ namespace RoboScapeSimulator
                 environment = EnvironmentID,
                 hasPassword = !string.IsNullOrEmpty(Password),
                 isHibernating = Hibernating,
-                lastInteractionTime = LastInteractionTime
+                lastInteractionTime = LastInteractionTime,
+                visitors = new List<string>(Visitors)
             };
         }
 
@@ -536,7 +540,7 @@ namespace RoboScapeSimulator
             SimInstance.Update(dt);
         }
 
-        public static Room Create(string name, string password, string environment, string creator, string roomNamespace = "anonymous")
+        public static Room Create(string name, string password, string environment, string creator, string roomNamespace = "anonymous", bool startHibernating = false)
         {
             // Verify we have capacity
             if (Program.Rooms.Count(r => !r.Value.Hibernating) >= SettingsManager.MaxRooms)
@@ -548,8 +552,29 @@ namespace RoboScapeSimulator
 
             newRoom.Name += "@" + roomNamespace;
             newRoom.Creator = creator;
+            newRoom.Visitors.Add(creator);
+            newRoom.Hibernating = startHibernating;
 
             Program.Rooms[newRoom.Name] = newRoom;
+
+            try
+            {
+                HttpClient client = new()
+                {
+                    BaseAddress = new Uri(SettingsManager.MainAPIServer)
+                };
+
+                var request = new HttpRequestMessage(HttpMethod.Patch, "/server/rooms")
+                {
+                    Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "rooms", JsonSerializer.Serialize(new List<RoomInfo>() { newRoom.GetRoomInfo() }, new JsonSerializerOptions() { IncludeFields = true }) } })
+                };
+
+                client.SendAsync(request);
+            }
+            catch (HttpRequestException)
+            {
+                Trace.WriteLine("Could not announce to main API server");
+            }
 
             return newRoom;
         }
