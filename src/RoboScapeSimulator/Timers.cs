@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using static RoboScapeSimulator.Room;
 
 namespace RoboScapeSimulator
 {
@@ -59,6 +60,26 @@ namespace RoboScapeSimulator
                     {
                         Trace.WriteLine($"Removing {oldRooms.Count} old rooms");
                         oldRooms.ForEach(pair => Program.Rooms.TryRemove(pair));
+
+                        // Send delete message to main API server
+                        try
+                        {
+                            HttpClient client = new()
+                            {
+                                BaseAddress = new Uri(SettingsManager.MainAPIServer)
+                            };
+
+                            var request = new HttpRequestMessage(HttpMethod.Delete, "/server/rooms")
+                            {
+                                Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "rooms", JsonSerializer.Serialize(oldRooms.Select(kvp => kvp.Value.GetRoomInfo()), new JsonSerializerOptions() { IncludeFields = true }) } })
+                            };
+
+                            client.SendAsync(request);
+                        }
+                        catch (HttpRequestException)
+                        {
+                            Trace.WriteLine("Could not announce to main API server");
+                        }
                     }
 
                 }
@@ -71,7 +92,7 @@ namespace RoboScapeSimulator
 
         public static Timer CreateMainAPIServerAnnounceTimer()
         {
-            TimeSpan period = TimeSpan.FromSeconds(30);
+            TimeSpan period = TimeSpan.FromSeconds(5 * 60);
 
             static async void apiAnnounce(object? e)
             {
@@ -93,6 +114,14 @@ namespace RoboScapeSimulator
                     request = new HttpRequestMessage(HttpMethod.Post, "/server/environments")
                     {
                         Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "environments", JsonSerializer.Serialize(Room.ListEnvironments()) } })
+                    };
+
+                    client.SendAsync(request);
+
+                    // Send environments list as well
+                    request = new HttpRequestMessage(HttpMethod.Put, "/server/rooms")
+                    {
+                        Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "rooms", JsonSerializer.Serialize(Program.Rooms.Values.Select(room => room.GetRoomInfo())) } })
                     };
 
                     client.SendAsync(request);
