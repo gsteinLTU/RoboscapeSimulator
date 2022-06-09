@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace RoboScapeSimulator
 {
@@ -72,16 +73,31 @@ namespace RoboScapeSimulator
         {
             TimeSpan period = TimeSpan.FromSeconds(5 * 60 * 10);
 
-            static void apiAnnounce(object? e)
+            static async void apiAnnounce(object? e)
             {
-                HttpClient client = new();
-
-                var request = new HttpRequestMessage(HttpMethod.Post, SettingsManager.MainAPIServer + "/server/announce")
+                try
                 {
-                    Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "maxRooms", SettingsManager.MaxRooms.ToString() } })
-                };
+                    HttpClient client = new();
+                    client.BaseAddress = new Uri(SettingsManager.MainAPIServer);
+                    var request = new HttpRequestMessage(HttpMethod.Post, "/server/announce")
+                    {
+                        Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "maxRooms", SettingsManager.MaxRooms.ToString() } })
+                    };
 
-                client.SendAsync(request);
+                    await client.SendAsync(request);
+
+                    // Send environments list as well
+                    request = new HttpRequestMessage(HttpMethod.Post, "/server/environments")
+                    {
+                        Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "environments", JsonSerializer.Serialize(Room.ListEnvironments()) } })
+                    };
+
+                    client.SendAsync(request);
+                }
+                catch (HttpRequestException)
+                {
+                    Trace.WriteLine("Could not announce to main API server");
+                }
             }
 
             var apiAnnounceTimer = new Timer(apiAnnounce);
