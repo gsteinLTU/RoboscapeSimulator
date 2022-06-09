@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using EmbedIO;
@@ -35,9 +36,20 @@ public class RoomsModule : WebApiModule
         return context.SendAsJSON(Array.Empty<string>());
     }
 
-    private Task PostCreate(IHttpContext context, RouteMatch route)
+    private async Task PostCreate(IHttpContext context, RouteMatch route)
     {
+        var formData = await context.GetRequestFormDataAsync();
 
-        return context.SendAsJSON(new Dictionary<string, string>() { { "server", Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToString() }, { "room", "" } });
+        // Validate request
+        if (formData["username"] == null)
+        {
+            return;
+        }
+
+        Trace.WriteLine($"Creating Room for {formData["username"]}");
+
+        var newRoom = Room.Create("", formData["password"] ?? "", formData["environment"] ?? "", formData["username"] ?? "anonymous", formData["namespace"] ?? formData["username"] ?? "anonymous");
+        newRoom.Hibernating = true;
+        await context.SendAsJSON(new Dictionary<string, string>() { { "server", Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToString() }, { "room", newRoom.Name } });
     }
 }
