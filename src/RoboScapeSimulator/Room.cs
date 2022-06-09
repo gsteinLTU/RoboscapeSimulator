@@ -260,6 +260,8 @@ namespace RoboScapeSimulator
             if (username != null)
             {
                 Visitors.Add(username);
+
+                SendAPIUpdate();
             }
         }
 
@@ -393,7 +395,7 @@ namespace RoboScapeSimulator
         /// Removes a socket from active list and removes message listeners
         /// </summary>
         /// <param name="socket">Socket to remove from active sockets list</param>
-        internal void RemoveSocket(Node.Socket socket)
+        internal void RemoveSocket(Socket socket)
         {
             socket.Off("resetRobot", HandleResetRobot);
             socket.Off("resetAll", HandleResetAll);
@@ -556,7 +558,13 @@ namespace RoboScapeSimulator
             newRoom.Hibernating = startHibernating;
 
             Program.Rooms[newRoom.Name] = newRoom;
+            newRoom.SendAPIUpdate();
 
+            return newRoom;
+        }
+
+        private void SendAPIUpdate()
+        {
             try
             {
                 HttpClient client = new()
@@ -566,7 +574,7 @@ namespace RoboScapeSimulator
 
                 var request = new HttpRequestMessage(HttpMethod.Patch, "/server/rooms")
                 {
-                    Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "rooms", JsonSerializer.Serialize(new List<RoomInfo>() { newRoom.GetRoomInfo() }, new JsonSerializerOptions() { IncludeFields = true }) } })
+                    Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "rooms", JsonSerializer.Serialize(new List<RoomInfo>() { GetRoomInfo() }, new JsonSerializerOptions() { IncludeFields = true }) } })
                 };
 
                 client.SendAsync(request);
@@ -575,8 +583,6 @@ namespace RoboScapeSimulator
             {
                 Trace.WriteLine("Could not announce to main API server");
             }
-
-            return newRoom;
         }
     }
 }
