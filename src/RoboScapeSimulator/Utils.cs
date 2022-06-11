@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -8,16 +9,37 @@ using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPhysics.Trees;
 using BepuUtilities.Memory;
+using EmbedIO;
+
 namespace RoboScapeSimulator
 {
+    /// <summary>
+    /// Various utility and helper functions
+    /// </summary>
     public static class Utils
     {
-
+        /// <summary>
+        /// Get Euler angles from a Quaternion
+        /// </summary>
         public static void ExtractYawPitchRoll(this Quaternion r, out float yaw, out float pitch, out float roll)
         {
             yaw = MathF.Atan2(2.0f * (r.Y * r.W + r.X * r.Z), 1.0f - 2.0f * (r.X * r.X + r.Y * r.Y));
             pitch = MathF.Asin(2.0f * (r.X * r.W - r.Y * r.Z));
             roll = MathF.Atan2(2.0f * (r.X * r.Y + r.Z * r.W), 1.0f - 2.0f * (r.X * r.X + r.Z * r.Z));
+        }
+
+        /// <summary>
+        /// Serialize an object to JSON and then send it as a response
+        /// </summary>
+        /// <typeparam name="T">Type of data to send</typeparam>
+        /// <param name="context"></param>
+        /// <param name="data">Data to serialize and send</param>
+        /// <param name="options">Optional serializer options</param>
+        /// <returns></returns>
+        public static Task SendAsJSON<T>(this IHttpContext context, T data, JsonSerializerOptions? options = null)
+        {
+            string output = JsonSerializer.Serialize(data, options ?? new JsonSerializerOptions() { IncludeFields = true });
+            return context.SendStringAsync(output, "application/json", Encoding.Default);
         }
 
         /// <summary>
@@ -65,6 +87,13 @@ namespace RoboScapeSimulator
             Array.ForEach(tokens, PrintJSON);
         }
 
+        /// <summary>
+        /// Serialize data and then send it as an event
+        /// </summary>
+        /// <typeparam name="T">Type of data to send</typeparam>
+        /// <param name="socket">Socket to send to</param>
+        /// <param name="eventName">Name of event to send</param>
+        /// <param name="data">Data to serialize and send</param>
         public static void SendAsJSON<T>(Node.Socket socket, string eventName, T data)
         {
             if (data != null)
@@ -92,6 +121,50 @@ namespace RoboScapeSimulator
             else
             {
                 socket.Emit(eventName);
+            }
+        }
+
+        /// <summary>
+        /// Serialize data and then send it as an event to many sockets
+        /// </summary>
+        /// <typeparam name="T">Type of data to send</typeparam>
+        /// <param name="sockets">Sockets to send to</param>
+        /// <param name="eventName">Name of event to send</param>
+        /// <param name="data">Data to serialize and send</param>
+        public static void SendAsJSON<T>(IEnumerable<Node.Socket> sockets, string eventName, T data)
+        {
+            if (data != null)
+            {
+                try
+                {
+                    string serialized = JsonSerializer.Serialize(data, new JsonSerializerOptions() { IncludeFields = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Converters = { new SmallerFloatFormatConverter() } });
+                    foreach (var socket in sockets)
+                    {
+                        socket.Emit(eventName, serialized);
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (data is IDictionary<string, object> dict)
+                    {
+                        foreach (var entry in dict)
+                        {
+                            Console.WriteLine("\t" + entry.Key + ": " + entry.Value.ToString());
+                        }
+                    }
+                    else
+                    {
+                        Trace.TraceError("Data: " + data.ToString());
+                    }
+                    Trace.TraceError(e.ToString());
+                }
+            }
+            else
+            {
+                foreach (var socket in sockets)
+                {
+                    socket.Emit(eventName);
+                }
             }
         }
 

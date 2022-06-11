@@ -72,6 +72,38 @@ namespace RoboScapeSimulator
             }
         }
 
+        /// <summary>
+        /// The port for the API server
+        /// </summary>
+        public static int APIPort
+        {
+            get
+            {
+                if (loadedSettings == null)
+                {
+                    LoadSettings();
+                }
+
+                return loadedSettings?.APIPort ?? DefaultSettings.APIPort ?? 0;
+            }
+        }
+
+        /// <summary>
+        /// The Main API server to connect to
+        /// </summary>
+        public static string MainAPIServer
+        {
+            get
+            {
+                if (loadedSettings == null)
+                {
+                    LoadSettings();
+                }
+
+                return (loadedSettings?.MainAPIServer) ?? DefaultSettings.MainAPIServer ?? "";
+            }
+        }
+
         static RoboScapeSimSettings? loadedSettings;
 
         /// <summary>
@@ -102,9 +134,19 @@ namespace RoboScapeSimulator
                 loadedSettings.RoboScapePort = DefaultSettings.RoboScapePort;
             }
 
-            if (loadedSettings.MaxRooms == null)
+            if (loadedSettings.MaxRooms == null || loadedSettings.MaxRooms <= 0)
             {
                 loadedSettings.MaxRooms = DefaultSettings.MaxRooms;
+            }
+
+            if (loadedSettings.APIPort == null || loadedSettings.APIPort <= 0)
+            {
+                loadedSettings.APIPort = DefaultSettings.APIPort;
+            }
+
+            if (string.IsNullOrWhiteSpace(loadedSettings.MainAPIServer))
+            {
+                loadedSettings.MainAPIServer = DefaultSettings.MainAPIServer;
             }
         }
 
@@ -116,7 +158,9 @@ namespace RoboScapeSimulator
             RoboScapeHost = "editor.netsblox.org",
             RoboScapePort = 1973,
             IoTScapePort = 1978,
-            MaxRooms = 64
+            MaxRooms = 64,
+            APIPort = 8000,
+            MainAPIServer = "roboscapeonlineapi.netsblox.org"
         };
     }
 
@@ -129,5 +173,7 @@ namespace RoboScapeSimulator
         public int? RoboScapePort { get; set; }
         public int? IoTScapePort { get; set; }
         public int? MaxRooms { get; set; }
+        public int? APIPort { get; set; }
+        public string? MainAPIServer { get; set; }
     }
 }

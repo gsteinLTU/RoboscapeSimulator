@@ -20,9 +20,9 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Send the rooms created  and environments to a socket
         /// </summary>
-        internal static void SendUserRooms(Node.Socket socket, string user, IDictionary<string, Room> rooms)
+        internal static void SendUserRooms(Node.Socket socket, string user)
         {
-            SendAvailableRooms(socket, rooms.Where(pair => pair.Value.Creator == user).ToDictionary(pair => pair.Key, pair => pair.Value));
+            SendAvailableRooms(socket, Program.Rooms.Where(pair => pair.Value.Visitors.Contains(user)).ToDictionary(pair => pair.Key, pair => pair.Value));
         }
 
         /// <summary>
@@ -36,12 +36,12 @@ namespace RoboScapeSimulator
             Utils.SendAsJSON(socket, isFullUpdate ? "fullUpdate" : "u", updateData);
         }
 
-        internal static void HandleJoinRoom(JsonNode[] args, Node.Socket socket, IDictionary<string, Room> rooms, ref string socketRoom)
+        internal static void HandleJoinRoom(JsonNode[] args, Node.Socket socket, ref string socketRoom)
         {
             // Remove from existing room
             if (!string.IsNullOrWhiteSpace(socketRoom))
             {
-                rooms[socketRoom].RemoveSocket(socket);
+                Program.Rooms[socketRoom].RemoveSocket(socket);
             }
 
             if (args.Length == 0 || args[0]["roomID"] == null)
@@ -56,35 +56,27 @@ namespace RoboScapeSimulator
             var roomID = args[0]["roomID"]?.ToString();
             if (roomID == "create")
             {
-                // Verify we have capacity
-                if (rooms.Count(r => !r.Value.Hibernating) >= SettingsManager.MaxRooms)
+                string roomNamespace = (args[0]["namespace"] ?? args[0]["username"])?.ToString() ?? "anonymous";
+
+                try
                 {
-                    socket.Emit("error", "Failed to create room: insufficient resources");
+                    var newRoom = Room.Create("", args[0]["password"]?.ToString() ?? "", args[0]["env"]?.ToString() ?? "default", roomNamespace, roomNamespace);
+                    socketRoom = newRoom.Name;
+                }
+                catch (Exception e)
+                {
+                    socket.Emit("error", e.Message);
                     return;
                 }
-
-                Room newRoom = new("", args[0]["password"]?.ToString() ?? "", args[0]["env"]?.ToString() ?? "default");
-
-                string? roomNamespace = args[0]["namespace"]?.ToString();
-                if (roomNamespace != null)
-                {
-                    newRoom.Name += "@" + roomNamespace;
-
-                    // For current NetsBlox implementation, namespace is username of creating user
-                    newRoom.Creator = roomNamespace;
-                }
-
-                rooms[newRoom.Name] = newRoom;
-                socketRoom = newRoom.Name;
             }
             else
             {
                 // Joining existing room, make sure it exists first
-                if (roomID != null && rooms.ContainsKey(roomID))
+                if (roomID != null && Program.Rooms.ContainsKey(roomID))
                 {
-                    if (rooms[roomID].Password == "" || rooms[roomID].Password == args[0]["password"]?.ToString())
+                    if (Program.Rooms[roomID].Password == "" || Program.Rooms[roomID].Password == args[0]["password"]?.ToString())
                     {
-                        rooms[roomID].Hibernating = false;
+                        Program.Rooms[roomID].Hibernating = false;
                         socketRoom = roomID;
                     }
                 }
@@ -93,10 +85,10 @@ namespace RoboScapeSimulator
             if (!string.IsNullOrWhiteSpace(socketRoom))
             {
                 // Setup updates for socket in new room 
-                rooms[socketRoom].AddSocket(socket);
+                Program.Rooms[socketRoom].AddSocket(socket, args[0]["username"]?.ToString());
                 Utils.SendAsJSON(socket, "roomJoined", socketRoom);
-                Utils.SendAsJSON(socket, "roomInfo", rooms[socketRoom].GetInfo());
-                SendUpdate(socket, rooms[socketRoom], true);
+                Utils.SendAsJSON(socket, "roomInfo", Program.Rooms[socketRoom].GetInfo());
+                SendUpdate(socket, Program.Rooms[socketRoom], true);
             }
             else
             {

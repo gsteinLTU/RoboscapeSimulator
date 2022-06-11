@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
@@ -36,6 +37,11 @@ namespace RoboScapeSimulator
         /// Username/ID of this Room's creator
         /// </summary>
         public string? Creator;
+
+        /// <summary>
+        /// List of users who have been in this room
+        /// </summary>
+        public HashSet<string> Visitors = new();
 
         /// <summary>
         /// Time (in seconds) without interaction this room will stay alive for, default 15 minutes
@@ -238,7 +244,8 @@ namespace RoboScapeSimulator
         /// Adds a socket to active list and sets up message listeners
         /// </summary>
         /// <param name="socket">Socket to add to active sockets list</param>
-        internal void AddSocket(Node.Socket socket)
+        /// <param name="username">Username of user joining</param>
+        internal void AddSocket(Node.Socket socket, string? username)
         {
             LastInteractionTime = DateTime.Now;
             lock (activeSockets)
@@ -249,6 +256,13 @@ namespace RoboScapeSimulator
             socket.On("resetAll", HandleResetAll);
             socket.On("robotButton", HandleRobotButton);
             socket.On("claimRobot", HandleClaimRobot);
+
+            if (username != null)
+            {
+                Visitors.Add(username);
+
+                SendAPIUpdate();
+            }
         }
 
         /// <summary>
@@ -381,7 +395,7 @@ namespace RoboScapeSimulator
         /// Removes a socket from active list and removes message listeners
         /// </summary>
         /// <param name="socket">Socket to remove from active sockets list</param>
-        internal void RemoveSocket(Node.Socket socket)
+        internal void RemoveSocket(Socket socket)
         {
             socket.Off("resetRobot", HandleResetRobot);
             socket.Off("resetAll", HandleResetAll);
@@ -478,6 +492,8 @@ namespace RoboScapeSimulator
             public bool isHibernating;
 
             public string creator;
+
+            public List<string> visitors;
         }
 
         /// <summary>
@@ -493,7 +509,8 @@ namespace RoboScapeSimulator
                 environment = EnvironmentID,
                 hasPassword = !string.IsNullOrEmpty(Password),
                 isHibernating = Hibernating,
-                lastInteractionTime = LastInteractionTime
+                lastInteractionTime = LastInteractionTime,
+                visitors = new List<string>(Visitors)
             };
         }
 
@@ -523,6 +540,49 @@ namespace RoboScapeSimulator
             OnUpdate?.Invoke(this, dt);
 
             SimInstance.Update(dt);
+        }
+
+        public static Room Create(string name, string password, string environment, string creator, string roomNamespace = "anonymous", bool startHibernating = false)
+        {
+            // Verify we have capacity
+            if (Program.Rooms.Count(r => !r.Value.Hibernating) >= SettingsManager.MaxRooms)
+            {
+                throw new Exception("Failed to create room: insufficient resources");
+            }
+
+            var newRoom = new Room(name, password, environment);
+
+            newRoom.Name += "@" + roomNamespace;
+            newRoom.Creator = creator;
+            newRoom.Visitors.Add(creator);
+            newRoom.Hibernating = startHibernating;
+
+            Program.Rooms[newRoom.Name] = newRoom;
+            newRoom.SendAPIUpdate();
+
+            return newRoom;
+        }
+
+        private void SendAPIUpdate()
+        {
+            try
+            {
+                HttpClient client = new()
+                {
+                    BaseAddress = new Uri(SettingsManager.MainAPIServer)
+                };
+
+                var request = new HttpRequestMessage(HttpMethod.Patch, "/server/rooms")
+                {
+                    Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "rooms", JsonSerializer.Serialize(new List<RoomInfo>() { GetRoomInfo() }, new JsonSerializerOptions() { IncludeFields = true }) } })
+                };
+
+                client.SendAsync(request);
+            }
+            catch (HttpRequestException)
+            {
+                Trace.WriteLine("Could not announce to main API server");
+            }
         }
     }
 }
