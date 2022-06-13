@@ -579,9 +579,9 @@ namespace RoboScapeSimulator
 
                 client.SendAsync(request);
             }
-            catch (HttpRequestException)
+            catch (Exception ex)
             {
-                Trace.WriteLine("Could not announce to main API server");
+                Trace.WriteLine("Could not announce to main API server: " + ex);
             }
         }
     }

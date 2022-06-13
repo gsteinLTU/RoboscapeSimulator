@@ -76,9 +76,9 @@ namespace RoboScapeSimulator
 
                             client.SendAsync(request);
                         }
-                        catch (HttpRequestException)
+                        catch (Exception ex)
                         {
-                            Trace.WriteLine("Could not announce to main API server");
+                            Trace.WriteLine("Could not announce to main API server: " + ex);
                         }
                     }
 
@@ -100,7 +100,8 @@ namespace RoboScapeSimulator
                 {
                     HttpClient client = new()
                     {
-                        BaseAddress = new Uri(SettingsManager.MainAPIServer)
+                        BaseAddress = new Uri(SettingsManager.MainAPIServer),
+                        Timeout = TimeSpan.FromSeconds(15)
                     };
 
                     var request = new HttpRequestMessage(HttpMethod.Post, "/server/announce")
@@ -126,9 +127,9 @@ namespace RoboScapeSimulator
 
                     client.SendAsync(request);
                 }
-                catch (HttpRequestException)
+                catch (Exception ex)
                 {
-                    Trace.WriteLine("Could not announce to main API server");
+                    Trace.WriteLine("Could not announce to main API server: " + ex);
                 }
             }
 
