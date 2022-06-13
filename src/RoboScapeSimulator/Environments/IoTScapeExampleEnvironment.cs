@@ -42,6 +42,10 @@ namespace RoboScapeSimulator.Environments
             var robot = new ParallaxRobot(room, debug: false);
 
             var cube = new Cube(room, visualInfo: new VisualInfo() { Color = "#B85" }, isKinematic: true);
+            var cube2 = new Cube(room, visualInfo: new VisualInfo() { Color = "#B85" });
+
+            PhysicsService physicsService = new(cube2);
+            physicsService.Setup(room);
 
             IoTScapeServiceDefinition exampleService = new(
                 "MoveCube",
