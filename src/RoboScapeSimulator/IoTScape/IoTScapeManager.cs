@@ -298,7 +298,9 @@ namespace RoboScapeSimulator.IoTScape
 
         [JsonInclude]
         [JsonPropertyName("params")]
-        public List<string> ParamsList = new();
+        public List<object> paramslist = new();
+
+        public IEnumerable<string> ParamsList { get { return paramslist.Select(param => param.ToString() ?? ""); } }
 
         public override string ToString()
         {
