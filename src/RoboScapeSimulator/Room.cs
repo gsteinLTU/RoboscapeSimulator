@@ -93,6 +93,13 @@ namespace RoboScapeSimulator
         /// </summary>
         public float Time { get => SimInstance.Time; }
 
+        private float timeMultiplier = 1.0f;
+
+        /// <summary>
+        /// Allows a room to run at higher/lower speed, minimum 0.1, maximum 10, default 1
+        /// </summary>
+        public float TimeMultiplier { get => timeMultiplier; set => timeMultiplier = Math.Clamp(value, 0.1f, 10f); }
+
         private bool hibernating = false;
 
         /// <summary>
@@ -461,6 +468,7 @@ namespace RoboScapeSimulator
             // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard),
             new FinalChallengeEnvironment(),
             new FinalChallengeEnvironment(true),
+            new PhysicsTestEnvironment()
         };
 
         public DateTime LastInteractionTime
@@ -521,6 +529,8 @@ namespace RoboScapeSimulator
         public void Update(float dt)
         {
             if (Hibernating) return;
+
+            dt *= TimeMultiplier;
 
             // Check if too much time has passed
             if ((DateTime.Now - LastInteractionTime).TotalSeconds > Timeout)

@@ -57,4 +57,22 @@ public static class EnvironmentUtils
         var angle = MathF.Atan2(p2.Z - p1.Z, p2.X - p1.X);
         return new Cube(room, length + padding, height, thickness, center, Quaternion.CreateFromAxisAngle(Vector3.UnitY, -angle), true, visualInfo: visualInfo ?? new VisualInfo() { Color = "#633" });
     }
+
+    /// <summary>
+    /// Create a rectangular walled area
+    /// </summary>
+    /// <param name="room">Room to add walls to</param>
+    /// <param name="xSize">Length of walls</param>
+    /// <param name="zSize">Depth of walls</param>
+    /// <param name="thickness">Thickness of walls</param>
+    /// <param name="height">Height of walls</param>
+    /// <param name="offset">Offset to center of walled-in area</param>
+    internal static void MakeWalls(Room room, float xSize = 15, float zSize = 15, float thickness = 1, float height = 1, Vector3? offset = null)
+    {
+        offset ??= new Vector3(0, height / 2f, 0);
+        _ = new Cube(room, xSize, height, thickness, new Vector3(0, 0, -zSize / 2) + offset, Quaternion.Identity, true, nameOverride: "wall1");
+        _ = new Cube(room, xSize, height, thickness, new Vector3(0, 0, zSize / 2) + offset, Quaternion.Identity, true, nameOverride: "wall2");
+        _ = new Cube(room, thickness, height, zSize + thickness, new Vector3(-xSize / 2, 0, 0) + offset, Quaternion.Identity, true, nameOverride: "wall3");
+        _ = new Cube(room, thickness, height, zSize + thickness, new Vector3(xSize / 2, 0, 0) + offset, Quaternion.Identity, true, nameOverride: "wall4");
+    }
 }

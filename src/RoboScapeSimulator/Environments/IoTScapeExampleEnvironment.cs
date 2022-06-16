@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Environments.Helpers;
 using RoboScapeSimulator.IoTScape;
 using RoboScapeSimulator.IoTScape.Devices;
 
@@ -28,15 +29,13 @@ namespace RoboScapeSimulator.Environments
         {
             Trace.WriteLine("Setting up IoTScape Example environment");
 
+            room.SimInstance.IntegratorCallbacks.LinearDamping = 0;
+
             // Ground
             var ground = new Ground(room);
 
             // Walls
-            float wallsize = 15;
-            var wall1 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, -wallsize / 2), Quaternion.Identity, true, nameOverride: "wall1");
-            var wall2 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, wallsize / 2), Quaternion.Identity, true, nameOverride: "wall2");
-            var wall3 = new Cube(room, 1, 1, wallsize + 1, new Vector3(-wallsize / 2, 0.5f, 0), Quaternion.Identity, true, nameOverride: "wall3");
-            var wall4 = new Cube(room, 1, 1, wallsize + 1, new Vector3(wallsize / 2, 0.5f, 0), Quaternion.Identity, true, nameOverride: "wall4");
+            EnvironmentUtils.MakeWalls(room);
 
             // Demo robot
             var robot = new ParallaxRobot(room, debug: false);

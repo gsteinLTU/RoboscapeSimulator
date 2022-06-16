@@ -151,28 +151,35 @@ namespace RoboScapeSimulator.IoTScape
 
                 string incomingString = Encoding.UTF8.GetString(incoming, 0, len);
 
-                var request = JsonSerializer.Deserialize<IoTScapeRequest>(incomingString);
-                Debug.WriteLine(request);
-
-                // Verify device exists
-                if (request != null && objects.ContainsKey(request.service + ":" + request.device))
+                try
                 {
-                    var device = objects[request.service + ":" + request.device];
+                    var request = JsonSerializer.Deserialize<IoTScapeRequest>(incomingString);
+                    Debug.WriteLine(request);
 
-                    // Call function if valid
-                    if (request.function != null && device.Methods.ContainsKey(request.function))
+                    // Verify device exists
+                    if (request != null && objects.ContainsKey(request.service + ":" + request.device))
                     {
-                        string[] result = device.Methods[request.function].Invoke(request.ParamsList.ToArray());
+                        var device = objects[request.service + ":" + request.device];
 
-
-                        // Keep room active if received non-heartbeat IoTScape message
-                        if (request.function != "heartbeat" && device._room != null)
+                        // Call function if valid
+                        if (request.function != null && device.Methods.ContainsKey(request.function))
                         {
-                            device._room.LastInteractionTime = DateTime.Now;
-                        }
+                            string[] result = device.Methods[request.function].Invoke(request.ParamsList.ToArray());
 
-                        SendResponse(request, result);
+
+                            // Keep room active if received non-heartbeat IoTScape message
+                            if (request.function != "heartbeat" && device._room != null)
+                            {
+                                device._room.LastInteractionTime = DateTime.Now;
+                            }
+
+                            SendResponse(request, result);
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Trace.TraceError(ex.ToString());
                 }
             }
 
@@ -291,7 +298,9 @@ namespace RoboScapeSimulator.IoTScape
 
         [JsonInclude]
         [JsonPropertyName("params")]
-        public List<string> ParamsList = new();
+        public List<object> paramslist = new();
+
+        public IEnumerable<string> ParamsList { get { return paramslist.Select(param => param.ToString() ?? ""); } }
 
         public override string ToString()
         {
