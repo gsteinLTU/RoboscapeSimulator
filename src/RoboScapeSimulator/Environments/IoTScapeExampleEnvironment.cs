@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Environments.Helpers;
 using RoboScapeSimulator.IoTScape;
 using RoboScapeSimulator.IoTScape.Devices;
 
@@ -34,20 +35,12 @@ namespace RoboScapeSimulator.Environments
             var ground = new Ground(room);
 
             // Walls
-            float wallsize = 15;
-            var wall1 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, -wallsize / 2), Quaternion.Identity, true, nameOverride: "wall1");
-            var wall2 = new Cube(room, wallsize, 1, 1, new Vector3(0, 0.5f, wallsize / 2), Quaternion.Identity, true, nameOverride: "wall2");
-            var wall3 = new Cube(room, 1, 1, wallsize + 1, new Vector3(-wallsize / 2, 0.5f, 0), Quaternion.Identity, true, nameOverride: "wall3");
-            var wall4 = new Cube(room, 1, 1, wallsize + 1, new Vector3(wallsize / 2, 0.5f, 0), Quaternion.Identity, true, nameOverride: "wall4");
+            EnvironmentUtils.MakeWalls(room);
 
             // Demo robot
             var robot = new ParallaxRobot(room, debug: false);
 
             var cube = new Cube(room, visualInfo: new VisualInfo() { Color = "#B85" }, isKinematic: true);
-            var cube2 = new Cube(room, visualInfo: new VisualInfo() { Color = "#B85" });
-
-            PhysicsService physicsService = new(cube2);
-            physicsService.Setup(room);
 
             IoTScapeServiceDefinition exampleService = new(
                 "MoveCube",
