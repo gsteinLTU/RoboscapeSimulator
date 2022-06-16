@@ -28,6 +28,8 @@ namespace RoboScapeSimulator.Environments
         {
             Trace.WriteLine("Setting up IoTScape Example environment");
 
+            room.SimInstance.IntegratorCallbacks.LinearDamping = 0;
+
             // Ground
             var ground = new Ground(room);
 

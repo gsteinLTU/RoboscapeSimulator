@@ -77,6 +77,32 @@ namespace RoboScapeSimulator.IoTScape.Devices
                         "void"
                     }}
                 }},
+                {"setVelocity", new IoTScapeMethodDescription(){
+                    documentation = "Set velocity of the object",
+                    paramsList = new List<IoTScapeMethodParams>(){
+                        new IoTScapeMethodParams() {
+                            documentation = "X component",
+                            name = "x",
+                            optional = false,
+                            type = "number"
+                        },
+                        new IoTScapeMethodParams() {
+                            documentation = "Y component",
+                            name = "y",
+                            optional = false,
+                            type = "number"
+                        },
+                        new IoTScapeMethodParams() {
+                            documentation = "Z component",
+                            name = "z",
+                            optional = false,
+                            type = "number"
+                        },
+                    },
+                    returns = new IoTScapeMethodReturns(){type = new List<string>(){
+                        "void"
+                    }}
+                }},
                 {"getMass", new IoTScapeMethodDescription(){
                     documentation = "Get mass of object",
                     paramsList = new List<IoTScapeMethodParams>(){},
@@ -132,6 +158,13 @@ namespace RoboScapeSimulator.IoTScape.Devices
                 trackedBody.ApplyLinearImpulse(new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2])));
                 return Array.Empty<string>();
             };
+
+            Methods["setVelocity"] = (string[] args) =>
+            {
+                trackedBody.Awake = true;
+                trackedBody.Velocity.Linear = new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
+                return Array.Empty<string>();
+            };
         }
 
         /// <summary>
@@ -161,6 +194,13 @@ namespace RoboScapeSimulator.IoTScape.Devices
             {
                 trackedBody.BodyReference.Awake = true;
                 trackedBody.BodyReference.ApplyLinearImpulse(new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2])));
+                return Array.Empty<string>();
+            };
+
+            Methods["setVelocity"] = (string[] args) =>
+            {
+                trackedBody.BodyReference.Awake = true;
+                trackedBody.BodyReference.Velocity.Linear = new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
                 return Array.Empty<string>();
             };
         }
