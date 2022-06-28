@@ -222,12 +222,24 @@ public abstract class DynamicEntity : Entity
 
     public new Vector3 Position
     {
-        get => BodyReference.Pose.Position; set => BodyReference.Pose.Position = value;
+        get => BodyReference.Pose.Position;
+        set
+        {
+            BodyReference.Pose.Position = value;
+            BodyReference.Awake = true;
+            forceUpdate = true;
+        }
     }
 
     public new Quaternion Orientation
     {
-        get => BodyReference.Pose.Orientation; set => BodyReference.Pose.Orientation = value;
+        get => BodyReference.Pose.Orientation;
+        set
+        {
+            BodyReference.Pose.Orientation = value;
+            BodyReference.Awake = true;
+            forceUpdate = true;
+        }
     }
 
     public float Width = 1;
