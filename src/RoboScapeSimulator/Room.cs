@@ -459,6 +459,7 @@ namespace RoboScapeSimulator
             // new LIDARTestEnvironment(),
             new TableEnvironment(2, 1, true),
             new TableEnvironment(2, 2, true),
+            new TreasureHuntEnvironment(),
             new LIDARRoadEnvironment(),
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.Hard),
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.VeryHard),
@@ -468,7 +469,7 @@ namespace RoboScapeSimulator
             // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard),
             new FinalChallengeEnvironment(),
             new FinalChallengeEnvironment(true),
-            new PhysicsTestEnvironment()
+            new PhysicsTestEnvironment(),
         };
 
         public DateTime LastInteractionTime
