@@ -98,7 +98,6 @@ namespace RoboScapeSimulator.Environments
 
                 Debug.WriteLine($"Moving to {x}, {y}, {z}");
                 cube.Position = new Vector3(x, y, z);
-                cube.BodyReference.Awake = true;
 
                 return Array.Empty<string>();
             };
