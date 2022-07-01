@@ -28,6 +28,8 @@ namespace RoboScapeSimulator.Environments
         {
             Trace.WriteLine($"Setting up {Name} environment");
 
+            Random rng = new();
+
             // Ground
             Ground ground = new(room);
 
@@ -37,14 +39,15 @@ namespace RoboScapeSimulator.Environments
             // Demo robot 
             ParallaxRobot robot = new(room, new Vector3(0, 0.25f, 0), Quaternion.Identity);
 
-            Cube chest = new(room, 0.5f, 0.5f, 0.5f, initialPosition: new Vector3(1, -1.5f, 1), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { ModelName = "chest_opt.glb", ModelScale = 0.4f }, isKinematic: true);
-            Trigger chestTrigger = new(room, chest.Position + new Vector3(0, 2f, 0), Quaternion.Identity, 0.5f, 1f, 0.5f, oneTime: true);
+            Cube chest = new(room, 0.2f, 0.5f, 0.2f, initialPosition: rng.PointOnAnnulus(1.5f, 3f, -150f), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { ModelName = "chest_opt.glb", ModelScale = 0.4f }, isKinematic: true);
+            Trigger chestTrigger = new(room, new Vector3(chest.Position.X, 0, chest.Position.Z), Quaternion.Identity, 0.2f, 2f, 0.2f);
 
             chestTrigger.OnTriggerEnter += (o, e) =>
             {
                 if (e == robot)
                 {
-                    chest.Position += new Vector3(0, 1.5f, 0);
+                    // Reveal chest
+                    chest.Position = new Vector3(chest.Position.X, 0, chest.Position.Z);
                 }
             };
 
@@ -67,16 +70,16 @@ namespace RoboScapeSimulator.Environments
                 },
                 new Dictionary<string, IoTScapeEventDescription>());
 
-            var sensorBody = robot.BodyReference;
-            var targetBody = chest.BodyReference;
+            var sensorBody = robot;
+            var targetBody = chestTrigger;
             int targetIntensity = 100;
 
             treasureSensor = new(treasureSensorDefinition, robot.ID);
             treasureSensor.Methods["getIntensity"] = (string[] args) =>
             {
-                float intensity = 0;
-                float distance = (sensorBody.Pose.Position - targetBody.Pose.Position).LengthSquared();
-                intensity = targetIntensity / distance;
+                float maxDist = 4f;
+                float distance = (sensorBody.Position - new Vector3(targetBody.Position.X, sensorBody.Position.Y, targetBody.Position.Z)).Length();
+                float intensity = targetIntensity * (maxDist - distance) / maxDist;
 
                 return new string[] { intensity.ToString() };
             };
@@ -85,6 +88,8 @@ namespace RoboScapeSimulator.Environments
 
             room.OnReset += (r, e) =>
             {
+                chest.Position = rng.PointOnAnnulus(1.75f, 3.5f, -150f);
+                chestTrigger.Position = new Vector3(chest.Position.X, 0, chest.Position.Z);
                 chestTrigger.Reset();
             };
         }

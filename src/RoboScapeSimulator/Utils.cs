@@ -54,6 +54,21 @@ namespace RoboScapeSimulator
             return new Vector3(radius * MathF.Cos(rng.NextSingle() * 2 * MathF.PI), height, radius * MathF.Sin(rng.NextSingle() * 2 * MathF.PI)) + (center ?? Vector3.Zero);
         }
 
+        /// <summary>
+        /// Returns a random point outside a radius, but inside another radius, on the XZ plane
+        /// </summary>
+        /// <param name="innerRadius">Inner radius of area</param>
+        /// <param name="outerRadius">Outer radius of area</param>
+        /// <param name="height">Additional Y-value of area</param>
+        /// <param name="center">Center of area, (0,0,0) if null</param>
+        /// <returns></returns>
+        public static Vector3 PointOnAnnulus(this Random rng, float innerRadius = 1, float outerRadius = 2, float height = 0, Vector3? center = null)
+        {
+            float theta = rng.NextSingle() * 2f * MathF.PI;
+            float dist = MathF.Sqrt(rng.NextSingle() * (outerRadius * outerRadius - innerRadius * innerRadius) + innerRadius * innerRadius);
+            return new Vector3(dist * MathF.Cos(theta), height, dist * MathF.Sin(theta)) + (center ?? Vector3.Zero);
+        }
+
 
         /// <summary>
         /// Returns a random point on a circle on the XZ plane
