@@ -224,8 +224,8 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
 
             firstBlock.Position = new Vector3(0f, 3.75f, 1f) * (_mini ? miniScale : Vector3.One);
             firstBlock.BodyReference.Awake = true;
-
             firstBlock.forceUpdate = true;
+
             secondBlock.Position = new Vector3(0f, -3f, 6.75f);
             secondBlock.BodyReference.Awake = true;
             secondBlock.forceUpdate = true;

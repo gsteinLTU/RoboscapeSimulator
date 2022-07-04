@@ -468,7 +468,10 @@ namespace RoboScapeSimulator
             // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard),
             new FinalChallengeEnvironment(),
             new FinalChallengeEnvironment(true),
-            new PhysicsTestEnvironment()
+            new PhysicsTestEnvironment(),
+            new GateEnvironment(),
+            new GateEnvironment(GateEnvironment.Courses.Random),
+            new GateEnvironment(GateEnvironment.Courses.Obstacles)
         };
 
         public DateTime LastInteractionTime
