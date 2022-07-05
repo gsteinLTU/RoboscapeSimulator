@@ -42,15 +42,6 @@ namespace RoboScapeSimulator.Environments
             Cube chest = new(room, 0.2f, 0.5f, 0.2f, initialPosition: rng.PointOnAnnulus(1.5f, 3f, -150f), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { ModelName = "chest_opt.glb", ModelScale = 0.4f }, isKinematic: true);
             Trigger chestTrigger = new(room, new Vector3(chest.Position.X, 0, chest.Position.Z), Quaternion.Identity, 0.2f, 2f, 0.2f);
 
-            chestTrigger.OnTriggerEnter += (o, e) =>
-            {
-                if (e == robot)
-                {
-                    // Reveal chest
-                    chest.Position = new Vector3(chest.Position.X, 0, chest.Position.Z);
-                }
-            };
-
             locationSensor = new(robot);
             locationSensor.Setup(room);
 
@@ -65,6 +56,13 @@ namespace RoboScapeSimulator.Environments
                     paramsList = new List<IoTScapeMethodParams>(){},
                     returns = new IoTScapeMethodReturns(){type = new List<string>(){
                         "number"
+                    }}
+                }},
+                {"dig", new IoTScapeMethodDescription(){
+                    documentation = "Look for buried treasure at current location, only usable every 5 seconds",
+                    paramsList = new List<IoTScapeMethodParams>(){},
+                    returns = new IoTScapeMethodReturns(){type = new List<string>(){
+                        "string"
                     }}
                 }}
                 },
@@ -82,6 +80,34 @@ namespace RoboScapeSimulator.Environments
                 float intensity = targetIntensity * (maxDist - distance) / maxDist;
 
                 return new string[] { intensity.ToString() };
+            };
+
+            long lastTime = 0;
+            long timeout = 5 * 1000;
+
+            treasureSensor.Methods["dig"] = (string[] args) =>
+            {
+                // Check timeout
+                if (Environment.TickCount64 - lastTime < timeout)
+                {
+                    return new string[] { "Please wait " + ((timeout - (Environment.TickCount64 - lastTime)) / 1000) + " seconds" };
+                }
+
+                lastTime = Environment.TickCount64;
+
+                // Test robot location
+                if (chestTrigger.InTrigger.Contains(robot))
+                {
+                    // Reveal chest
+                    chest.Position = new Vector3(chest.Position.X, 0, chest.Position.Z);
+                    return new string[] { "true" };
+                }
+                else
+                {
+
+                    return new string[] { "false" };
+                }
+
             };
 
             treasureSensor.Setup(room);
