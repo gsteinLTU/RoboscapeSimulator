@@ -10,6 +10,7 @@ using BepuPhysics.Collidables;
 using BepuPhysics.Trees;
 using BepuUtilities.Memory;
 using EmbedIO;
+using RoboScapeSimulator.Entities;
 
 namespace RoboScapeSimulator
 {
@@ -183,16 +184,12 @@ namespace RoboScapeSimulator
             }
         }
 
-        public unsafe static bool QuickRayCast(Simulation simulation, Vector3 origin, Vector3 direction, float maxRange = 300)
+        public unsafe static bool QuickRayCast(Simulation simulation, Vector3 origin, Vector3 direction, float maxRange = 300, IEnumerable<DynamicEntity>? ignoreList = null)
         {
             int intersectionCount = 0;
             simulation.BufferPool.Take(1, out Buffer<RayHit> results);
 
-            HitHandler hitHandler = new()
-            {
-                Hits = results,
-                IntersectionCount = &intersectionCount
-            };
+            HitHandler hitHandler = new(results, &intersectionCount, ignoreList);
 
             simulation.RayCast(origin, direction, maxRange / 100f, ref hitHandler);
             simulation.BufferPool.Return(ref results);
@@ -227,18 +224,42 @@ namespace RoboScapeSimulator
 
     public unsafe struct HitHandler : IRayHitHandler
     {
+        public HitHandler(Buffer<RayHit> hits, int* intersectionCount, List<BodyHandle>? ignoreList)
+        {
+            Hits = hits;
+            IntersectionCount = intersectionCount;
+            IgnoreList = ignoreList;
+        }
+
+        public HitHandler(Buffer<RayHit> hits, int* intersectionCount, IEnumerable<DynamicEntity>? ignoreList = null)
+        {
+            Hits = hits;
+            IntersectionCount = intersectionCount;
+            IgnoreList = ignoreList?.Select(e => e.BodyReference.Handle).ToList();
+        }
+
+        public List<BodyHandle>? IgnoreList = null;
         public Buffer<RayHit> Hits;
         public int* IntersectionCount;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool AllowTest(CollidableReference collidable)
         {
+            if (IgnoreList != null)
+            {
+                return !IgnoreList.Contains(collidable.BodyHandle);
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool AllowTest(CollidableReference collidable, int childIndex)
         {
+            if (IgnoreList != null)
+            {
+                return !IgnoreList.Contains(collidable.BodyHandle);
+            }
+
             return true;
         }
 
