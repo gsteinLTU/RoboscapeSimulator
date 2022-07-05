@@ -543,7 +543,7 @@ namespace RoboScapeSimulator
             dt *= TimeMultiplier;
 
             // Check if too much time has passed
-            if ((LastInteractionTime - Program.StartTicks) / 1000f > Timeout)
+            if ((Environment.TickCount64 - LastInteractionTime) / 1000f > Timeout)
             {
                 // Go to sleep
                 Hibernating = true;
