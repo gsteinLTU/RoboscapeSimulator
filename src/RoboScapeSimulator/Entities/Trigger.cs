@@ -4,10 +4,10 @@ using BepuPhysics.Collidables;
 
 namespace RoboScapeSimulator.Entities;
 
-/// <summary>
+/// <summary> 
 /// A non-solid box that tracks other Entities entering its volume
 /// </summary>
-class Trigger : DynamicEntity, IResettable
+public class Trigger : DynamicEntity, IResettable
 {
     private static uint ID = 0;
 
@@ -95,6 +95,11 @@ class Trigger : DynamicEntity, IResettable
 
     internal void EntityInside(Entity e)
     {
+        if (e is Trigger)
+        {
+            return;
+        }
+
         lock (InTrigger)
         {
             if (!InTrigger.Contains(e))

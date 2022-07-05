@@ -287,7 +287,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
                 Debug.WriteLine($"Message from {remoteEP.Address}: {BytesToHexstring(msg)}");
 
-                room.LastInteractionTime = DateTime.Now;
+                room.LastInteractionTime = Environment.TickCount64;
 
                 // Pass message to handler, if exists
                 char messageCode = (char)msg[0];

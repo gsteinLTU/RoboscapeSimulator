@@ -51,7 +51,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Previous time this Room was interacted with
         /// </summary>
-        private DateTime lastInteractionTime;
+        private long lastInteractionTime;
 
         /// <summary>
         /// When going inactive, how long should this room be kept in "suspended animation" until deletion
@@ -174,7 +174,7 @@ namespace RoboScapeSimulator
 
             Password = password;
 
-            LastInteractionTime = DateTime.Now;
+            LastInteractionTime = Environment.TickCount64;
 
             OnHibernateStart += (o, e) =>
             {
@@ -254,7 +254,7 @@ namespace RoboScapeSimulator
         /// <param name="username">Username of user joining</param>
         internal void AddSocket(Node.Socket socket, string? username)
         {
-            LastInteractionTime = DateTime.Now;
+            LastInteractionTime = Environment.TickCount64;
             lock (activeSockets)
             {
                 activeSockets.Add(socket);
@@ -283,7 +283,7 @@ namespace RoboScapeSimulator
                 return;
             }
 
-            LastInteractionTime = DateTime.Now;
+            LastInteractionTime = Environment.TickCount64;
             string robotID = args[0].ToString();
             string userID = args[1].ToString();
 
@@ -296,7 +296,7 @@ namespace RoboScapeSimulator
         /// <param name="args">Input from event</param>
         private void HandleResetAll(Socket s, JsonNode[] args)
         {
-            LastInteractionTime = DateTime.Now;
+            LastInteractionTime = Environment.TickCount64;
 
             foreach (var entity in SimInstance.Entities)
             {
@@ -382,7 +382,7 @@ namespace RoboScapeSimulator
         /// </summary>
         /// <param name="robotID">ID of robot to reset</param>
         /// <param name="userID">Optional, user ID requesting reset</param>
-        public void ResetRobot(string robotID, string? userID)
+        public void ResetRobot(string robotID, string? userID = null)
         {
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot != null)
@@ -472,7 +472,16 @@ namespace RoboScapeSimulator
             new PhysicsTestEnvironment(),
         };
 
-        public DateTime LastInteractionTime
+        public DateTime LastInteractionDateTime
+        {
+            get => Program.StartDateTime.AddMilliseconds(lastInteractionTime);
+            set
+            {
+                lastInteractionTime = (long)(value - Program.StartDateTime).TotalMilliseconds;
+            }
+        }
+
+        public long LastInteractionTime
         {
             get => lastInteractionTime;
             set
@@ -518,7 +527,7 @@ namespace RoboScapeSimulator
                 environment = EnvironmentID,
                 hasPassword = !string.IsNullOrEmpty(Password),
                 isHibernating = Hibernating,
-                lastInteractionTime = LastInteractionTime,
+                lastInteractionTime = LastInteractionDateTime,
                 visitors = new List<string>(Visitors)
             };
         }
@@ -534,7 +543,7 @@ namespace RoboScapeSimulator
             dt *= TimeMultiplier;
 
             // Check if too much time has passed
-            if ((DateTime.Now - LastInteractionTime).TotalSeconds > Timeout)
+            if ((Environment.TickCount64 - LastInteractionTime) / 1000f > Timeout)
             {
                 // Go to sleep
                 Hibernating = true;

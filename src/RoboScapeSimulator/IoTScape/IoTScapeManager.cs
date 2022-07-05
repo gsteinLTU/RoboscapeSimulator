@@ -170,7 +170,7 @@ namespace RoboScapeSimulator.IoTScape
                             // Keep room active if received non-heartbeat IoTScape message
                             if (request.function != "heartbeat" && device._room != null)
                             {
-                                device._room.LastInteractionTime = DateTime.Now;
+                                device._room.LastInteractionTime = Environment.TickCount64;
                             }
 
                             SendResponse(request, result);

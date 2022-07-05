@@ -49,6 +49,13 @@ public class RoomsModule : WebApiModule
         Trace.WriteLine($"Creating Room for {formData["username"]}");
 
         var newRoom = Room.Create("", formData["password"] ?? "", formData["environment"] ?? "", formData["username"] ?? "anonymous", formData["namespace"] ?? formData["username"] ?? "anonymous", true);
-        await context.SendAsJSON(new Dictionary<string, string>() { { "server", Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToString() }, { "room", newRoom.Name } });
+        var address = Dns.GetHostEntry(Dns.GetHostName()).AddressList?.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+
+        if (address == null)
+        {
+            Trace.WriteLine("Error getting address");
+        }
+
+        await context.SendAsJSON(new Dictionary<string, string>() { { "server", address ?? "" }, { "room", newRoom.Name } });
     }
 }
