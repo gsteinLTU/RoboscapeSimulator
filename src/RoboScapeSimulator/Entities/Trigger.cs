@@ -95,6 +95,11 @@ public class Trigger : DynamicEntity, IResettable
 
     internal void EntityInside(Entity e)
     {
+        if (e is Trigger)
+        {
+            return;
+        }
+
         lock (InTrigger)
         {
             if (!InTrigger.Contains(e))
