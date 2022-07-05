@@ -382,7 +382,7 @@ namespace RoboScapeSimulator
         /// </summary>
         /// <param name="robotID">ID of robot to reset</param>
         /// <param name="userID">Optional, user ID requesting reset</param>
-        public void ResetRobot(string robotID, string? userID)
+        public void ResetRobot(string robotID, string? userID = null)
         {
             Robot? robot = SimInstance.Robots.FirstOrDefault(r => r?.ID == robotID, null);
             if (robot != null)

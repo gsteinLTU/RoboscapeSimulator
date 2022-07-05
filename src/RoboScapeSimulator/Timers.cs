@@ -119,7 +119,7 @@ namespace RoboScapeSimulator
                         Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "environments", JsonSerializer.Serialize(Room.ListEnvironments()) } })
                     };
 
-                    client.SendAsync(request);
+                    _ = client.SendAsync(request);
 
                     // Send environments list as well
                     request = new HttpRequestMessage(HttpMethod.Put, "/server/rooms")
@@ -127,7 +127,7 @@ namespace RoboScapeSimulator
                         Content = new FormUrlEncodedContent(new Dictionary<string, string> { { "rooms", JsonSerializer.Serialize(Program.Rooms.Values.Select(room => room.GetRoomInfo())) } })
                     };
 
-                    client.SendAsync(request);
+                    _ = client.SendAsync(request);
                 }
                 catch (Exception ex)
                 {
