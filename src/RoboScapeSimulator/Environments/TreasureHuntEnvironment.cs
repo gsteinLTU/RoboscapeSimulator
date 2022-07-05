@@ -40,10 +40,27 @@ namespace RoboScapeSimulator.Environments
             ParallaxRobot robot = new(room, new Vector3(0, 0.25f, 0), Quaternion.Identity);
 
             Cube chest = new(room, 0.2f, 0.5f, 0.2f, initialPosition: rng.PointOnAnnulus(1.5f, 3f, -150f), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { ModelName = "chest_opt.glb", ModelScale = 0.4f }, isKinematic: true);
-            Trigger chestTrigger = new(room, new Vector3(chest.Position.X, 0, chest.Position.Z), Quaternion.Identity, 0.2f, 2f, 0.2f);
+            Trigger chestTrigger = new(room, new Vector3(chest.Position.X, 0, chest.Position.Z), Quaternion.Identity, 0.1f, 2f, 0.1f);
 
             locationSensor = new(robot);
             locationSensor.Setup(room);
+
+            bool inTrigger = false;
+
+            chestTrigger.OnTriggerEnter += (o, e) =>
+            {
+                if (e == robot)
+                {
+                    inTrigger = true;
+                }
+            };
+            chestTrigger.OnTriggerExit += (o, e) =>
+            {
+                if (e == robot)
+                {
+                    inTrigger = false;
+                }
+            };
 
             IoTScapeServiceDefinition treasureSensorDefinition = new(
                 "MetalDetector",
@@ -96,7 +113,7 @@ namespace RoboScapeSimulator.Environments
                 lastTime = Environment.TickCount64;
 
                 // Test robot location
-                if (chestTrigger.InTrigger.Contains(robot))
+                if (inTrigger)
                 {
                     // Reveal chest
                     chest.Position = new Vector3(chest.Position.X, 0, chest.Position.Z);
@@ -117,6 +134,7 @@ namespace RoboScapeSimulator.Environments
                 chest.Position = rng.PointOnAnnulus(1.75f, 3.5f, -150f);
                 chestTrigger.Position = new Vector3(chest.Position.X, 0, chest.Position.Z);
                 chestTrigger.Reset();
+                inTrigger = false;
             };
         }
     }
