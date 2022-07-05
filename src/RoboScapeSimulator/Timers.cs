@@ -55,8 +55,8 @@ namespace RoboScapeSimulator
                 {
                     Trace.WriteLine($"{Program.Rooms.Count} rooms, {Program.Rooms.Count(room => !room.Value.Hibernating)} not hibernating");
 
-                    // If room is Hibernating and past its TTL, remove it
-                    var oldRooms = Program.Rooms.Where(pair => pair.Value.Hibernating && (DateTime.Now - pair.Value.LastInteractionTime).TotalSeconds > pair.Value.MaxHibernateTime).ToList();
+                    // If room is Hibernating and past its TTL, remove it 
+                    var oldRooms = Program.Rooms.Where(pair => pair.Value.Hibernating && (Environment.TickCount64 - pair.Value.LastInteractionTime) / 1000f > pair.Value.MaxHibernateTime).ToList();
 
                     if (oldRooms.Count > 0)
                     {

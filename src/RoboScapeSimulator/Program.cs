@@ -26,6 +26,12 @@ public static class Program
 
     public static IoTScapeManager IoTScapeManager { get; private set; } = new();
 
+    public static readonly long StartTicks = Environment.TickCount64;
+
+    public static readonly DateTime StartDateTime = DateTime.Now;
+
+
+
     public static void Main()
     {
         Trace.Listeners.Add(new ConsoleTraceListener());
