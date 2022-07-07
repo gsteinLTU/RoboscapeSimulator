@@ -442,7 +442,9 @@ namespace RoboScapeSimulator
             return Environments.Select(
                 (environmentType) => new Dictionary<string, object> {
                 { "Name", environmentType.Name },
-                { "ID", environmentType.ID }
+                { "ID", environmentType.ID },
+                {"Description", environmentType.Description},
+                {"Category", environmentType.Category}
             }).ToList();
         }
 
