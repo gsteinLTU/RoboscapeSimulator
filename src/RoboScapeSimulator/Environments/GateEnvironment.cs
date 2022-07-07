@@ -63,15 +63,15 @@ namespace RoboScapeSimulator.Environments
             });
 
             //Creates gate to fill in opening
-            var gate = new Cube(room, 1.8f, 0.25f, 0.15f, new Vector3(0, 0, 9.0f), Quaternion.Identity);
+            Cube gate = new Cube(room, 1.8f, 0.25f, 0.15f, new Vector3(0, 0, 9.0f), Quaternion.Identity);
             gate.BodyReference.Awake = true;
             gate.forceUpdate = true;
 
             Random rng = new();
 
             //Spawns two robots at set locations within the walls
-            var robot1 = new ParallaxRobot(room, new Vector3(1.0f, 0.25f, 0), Quaternion.Identity);
-            var robot2 = new ParallaxRobot(room, new Vector3(-1.0f, 0.25f, 0), Quaternion.Identity);
+            ParallaxRobot robot1;
+            ParallaxRobot robot2;
 
             switch (_courseType)
             {
@@ -93,19 +93,25 @@ namespace RoboScapeSimulator.Environments
                         new(1.5f, 0, 5.0f),
                         new(4.0f, 0, 5.0f),
                     });
+
+
+                    robot1 = new ParallaxRobot(room, new Vector3(1.0f, 0.25f, 0), Quaternion.Identity);
+                    robot2 = new ParallaxRobot(room, new Vector3(-1.0f, 0.25f, 0), Quaternion.Identity);
                     break;
 
                 case Courses.Random:
                     //Robots are spawned in random locations within the enclosure
 
                     /* correct behaviour, but creates duplicates so there are four */
-                    //robot1 = new ParallaxRobot(room, rng.PointOnCircle(2.75f, 0.25f, new Vector3(0, 0, 2.0f)), Quaternion.Identity);
-                    //robot2 = new ParallaxRobot(room, rng.PointOnCircle(2.75f, 0.25f, new Vector3(0, 0, 2.0f)), Quaternion.Identity);
+                    robot1 = new ParallaxRobot(room, rng.PointOnCircle(2.75f, 0.25f, new Vector3(0, 0, 2.0f)), Quaternion.Identity);
+                    robot2 = new ParallaxRobot(room, rng.PointOnCircle(2.75f, 0.25f, new Vector3(0, 0, 2.0f)), Quaternion.Identity);
 
                     /* robots freak out and bounce everywhere */
-                    robot1._initialPosition = rng.PointOnCircle(2.75f, 0.25f, new Vector3(0, 0.25f, 2.0f));
-                    //robot1._initialOrientation = Quaternion.Identity;
-                    robot2._initialPosition = rng.PointOnCircle(2.75f, 0.25f, new Vector3(0, 0.25f, 2.0f));
+                    // robot1.Position = rng.PointOnCircle(2.75f, 0f, new Vector3(0, 0.25f, 2.0f));
+                    // robot1._initialPosition = rng.PointOnCircle(2.75f, 0f, new Vector3(0, 0.25f, 2.0f));
+                    // robot1._initialOrientation = Quaternion.Identity;
+                    // robot2.Position = rng.PointOnCircle(2.75f, 0f, new Vector3(0, 0.25f, 2.0f));
+                    // robot2._initialPosition = rng.PointOnCircle(2.75f, 0f, new Vector3(0, 0.25f, 2.0f));
                     //robot2._initialOrientation = Quaternion.Identity;
                     break;
 
@@ -118,6 +124,8 @@ namespace RoboScapeSimulator.Environments
                     //robot2 = new ParallaxRobot(room, new Vector3(-1.0f, 0.25f, 0), Quaternion.Identity);
                     //robot2._initialPosition = new Vector3(-1.0f, 0.25f, 0);
                     //robot2._initialOrientation = Quaternion.Identity;
+                    robot1 = new ParallaxRobot(room, new Vector3(1.0f, 0.25f, 0), Quaternion.Identity);
+                    robot2 = new ParallaxRobot(room, new Vector3(-1.0f, 0.25f, 0), Quaternion.Identity);
                     break;
 
             }
@@ -154,21 +162,13 @@ namespace RoboScapeSimulator.Environments
             },*/ robot1.ID);
 
             //Final waypoint test
-            WaypointTest final1 = new WaypointTest(room, () =>
+            /* WaypointTest final1 = new WaypointTest(room, () =>
             {
                 return new List<Vector3>() {
                     rng.PointOnLine(new(0, 0, 10.0f), new(0, 0, 10.0f))
 
                 };
-            }, robot1.ID, robot2.ID);
-
-            /*WaypointTest final2 = new WaypointTest(room, () =>
-            {
-                return new List<Vector3>() {
-                    rng.PointOnLine(new(0, 0, 10.0f), new(0, 0, 10.0f))
-
-                };
-            }, robot2.ID);*/
+            }, robot1.ID, robot2.ID); */
 
             //Initializes position and LIDAR sensors for the robots
             PositionSensor positionSensor1 = new(robot1);
@@ -181,7 +181,7 @@ namespace RoboScapeSimulator.Environments
             lidar2.Setup(room);
             positionSensor2.Setup(room);
 
-            //Ensures that the gate only opens if the robots hit the triggers within two seconds of one another
+            //Ensures that the gate only opens if the robots hit the triggers within two seconds of one another.
             room.OnUpdate += (e, dt) =>
             {
                 if (timer1.IsRunning == false && timer2.IsRunning == false)
@@ -203,12 +203,10 @@ namespace RoboScapeSimulator.Environments
                 }
             };
 
+            //When room is reset, gate will return to its initial position.
             room.OnReset += (o, e) =>
             {
-                //var gate = new Cube(room, 1.8f, 0.25f, 0.15f, new Vector3(0, 0, 9.0f), Quaternion.Identity);
                 gate.Position = new Vector3(0, 0, 9.0f);
-                //gate.BodyReference.Awake = true;
-                //gate.forceUpdate = true;
             };
         }
     }

@@ -58,12 +58,23 @@ internal class WaypointTest
         //The waypoint will then move out of sight into the negative position
         waypoint_X.OnTriggerStay += (o, e) =>
         {
-            var greenSquare = Markers[0];
-            greenSquare.Position = waypoint_X.Position;
-            waypoint_X_1.Position = new Vector3(0, -1.0f, 0);
-            waypoint_X_2.Position = new Vector3(0, -1.0f, 0);
+            if (e is Robot r)
+            {
+                if (r.ID == id)
+                {
+                    var greenSquare = Markers[0];
+                    greenSquare.Position = waypoint_X.Position;
+                    waypoint_X.Position = new Vector3(0, 0, 10.0f);
+                    waypoint_X_1.Position = new Vector3(0, 0, 10.0f);
+                    waypoint_X_2.Position = new Vector3(0, 0, 10.0f);
 
-            pressed = true;
+                    /* The waypoints are moved into this position (0, 0, 10) specifically
+                    for the GateEnvironment.Another way is to have them move into a negative Y position,
+                    which effectively puts them out of view. */
+
+                    pressed = true;
+                }
+            }
         };
 
         /* waypoint_X.OnTriggerEnter += (o, e) =>
