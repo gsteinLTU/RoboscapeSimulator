@@ -17,7 +17,7 @@ public static class Program
     /// <summary>
     /// Frequency to run simulation at
     /// </summary> 
-    const int simFPS = 45;
+    const int simFPS = 40;
 
     /// <summary>
     /// Mapping of room IDs to Room objects
