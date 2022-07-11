@@ -12,12 +12,16 @@ namespace RoboScapeSimulator.Environments
     /// </summary>
     class MultiColorRobotsEnvironment : EnvironmentConfiguration
     {
+        /// <summary>
+        /// Maximum number of robots supported by the environment
+        /// </summary>
         public const uint MaxRobots = 4;
 
-        uint _robots = 4;
-        bool _walls = false;
-        bool _positionSensor = false;
-        bool _LIDAR = false;
+        readonly uint _robots = 4;
+        readonly bool _walls = false;
+        readonly bool _positionSensor = false;
+        readonly bool _LIDAR = false;
+
         public MultiColorRobotsEnvironment(uint numRobots = 4, bool walls = false, bool positionSensor = false, bool LIDAR = false)
         {
             if (numRobots > MaxRobots)
