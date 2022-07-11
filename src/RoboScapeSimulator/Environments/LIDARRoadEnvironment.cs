@@ -17,6 +17,7 @@ namespace RoboScapeSimulator.Environments
             ID = "lidarroad" + courseType;
             Description = $"Robot with LIDAR drives down a {courseType} road";
             _courseType = courseType;
+            Category = "LIDAR Road";
         }
 
         public struct Courses

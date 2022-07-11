@@ -12,6 +12,7 @@ namespace RoboScapeSimulator.Environments
             Name = "PhysicsTestEnvironment";
             ID = "phystest";
             Description = "Physics demo environment";
+            Category = "§_Testing";
         }
 
         PositionSensor? locationSensor;

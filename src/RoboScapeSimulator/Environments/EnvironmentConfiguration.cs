@@ -20,6 +20,11 @@ namespace RoboScapeSimulator.Environments
         /// </summary>
         public string Description = "";
 
+        /// <summary>
+        /// Category for this environment
+        /// </summary>
+        public string Category = "";
+
         public abstract object Clone();
 
         /// <summary>

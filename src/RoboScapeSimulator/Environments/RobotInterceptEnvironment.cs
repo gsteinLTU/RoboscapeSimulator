@@ -22,6 +22,7 @@ namespace RoboScapeSimulator.Environments
             Name = $"Robot Intercept ({difficulty})";
             ID = $"robotintercept{difficulty}";
             Description = "One robot has to intercept another";
+            Category = "§_Testing";
         }
 
         public override object Clone()

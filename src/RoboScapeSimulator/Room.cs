@@ -442,7 +442,9 @@ namespace RoboScapeSimulator
             return Environments.Select(
                 (environmentType) => new Dictionary<string, object> {
                 { "Name", environmentType.Name },
-                { "ID", environmentType.ID }
+                { "ID", environmentType.ID },
+                {"Description", environmentType.Description},
+                {"Category", environmentType.Category}
             }).ToList();
         }
 
@@ -454,19 +456,31 @@ namespace RoboScapeSimulator
             new DefaultEnvironment(),
             new WallEnvironment(),
             new SquareDrivingEnvironment(),
-            new FourColorRobotsEnvironment(),
+            // Multi-color robot environments
+            new MultiColorRobotsEnvironment(1),
+            new MultiColorRobotsEnvironment(2),
+            new MultiColorRobotsEnvironment(3),
+            new MultiColorRobotsEnvironment(),
+            new MultiColorRobotsEnvironment(1, true),
+            new MultiColorRobotsEnvironment(2, true),
+            new MultiColorRobotsEnvironment(3, true),
+            new MultiColorRobotsEnvironment(4, true),
+            new MultiColorRobotsEnvironment(1, true, true, true),
+            new MultiColorRobotsEnvironment(2, true, true, true),
+            new MultiColorRobotsEnvironment(3, true, true, true),
+            new MultiColorRobotsEnvironment(4, true, true, true),
             new ObstacleCourseEnvironment(),
-            // new LIDARTestEnvironment(),
             new TableEnvironment(2, 1, true),
             new TableEnvironment(2, 2, true),
             new TreasureHuntEnvironment(),
+            // LIDAR roads
             new LIDARRoadEnvironment(),
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.Hard),
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.VeryHard),
             new WaypointNavigationEnvironment(),
             new WaypointNavigationEnvironment(3),
-            // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Easy),
-            // new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard),
+            new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Easy),
+            new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard),
             new FinalChallengeEnvironment(),
             new FinalChallengeEnvironment(true),
             new PhysicsTestEnvironment(),

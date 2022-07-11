@@ -46,7 +46,7 @@ namespace RoboScapeSimulator
             Properties = new CollidableProperty<BodyCollisionProperties>();
             BufferPool = new BufferPool();
             IntegratorCallbacks = new SimulationInstanceIntegratorCallbacks(new Vector3(0, -9.81f, 0));
-            Simulation = Simulation.Create(BufferPool, new SimulationInstanceCallbacks(this, Properties), IntegratorCallbacks, new SolveDescription(2, 8), new DefaultTimestepper());
+            Simulation = Simulation.Create(BufferPool, new SimulationInstanceCallbacks(this, Properties), IntegratorCallbacks, new SolveDescription(3, 10), new DefaultTimestepper());
         }
 
         bool disposed;
