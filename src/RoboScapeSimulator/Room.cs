@@ -479,6 +479,8 @@ namespace RoboScapeSimulator
             new LIDARRoadEnvironment(LIDARRoadEnvironment.Courses.VeryHard),
             new WaypointNavigationEnvironment(),
             new WaypointNavigationEnvironment(3),
+            new BoxPushingRace(),
+            new BoxPushingRace(true),
             new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Easy),
             new RobotInterceptEnvironment(RobotInterceptEnvironment.Difficulties.Hard),
             new FinalChallengeEnvironment(),

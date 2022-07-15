@@ -56,6 +56,19 @@ namespace RoboScapeSimulator
         }
 
         /// <summary>
+        /// Get evenly spaced points on a circle
+        /// </summary>
+        /// <param name="count">Number of points</param>
+        /// <param name="radius">Radius of circle</param>
+        /// <param name="height">Additional Y-value of circle</param>
+        /// <param name="center">Center of circle, (0,0,0) if null</param>
+        /// <returns></returns>
+        public static IEnumerable<Vector3> PointsOnCircle(int count, float radius = 1, float height = 0, Vector3? center = null)
+        {
+            return Enumerable.Range(1, count).Select(i => (MathF.PI * 2f / count) * i).Select(i => new Vector3(radius * MathF.Cos(i), height, radius * MathF.Sin(i)) + (center ?? Vector3.Zero));
+        }
+
+        /// <summary>
         /// Returns a random point outside a radius, but inside another radius, on the XZ plane
         /// </summary>
         /// <param name="innerRadius">Inner radius of area</param>
