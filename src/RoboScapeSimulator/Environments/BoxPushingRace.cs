@@ -28,7 +28,7 @@ namespace RoboScapeSimulator.Environments
         {
             Trace.WriteLine($"Setting up {Name} environment");
 
-            StopwatchTimer timer = new(room);
+            StopwatchTimer timer = new(room, false);
 
             // Ground
             _ = new Ground(room);
@@ -73,9 +73,18 @@ namespace RoboScapeSimulator.Environments
             room.OnReset += (o, e) =>
             {
                 trigger.Reset();
+
                 timer.Reset();
-                timer.Start();
+
+                void handler(object? o, byte[] e)
+                {
+                    timer.Start();
+                    robot.OnCommand -= handler;
+                }
+
+                robot.OnCommand += handler;
             };
+
         }
     }
 }
