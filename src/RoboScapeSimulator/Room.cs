@@ -186,6 +186,7 @@ namespace RoboScapeSimulator
                 Trace.WriteLine($"Room {Name} is no longer hibernating");
             };
 
+            HandleResetAll();
             Trace.WriteLine("Room " + Name + " created.");
         }
 
@@ -202,10 +203,10 @@ namespace RoboScapeSimulator
         public Dictionary<string, object> GetInfo()
         {
             return new Dictionary<string, object>()
-        {
-            {"background", ""},
-            {"time", Time}
-        };
+            {
+                {"background", ""},
+                {"time", Time}
+            };
         }
 
 
@@ -294,7 +295,7 @@ namespace RoboScapeSimulator
         /// Handles a request to reset the entire environment
         /// </summary>
         /// <param name="args">Input from event</param>
-        private void HandleResetAll(Socket s, JsonNode[] args)
+        private void HandleResetAll(Socket? s = null, JsonNode[]? args = null)
         {
             LastInteractionTime = Environment.TickCount64;
 

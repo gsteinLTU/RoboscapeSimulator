@@ -24,7 +24,7 @@ namespace RoboScapeSimulator.Environments
         {
             Trace.WriteLine($"Setting up {Name} environment");
 
-            StopwatchTimer sw = new(room);
+            StopwatchTimer sw = new(room, false);
 
             // Ground
             _ = new Ground(room);
@@ -62,7 +62,7 @@ namespace RoboScapeSimulator.Environments
             _ = new Cube(room, 0.5f, 0.5f, 0.5f, new(0, 0.55f, -wallZ / 2 + 5.2f), Quaternion.Identity);
 
             // Robot
-            _ = new ParallaxRobot(room, new(0, 0.15f, -wallZ / 2 + 0.5f), Quaternion.Identity);
+            var robot = new ParallaxRobot(room, new(0, 0.15f, -wallZ / 2 + 0.5f), Quaternion.Identity);
 
             static void AddObstacleWall(Room room, float wallX, float wallZ, float leftSize, float gapSize, float zPos)
             {
@@ -70,7 +70,21 @@ namespace RoboScapeSimulator.Environments
                 _ = new Cube(room, wallX - leftSize - gapSize, 0.5f, 0.1f, new Vector3(wallX / 2 - (wallX - leftSize - gapSize) / 2, 0.25f, -wallZ / 2 + zPos), Quaternion.Identity, true, nameOverride: "wallr", visualInfo: new VisualInfo() { Color = "#633" });
             }
 
-            sw.Start();
+
+            room.OnReset += (o, e) =>
+            {
+                sw.Reset();
+
+                void handler(object? o, byte[] e)
+                {
+                    sw.Start();
+                    robot.OnCommand -= handler;
+                }
+
+                robot.OnCommand += handler;
+            };
+
+
         }
     }
 }

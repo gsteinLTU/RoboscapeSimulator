@@ -151,6 +151,8 @@ namespace RoboScapeSimulator.Entities.Robots
 
         public event EventHandler? OnReset;
 
+        public event EventHandler<byte[]>? OnCommand;
+
         /// <summary>
         /// Add a message handler for a certain message type
         /// </summary>
@@ -302,6 +304,7 @@ namespace RoboScapeSimulator.Entities.Robots
                         lastMessageTime = time.ElapsedSeconds;
                         MessageHandlers[messageCode](msg);
                     }
+                    OnCommand?.Invoke(this, msg);
                 }
                 else
                 {
