@@ -470,8 +470,10 @@ namespace RoboScapeSimulator
             new FinalChallengeEnvironment(true),
             new PhysicsTestEnvironment(),
             new GateEnvironment(),
-            new GateEnvironment(GateEnvironment.Courses.Random),
-            new GateEnvironment(GateEnvironment.Courses.Obstacles)
+            new GateEnvironment(GateEnvironment.Courses.Default, 3),
+            new GateEnvironment(GateEnvironment.Courses.Obstacles),
+            new WaypointChase(),
+            new Trap()
         };
 
         public DateTime LastInteractionTime

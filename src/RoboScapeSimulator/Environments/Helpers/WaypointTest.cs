@@ -8,7 +8,11 @@ namespace RoboScapeSimulator.Environments.Helpers;
 
 /*
 Same as Waypoints except it does not generate additional Waypoints when the first one has been triggered.
-Instead, the red X is moved into a negative postion out of sight and is replaced by a green square checkpoint.
+Instead, the red X is moved into a set location in the GateEnvironment and is replaced by a green square checkpoint.
+
+Note : As of now, 7-11, this class is only compatible with GateEnvironment because the waypoint's second location 
+is hardcoded for the environment. Ideally, this class should be more versatile. Fix this when removing entities and 
+assigning more than one robot to a waypoint is possible.
 */
 
 internal class WaypointTest
@@ -69,7 +73,7 @@ internal class WaypointTest
                     waypoint_X_2.Position = new Vector3(0, 0, 10.0f);
 
                     /* The waypoints are moved into this position (0, 0, 10) specifically
-                    for the GateEnvironment.Another way is to have them move into a negative Y position,
+                    for the GateEnvironment. Another way is to have them move into a negative Y position,
                     which effectively puts them out of view. */
 
                     pressed = true;
@@ -183,6 +187,7 @@ internal class WaypointTest
         };
     }
 
+    //When the waypoint is triggered, returns true
     public bool buttonPressed()
     {
         return pressed;
