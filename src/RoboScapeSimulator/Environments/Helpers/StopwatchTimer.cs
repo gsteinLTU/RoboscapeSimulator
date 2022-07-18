@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace RoboScapeSimulator.Environments.Helpers;
 
 /// <summary>
@@ -11,19 +9,14 @@ internal class StopwatchTimer
 
     public bool ShowText = true;
 
-    bool shouldRun = true;
+    bool shouldRun = false;
 
     long? lastSend = null;
 
-    public StopwatchTimer(Room room)
-    {
-        room.OnReset += (o, _) =>
-        {
-            timer.Reset();
-            timer.Start();
-            lastSend = null;
-        };
+    public bool IsRunning { get => timer.IsRunning; }
 
+    public StopwatchTimer(Room room, bool autoSetup = true)
+    {
         room.OnUpdate += (o, dt) =>
         {
             if (ShowText && (timer.ElapsedMillis - (lastSend ?? -1000)) >= 120)
@@ -47,22 +40,41 @@ internal class StopwatchTimer
             }
         };
 
-        timer.Start();
+        shouldRun = autoSetup;
+
+        if (autoSetup)
+        {
+            room.OnReset += (o, _) =>
+            {
+                Reset();
+                Start();
+            };
+
+            Start();
+        }
     }
 
     public void Stop()
     {
         timer.Stop();
+        lastSend = null;
     }
 
     public void Start()
     {
         timer.Start();
+        lastSend = null;
     }
 
     public void Reset()
     {
         timer.Stop();
+        timer.Reset();
         lastSend = null;
+
+        if (shouldRun)
+        {
+            timer.Start();
+        }
     }
 }
