@@ -172,13 +172,10 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
             if (idx == 0)
             {
                 firstBlock.Position = new Vector3(0.25f, -3.75f, 1f);
-                firstBlock.forceUpdate = true;
             }
             if (idx == 1)
             {
                 secondBlock.Position = new Vector3(0f, 3f, 6.75f) * (_mini ? miniScale : Vector3.One);
-                secondBlock.BodyReference.Awake = true;
-                secondBlock.forceUpdate = true;
             }
         };
 
@@ -223,12 +220,7 @@ internal class FinalChallengeEnvironment : EnvironmentConfiguration
             targetCube.Position = cubePos;
 
             firstBlock.Position = new Vector3(0f, 3.75f, 1f) * (_mini ? miniScale : Vector3.One);
-            firstBlock.BodyReference.Awake = true;
-            firstBlock.forceUpdate = true;
-
             secondBlock.Position = new Vector3(0f, -3f, 6.75f);
-            secondBlock.BodyReference.Awake = true;
-            secondBlock.forceUpdate = true;
         };
     }
 }

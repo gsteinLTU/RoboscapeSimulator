@@ -172,37 +172,6 @@ namespace RoboScapeSimulator.IoTScape.Devices
         /// </summary>
         /// <param name="trackedBody">Body to track position/heading of</param>
         /// <param name="id">ID to assign sensor</param>
-        public PhysicsService(DynamicEntity trackedBody, string? id = null) : base(definition, id)
-        {
-            Methods["getPosition"] = (string[] args) =>
-            {
-                return new string[] { trackedBody.Position.X.ToString(), trackedBody.Position.Y.ToString(), trackedBody.Position.Z.ToString() };
-            };
-
-            Methods["getOrientation"] = (string[] args) =>
-            {
-                trackedBody.Orientation.ExtractYawPitchRoll(out var yaw, out var pitch, out var roll);
-                return new string[] { (pitch * 180.0f / MathF.PI).ToString(), (yaw * 180.0f / MathF.PI).ToString(), (roll * 180.0f / MathF.PI).ToString() };
-            };
-
-            Methods["getMass"] = (string[] args) =>
-            {
-                return new string[] { (1.0f / trackedBody.BodyReference.LocalInertia.InverseMass).ToString() };
-            };
-
-            Methods["applyForce"] = (string[] args) =>
-            {
-                trackedBody.BodyReference.Awake = true;
-                trackedBody.BodyReference.ApplyLinearImpulse(new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2])));
-                return Array.Empty<string>();
-            };
-
-            Methods["setVelocity"] = (string[] args) =>
-            {
-                trackedBody.BodyReference.Awake = true;
-                trackedBody.BodyReference.Velocity.Linear = new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
-                return Array.Empty<string>();
-            };
-        }
+        public PhysicsService(DynamicEntity trackedBody, string? id = null) : this(trackedBody.BodyReference, id) { }
     }
 }

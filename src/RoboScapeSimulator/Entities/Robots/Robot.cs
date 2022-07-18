@@ -50,7 +50,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
             Box box;
 
-            VisualInfo = visualInfo ?? new VisualInfo() { ModelName = "parallax_robot.gltf" };
+            VisualInfo = visualInfo ?? new VisualInfo() { ModelName = "parallax_robot.glb" };
 
             if (size == null)
             {
