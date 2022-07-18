@@ -23,6 +23,8 @@ namespace RoboScapeSimulator
 
         public IEnumerable<Robot> Robots => Entities.Where(e => e is Robot).Cast<Robot>();
 
+        public IEnumerable<Trigger> Triggers => Entities.Where(e => e is Trigger).Cast<Trigger>();
+
         public Simulation Simulation;
 
         /// <summary>

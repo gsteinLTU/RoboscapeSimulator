@@ -244,9 +244,9 @@ namespace RoboScapeSimulator.Entities.Robots
                 // Do whisker tests
                 const int whiskerRange = 11;
                 var whiskerTestL = Utils.QuickRayCast(simulation, Position + Vector3.Transform(new Vector3(-0.05f, 0.05f, 0.15f), Orientation),
-                               Vector3.Transform(new Vector3(0, 0, 1), Orientation), whiskerRange);
+                               Vector3.Transform(new Vector3(0, 0, 1), Orientation), whiskerRange, room.SimInstance.Triggers);
                 var whiskerTestR = Utils.QuickRayCast(simulation, Position + Vector3.Transform(new Vector3(0.05f, 0.05f, 0.15f), Orientation),
-                               Vector3.Transform(new Vector3(0, 0, 1), Orientation), whiskerRange);
+                               Vector3.Transform(new Vector3(0, 0, 1), Orientation), whiskerRange, room.SimInstance.Triggers);
 
                 if (whiskerTestL != whiskerL || whiskerTestR != whiskerR)
                 {

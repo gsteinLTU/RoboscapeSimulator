@@ -12,8 +12,11 @@ public class RobotTests
         Room testRoom = new("testroom");
 
         Robot robot = testRoom.SimInstance.Robots.First();
+        Wait(testRoom, 100);
 
-        wait(testRoom);
+        testRoom.ResetRobot(robot.ID);
+
+        Wait(testRoom);
 
         // Did robot go to floor
         Assert.InRange(robot.Position.Y, -0.1f, 0.1f);
@@ -26,13 +29,17 @@ public class RobotTests
 
         ParallaxRobot robot = (ParallaxRobot)testRoom.SimInstance.Robots.First();
 
-        wait(testRoom);
+        Wait(testRoom, 100);
+
+        testRoom.ResetRobot(robot.ID);
+
+        Wait(testRoom);
 
         robot.MessageHandlers['S'](new byte[] { (byte)'S', 0x64, 0, 0x64, 0 });
 
         Vector3 initialPosition = new(robot.Position.X, robot.Position.Y, robot.Position.Z);
 
-        wait(testRoom);
+        Wait(testRoom);
 
         double distance = (robot.Position - initialPosition).Length();
 
@@ -50,14 +57,18 @@ public class RobotTests
         Room testRoom = new("testroom");
 
         ParallaxRobot robot = (ParallaxRobot)testRoom.SimInstance.Robots.First();
-        wait(testRoom);
+        Wait(testRoom, 100);
+
+        testRoom.ResetRobot(robot.ID);
+
+        Wait(testRoom);
+
+        Vector3 initialPosition = new(robot.Position.X, robot.Position.Y, robot.Position.Z);
 
         // Send set speed 100 100
         robot.MessageHandlers['S'](new byte[] { (byte)'S', 0x64, 0, 0x64, 0 });
 
-        Vector3 initialPosition = new(robot.Position.X, robot.Position.Y, robot.Position.Z);
-
-        wait(testRoom);
+        Wait(testRoom);
 
         // Did robot move
         double distance = (robot.Position - initialPosition).Length();
@@ -67,14 +78,14 @@ public class RobotTests
         Assert.InRange(robot.LeftTicks, 1d, double.PositiveInfinity);
         Assert.InRange(robot.RightTicks, 1d, double.PositiveInfinity);
 
-        testRoom.ResetRobot(robot.ID, "");
+        testRoom.ResetRobot(robot.ID);
 
-        wait(testRoom);
+        Wait(testRoom, 500);
 
         distance = (robot.Position - initialPosition).Length();
 
         // Did robot go back
-        Assert.InRange(distance, 0, 0.07);
+        Assert.InRange(distance, 0, 0.15);
 
         // Did ticks go back to zero
         Assert.Equal(0, robot.LeftTicks);
@@ -89,14 +100,18 @@ public class RobotTests
 
         ParallaxRobot robot = (ParallaxRobot)testRoom.SimInstance.Robots.First();
 
-        wait(testRoom);
+        Wait(testRoom, 100);
+
+        testRoom.ResetRobot(robot.ID);
+
+        Wait(testRoom, 500);
 
         Vector3 initialPosition = new(robot.Position.X, robot.Position.Y, robot.Position.Z);
 
         // Send set speed 100 100
         robot.MessageHandlers['S'](new byte[] { (byte)'S', 0x64, 0, 0x64, 0 });
 
-        wait(testRoom);
+        Wait(testRoom, 500);
 
         // Did robot move
         double distance = (robot.Position - initialPosition).Length();
@@ -108,12 +123,12 @@ public class RobotTests
 
         testRoom.ResetRobot(robot.ID, "");
 
-        wait(testRoom);
+        Wait(testRoom, 500);
 
         distance = (robot.Position - initialPosition).Length();
 
         // Did robot go back
-        Assert.InRange(distance, 0, 0.05);
+        Assert.InRange(distance, 0, 0.075);
 
         // Did ticks go back to zero
         Assert.Equal(0, robot.LeftTicks);
@@ -122,7 +137,7 @@ public class RobotTests
         // Send set speed 100 100
         robot.MessageHandlers['S'](new byte[] { (byte)'S', 0x64, 0, 0x64, 0 });
 
-        wait(testRoom);
+        Wait(testRoom);
 
         distance = (robot.Position - initialPosition).Length();
 
@@ -134,7 +149,7 @@ public class RobotTests
         Assert.InRange(robot.RightTicks, 1d, double.PositiveInfinity);
     }
 
-    private static void wait(Room testRoom, int ticks = 250, int fps = 30)
+    private static void Wait(Room testRoom, int ticks = 300, int fps = 15)
     {
         for (int i = 0; i < ticks; i++)
         {
