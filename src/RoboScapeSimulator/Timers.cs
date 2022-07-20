@@ -19,15 +19,17 @@ namespace RoboScapeSimulator
             long lastTicks = Environment.TickCount64 - (long)fpsSpan.TotalMilliseconds;
             var updateTimer = new Timer((e) =>
             {
+                float dt = Utils.Clamp((Environment.TickCount64 - lastTicks) / 1000f, 1f / ((float)simFPS * 4f), 1f / ((float)simFPS / 4f));
+
                 lock (Program.Rooms)
                 {
                     foreach (Room room in Program.Rooms.Values)
                     {
-                        room.Update((Environment.TickCount64 - lastTicks) / 1000f);
+                        room.Update(dt);
                     }
-                }
 
-                Program.IoTScapeManager.Update((Environment.TickCount64 - lastTicks) / 1000f);
+                    Program.IoTScapeManager.Update(dt);
+                }
 
                 lastTicks = Environment.TickCount64;
             });
@@ -41,7 +43,7 @@ namespace RoboScapeSimulator
         /// <param name="updateFPS">Rate (per second) to update clients at</param>
         /// <param name="updatesUntilFullUpdate">Number of incremental updates to send before sending a new full Update</param>
         /// <returns>Created Timer object</returns>
-        public static Timer CreateClientUpdateTimer(double updateFPS, double updatesUntilFullUpdate = 2400)
+        public static Timer CreateClientUpdateTimer(double updateFPS, double updatesUntilFullUpdate = 600)
         {
             TimeSpan period = TimeSpan.FromMilliseconds(1000d / updateFPS);
 
