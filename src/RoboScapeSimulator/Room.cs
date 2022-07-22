@@ -209,12 +209,6 @@ namespace RoboScapeSimulator
             };
         }
 
-
-        /// <summary>
-        /// Do not send the next update for this room (if needed for optimization purposes)
-        /// </summary>
-        public bool SkipNextUpdate = false;
-
         /// <summary>
         /// Send an event to all clients in the room
         /// </summary>

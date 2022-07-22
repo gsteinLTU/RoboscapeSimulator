@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text.Json;
-using static RoboScapeSimulator.Room;
 
 namespace RoboScapeSimulator
 {
@@ -9,23 +8,60 @@ namespace RoboScapeSimulator
     /// </summary>
     internal static class Timers
     {
-        public static Timer CreateClientUpdateTimer(double updateFPS, bool isFullUpdate = false)
+        /// <summary>
+        /// Create the timer that updates the rooms' simulations
+        /// </summary>
+        /// <param name="simFPS">Rate to attempt to update rooms at</param>
+        /// <returns>Created Timer object</returns>
+        public static Timer CreateRoomUpdateTimer(double simFPS)
+        {
+            var fpsSpan = TimeSpan.FromSeconds(1d / simFPS);
+            long lastTicks = Environment.TickCount64 - (long)fpsSpan.TotalMilliseconds;
+            var updateTimer = new Timer((e) =>
+            {
+                float dt = Utils.Clamp((Environment.TickCount64 - lastTicks) / 1000f, 1f / ((float)simFPS * 4f), 1f / ((float)simFPS / 4f));
+
+                lock (Program.Rooms)
+                {
+                    foreach (Room room in Program.Rooms.Values)
+                    {
+                        room.Update(dt);
+                    }
+
+                    Program.IoTScapeManager.Update(dt);
+                }
+
+                lastTicks = Environment.TickCount64;
+            });
+            updateTimer.Change(fpsSpan, fpsSpan);
+            return updateTimer;
+        }
+
+        /// <summary>
+        /// Create the timer which sends updates to the clients
+        /// </summary>
+        /// <param name="updateFPS">Rate (per second) to update clients at</param>
+        /// <param name="updatesUntilFullUpdate">Number of incremental updates to send before sending a new full Update</param>
+        /// <returns>Created Timer object</returns>
+        public static Timer CreateClientUpdateTimer(double updateFPS, double updatesUntilFullUpdate = 600)
         {
             TimeSpan period = TimeSpan.FromMilliseconds(1000d / updateFPS);
 
+            int i = 0;
             var updateTimer = new Timer((e) =>
             {
+                bool isFullUpdate = false;
+                if (i++ > updatesUntilFullUpdate)
+                {
+                    i = 0;
+                    isFullUpdate = true;
+                }
+
                 lock (Program.Rooms)
                 {
                     Program.Rooms.AsParallel().ForAll(kvp =>
                     {
                         var room = kvp.Value;
-                        if (!isFullUpdate && room.SkipNextUpdate)
-                        {
-                            room.SkipNextUpdate = false;
-                            return;
-                        }
-
                         lock (room.activeSockets)
                         {
                             foreach (var socket in room.activeSockets)
@@ -41,11 +77,10 @@ namespace RoboScapeSimulator
             return updateTimer;
         }
 
-        public static Timer CreateClientFullUpdateTimer()
-        {
-            return CreateClientUpdateTimer(1d / 60d, true);
-        }
-
+        /// <summary>
+        /// Create the Timer watching for very old hibernating rooms to remove
+        /// </summary>     
+        /// <returns>Created Timer object</returns>
         public static Timer CreateCleanDeadRoomsTimer()
         {
             TimeSpan period = TimeSpan.FromSeconds(60 * 10);
@@ -92,6 +127,10 @@ namespace RoboScapeSimulator
             return deadRoomTimer;
         }
 
+        /// <summary>
+        /// Create the Timer for sending updates to the API server
+        /// </summary>
+        /// <returns>Created Timer object</returns>
         public static Timer CreateMainAPIServerAnnounceTimer()
         {
             TimeSpan period = TimeSpan.FromSeconds(5 * 60);
