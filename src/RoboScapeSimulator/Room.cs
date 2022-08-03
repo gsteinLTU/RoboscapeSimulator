@@ -490,8 +490,7 @@ namespace RoboScapeSimulator
             new GateEnvironment(),
             new GateEnvironment(GateEnvironment.Courses.Default, 3),
             new GateEnvironment(GateEnvironment.Courses.Obstacles),
-            new WaypointChase(),
-            new Trap()
+            new RatEnvironment()
         };
 
         public DateTime LastInteractionDateTime
