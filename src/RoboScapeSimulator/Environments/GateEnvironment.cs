@@ -21,11 +21,12 @@ namespace RoboScapeSimulator.Environments
         readonly private string _courseType;
         //Stores the number (N) of robots
         readonly uint _numBots;
+
         public GateEnvironment(string courseType = Courses.Default, uint numBots = 2)
         {
             Name = $"Gate Environment({courseType}, {numBots} Robots)";
             ID = "Gate" + courseType + " " + numBots;
-            Description = "Two robots, two waypoints, and a gate";
+            Description = "N robots, N waypoints, and a gate";
             _courseType = courseType;
             _numBots = numBots;
         }
@@ -37,7 +38,7 @@ namespace RoboScapeSimulator.Environments
         {
             //Default is just the rectangle.
             public const string Default = "Default";
-            //Obstacles adds additional walls the robots must manuever around.
+            //Obstacles adds additional walls the robots must maneuver around.
             public const string Obstacles = "Obstacles";
         }
 
@@ -114,7 +115,7 @@ namespace RoboScapeSimulator.Environments
                 waypoints.Add(new WaypointForGate(room, () =>
                 {
                     return new List<Vector3>() {
-                        rng.PointOnCircle(2.25f, 0, new Vector3(0, 0, 6.0f))
+                        rng.PointOnCircle(2.0f, 0, new Vector3(0, 0, 6.0f))
                     };
                 }, robot.ID));
 
@@ -151,26 +152,13 @@ namespace RoboScapeSimulator.Environments
                     {
                         complete = false;
                     }
-                    //*Complete is false for the second(final) waypoint
+                    //*Complete is false for the second(final) waypoint*
                 }
 
                 //Gate is removed and timers are reset, as long as prior conditions are met
                 if (complete)
                 {
-                    //Console.WriteLine("complete");
-                    if (gate.Position == new Vector3(0, -1.0f, 0)) //maybe this isn't called right
-                    {
-                        //has never been true
-                        //Console.WriteLine("hide");
-                        for (int i = 0; i < waypoints.Count; i++)
-                        {
-                            waypoints[i].move(new Vector3(0, -1.0f, 0));
-                        }
-                    }
-                    else
-                    {
-                        gate.Position = new Vector3(0, -1.0f, 0);
-                    }
+                    gate.Position = new Vector3(0, -1.0f, 0);
 
                     for (int i = 0; i < _numBots; i++)
                     {

@@ -18,7 +18,7 @@ class RatEnvironment : EnvironmentConfiguration
     {
         Name = "RatEnvironment";
         ID = "RatEnvironment";
-        Description = $"Robot must trap the red robot";
+        Description = $"Robots must trap the red robot";
     }
 
     public override object Clone()

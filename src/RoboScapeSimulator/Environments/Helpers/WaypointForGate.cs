@@ -143,7 +143,7 @@ internal class WaypointForGate
     }
 
     /// <summary>
-    //Moves the way point from its current position to pos.
+    /// Moves the waypoint from its current position to pos.
     /// </summary>
     public void move(Vector3 pos)
     {
