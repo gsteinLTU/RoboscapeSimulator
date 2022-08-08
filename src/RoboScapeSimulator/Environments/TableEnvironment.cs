@@ -48,7 +48,7 @@ namespace RoboScapeSimulator.Environments
 
                 if (_lidar)
                 {
-                    var lidar = new LIDARSensor(robot) { Offset = new(0, 0.25f, 0.07f), NumRays = 15, StartAngle = MathF.PI / 2, AngleRange = MathF.PI, MaxDistance = 5, };
+                    var lidar = new LIDARSensor(robot) { Offset = new(0, 0.25f, 0.07f), NumRays = 15, StartAngle = MathF.PI / 2, AngleRange = MathF.PI, MaxDistance = 5 };
                     lidar.Setup(room);
                 }
             }

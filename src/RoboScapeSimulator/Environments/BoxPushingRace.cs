@@ -39,7 +39,7 @@ namespace RoboScapeSimulator.Environments
             // Demo robots
             Random rng = new();
 
-            Trigger trigger = new Trigger(room, new Vector3(0, 0.125f, 0), Quaternion.Identity, 10, 0.25f, 10);
+            Trigger trigger = new(room, new Vector3(0, 0.125f, 0), Quaternion.Identity, 10, 0.25f, 10);
 
             var robot = new ParallaxRobot(room, rng.PointOnCircle(0.25f, 1.45f));
 

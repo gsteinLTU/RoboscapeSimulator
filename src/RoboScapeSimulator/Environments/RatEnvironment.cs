@@ -19,6 +19,7 @@ class RatEnvironment : EnvironmentConfiguration
         Name = "RatEnvironment";
         ID = "RatEnvironment";
         Description = $"Robots must trap the red robot";
+        Category = "§_Testing";
     }
 
     public override object Clone()
@@ -48,10 +49,10 @@ class RatEnvironment : EnvironmentConfiguration
         Vector3 position = rng.PointOnLine(new(1.0f, 0.25f, 3.0f), new(5.0f, 0.25f, 3.0f));
         //This function ensures that the rat is placed on an axis
         position.X = MathF.Round(position.X);
-        ParallaxRobot rat = new ParallaxRobot(room, position, Quaternion.Identity, visualInfo: new() { ModelName = "car1_red.gltf" });
+        ParallaxRobot rat = new(room, position, Quaternion.Identity, visualInfo: new() { ModelName = "car1_red.gltf" });
 
-        ParallaxRobot robot1 = new ParallaxRobot(room, new Vector3(0.5f, 0.25f, 5.0f), Quaternion.Identity);
-        ParallaxRobot robot2 = new ParallaxRobot(room, new Vector3(5.5f, 0.25f, 1.0f), Quaternion.Identity);
+        ParallaxRobot robot1 = new(room, new Vector3(0.5f, 0.25f, 5.0f), Quaternion.Identity);
+        ParallaxRobot robot2 = new(room, new Vector3(5.5f, 0.25f, 1.0f), Quaternion.Identity);
 
         //Is it possible to program a robot's movements here instead of in NetsBlox? (ie create moving components)
 

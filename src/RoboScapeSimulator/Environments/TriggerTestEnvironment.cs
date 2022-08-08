@@ -12,6 +12,7 @@ namespace RoboScapeSimulator.Environments
             Name = "Trigger test";
             ID = "triggertest";
             Description = "Test of trigger entity";
+            Category = "§_Testing";
         }
 
         public override object Clone()

@@ -26,7 +26,7 @@ internal class WaypointForGate
     //When the waypoint is triggered, pressed equals true
     bool pressed = false;
 
-    public WaypointForGate(Room room, Func<List<Vector3>> waypointGenerator, string id, string id2 = "", bool robotsOnly = true, float threshold = 0.2f, bool debug = false)
+    public WaypointForGate(Room room, Func<List<Vector3>> waypointGenerator, string id, float threshold = 0.2f)
     {
         waypoint = waypointGenerator()[0];
 
@@ -129,15 +129,12 @@ internal class WaypointForGate
     /// <summary>
     /// When the waypoint is triggered, returns true.
     /// </summary>
-    public bool buttonPressed()
-    {
-        return pressed;
-    }
+    public bool ButtonPressed => pressed;
 
     /// <summary>
     /// Returns the position of the waypoint.
     /// </summary>
-    public Vector3 getPosition()
+    public Vector3 GetPosition()
     {
         return waypoint_X.Position;
     }
@@ -145,7 +142,7 @@ internal class WaypointForGate
     /// <summary>
     /// Moves the waypoint from its current position to pos.
     /// </summary>
-    public void move(Vector3 pos)
+    public void Move(Vector3 pos)
     {
         waypoint_X.Position = pos;
         waypoint_X_1.Position = pos;

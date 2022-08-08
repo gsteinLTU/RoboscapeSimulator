@@ -29,6 +29,7 @@ namespace RoboScapeSimulator.Environments
             Description = "N robots, N waypoints, and a gate";
             _courseType = courseType;
             _numBots = numBots;
+            Category = "§_Testing";
         }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace RoboScapeSimulator.Environments
             });
 
             //Creates gate to fill in opening
-            Cube gate = new Cube(room, 1.8f, 0.25f, 0.15f, new Vector3(0, 0, 9.0f), Quaternion.Identity);
+            Cube gate = new(room, 1.8f, 0.25f, 0.15f, new Vector3(0, 0, 9.0f), Quaternion.Identity);
             gate.BodyReference.Awake = true;
             gate.forceUpdate = true;
 
@@ -139,7 +140,7 @@ namespace RoboScapeSimulator.Environments
                             start = false;
                         }
                     }
-                    if (start && waypoints[i].buttonPressed())
+                    if (start && waypoints[i].ButtonPressed)
                     {
                         timers[i].Start();
                     }
@@ -148,7 +149,7 @@ namespace RoboScapeSimulator.Environments
                 //Checks that all the waypoints have been triggered within 2 seconds of the first
                 for (int i = 0; i < _numBots; i++)
                 {
-                    if (!(waypoints[i].buttonPressed() && timers[i].ElapsedSeconds < 2))
+                    if (!(waypoints[i].ButtonPressed && timers[i].ElapsedSeconds < 2))
                     {
                         complete = false;
                     }
