@@ -87,7 +87,7 @@ namespace RoboScapeSimulator
                 // Setup updates for socket in new room 
                 Program.Rooms[socketRoom].AddSocket(socket, args[0]["username"]?.ToString());
                 Utils.SendAsJSON(socket, "roomJoined", socketRoom);
-                Utils.SendAsJSON(socket, "roomInfo", Program.Rooms[socketRoom].GetInfo());
+                Utils.SendAsJSON(socket, "roomInfo", Program.Rooms[socketRoom].GetRoomInfo());
                 SendUpdate(socket, Program.Rooms[socketRoom], true);
             }
             else

@@ -197,20 +197,6 @@ namespace RoboScapeSimulator
         }
 
         /// <summary>
-        /// Collect information about the room's metadata in a format sendable to the client as JSON
-        /// </summary>
-        /// <returns>Structure containing room metadata</returns>
-        public Dictionary<string, object> GetInfo()
-        {
-            return new Dictionary<string, object>()
-            {
-                {"background", ""},
-                {"time", Time}
-            };
-        }
-
-
-        /// <summary>
         /// Do not send the next update for this room (if needed for optimization purposes)
         /// </summary>
         public bool SkipNextUpdate = false;
@@ -253,7 +239,7 @@ namespace RoboScapeSimulator
         /// </summary>
         /// <param name="socket">Socket to add to active sockets list</param>
         /// <param name="username">Username of user joining</param>
-        internal void AddSocket(Node.Socket socket, string? username)
+        internal void AddSocket(Socket socket, string? username)
         {
             LastInteractionTime = Environment.TickCount64;
             lock (activeSockets)
