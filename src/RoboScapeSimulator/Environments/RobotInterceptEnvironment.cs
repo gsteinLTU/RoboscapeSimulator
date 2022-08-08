@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Environments.Helpers;
 using RoboScapeSimulator.IoTScape.Devices;
 
 namespace RoboScapeSimulator.Environments
@@ -22,7 +23,7 @@ namespace RoboScapeSimulator.Environments
             Name = $"Robot Intercept ({difficulty})";
             ID = $"robotintercept{difficulty}";
             Description = "One robot has to intercept another";
-            Category = "§_Testing";
+            //Category = "§_Testing";
         }
 
         public override object Clone()
@@ -42,6 +43,8 @@ namespace RoboScapeSimulator.Environments
 
             // Target robot
             float targetSpeed = _difficulty == Difficulties.Hard ? 90 : 50;
+
+            StopwatchTimer timer = new(room);
 
             var rng = new Random();
 

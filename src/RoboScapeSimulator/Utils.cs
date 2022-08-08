@@ -30,6 +30,29 @@ namespace RoboScapeSimulator
         }
 
         /// <summary>
+        /// Clamp a value between a min and max
+        /// </summary>
+        /// <param name="val">Value to clamp</param>
+        /// <param name="min">Minimum</param>
+        /// <param name="max">Maximum</param>
+        /// <typeparam name="T">Type of values to compare</typeparam>
+        /// <returns>val if between min and max, otherwise the closest bound</returns>
+        internal static T Clamp<T>(T val, T min, T max) where T : IComparable
+        {
+            if (val.CompareTo(min) < 0)
+            {
+                return min;
+            }
+
+            if (val.CompareTo(max) > 0)
+            {
+                return max;
+            }
+
+            return val;
+        }
+
+        /// <summary>
         /// Serialize an object to JSON and then send it as a response
         /// </summary>
         /// <typeparam name="T">Type of data to send</typeparam>
@@ -137,7 +160,7 @@ namespace RoboScapeSimulator
                     {
                         foreach (var entry in dict)
                         {
-                            Console.WriteLine("\t" + entry.Key + ": " + entry.Value.ToString());
+                            Trace.WriteLine("\t" + entry.Key + ": " + entry.Value.ToString());
                         }
                     }
                     else
@@ -178,7 +201,7 @@ namespace RoboScapeSimulator
                     {
                         foreach (var entry in dict)
                         {
-                            Console.WriteLine("\t" + entry.Key + ": " + entry.Value.ToString());
+                            Trace.WriteLine("\t" + entry.Key + ": " + entry.Value.ToString());
                         }
                     }
                     else
