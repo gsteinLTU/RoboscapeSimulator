@@ -57,7 +57,6 @@ namespace RoboScapeSimulator.Environments
             int boxes = 5;
             foreach (var point in Utils.PointsOnCircle(boxes, 1.5f, 1.45f))
             {
-                Console.WriteLine(point);
                 _ = new Cube(room, 0.5f, 0.5f, 0.5f, point, Quaternion.Identity, visualInfo: new VisualInfo() { Color = "#B85" });
             }
 

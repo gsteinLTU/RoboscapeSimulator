@@ -30,8 +30,6 @@ public static class Program
 
     public static readonly DateTime StartDateTime = DateTime.Now;
 
-
-
     public static void Main()
     {
         Trace.Listeners.Add(new ConsoleTraceListener());
@@ -87,34 +85,13 @@ public static class Program
 
         server.Start();
 
-        Stopwatch stopwatch = new();
-        stopwatch.Start();
-
-        Trace.WriteLine("Server started");
-
         // Client update loops
         var clientUpdateTimer = Timers.CreateClientUpdateTimer(updateFPS);
-        var clientFullUpdateTimer = Timers.CreateClientFullUpdateTimer();
         var cleanDeadRoomsTimer = Timers.CreateCleanDeadRoomsTimer();
         var apiAnnounceTimer = Timers.CreateMainAPIServerAnnounceTimer();
+        var roomUpdateTimer = Timers.CreateRoomUpdateTimer(simFPS);
 
-        var fpsSpan = TimeSpan.FromSeconds(1d / simFPS);
-        Thread.Sleep(Math.Max(0, (int)fpsSpan.Subtract(stopwatch.Elapsed).TotalMilliseconds));
-
-        var updateTimer = new Timer((e) =>
-        {
-            lock (Rooms)
-            {
-                foreach (Room room in Rooms.Values)
-                {
-                    room.Update((float)stopwatch.Elapsed.TotalSeconds);
-                }
-            }
-
-            IoTScapeManager.Update((float)stopwatch.Elapsed.TotalSeconds);
-            stopwatch.Restart();
-        });
-        updateTimer.Change(fpsSpan, fpsSpan);
+        Trace.WriteLine("Server started");
 
         while (true)
         {
