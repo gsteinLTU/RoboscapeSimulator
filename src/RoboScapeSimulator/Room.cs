@@ -481,6 +481,10 @@ namespace RoboScapeSimulator
             new FinalChallengeEnvironment(),
             new FinalChallengeEnvironment(true),
             new PhysicsTestEnvironment(),
+            new GateEnvironment(),
+            new GateEnvironment(GateEnvironment.Courses.Default, 3),
+            new GateEnvironment(GateEnvironment.Courses.Obstacles),
+            new RatEnvironment()
         };
 
         public DateTime LastInteractionDateTime
