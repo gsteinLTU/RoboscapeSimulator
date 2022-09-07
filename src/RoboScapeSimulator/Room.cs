@@ -5,6 +5,7 @@ using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.Environments;
 using RoboScapeSimulator.Node;
+using RoboScapeSimulator.Physics.Bepu;
 
 namespace RoboScapeSimulator
 {
@@ -137,10 +138,10 @@ namespace RoboScapeSimulator
         /// <param name="name">Name of this Room, leave empty to be assigned a random name</param>
         /// <param name="password">Password to restrict entry to this Room with</param>
         /// <param name="environment">ID of EnvironmentConfiguration to setup this Room with</param>
-        public Room(string name = "", string password = "", string environment = "default")
+        public Room(string name = "", string password = "", string environment = "default", SimulationInstance? simulationInstance = null)
         {
             Trace.WriteLine($"Setting up room {name} with environment {environment}");
-            SimInstance = new SimulationInstance();
+            SimInstance = simulationInstance ?? new BepuSimulationInstance();
 
             // Find requested environment (or use default)
             if (!Environments.Any((env) => env.ID == environment))

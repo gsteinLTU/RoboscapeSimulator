@@ -1,62 +1,31 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Text;
-using BepuPhysics;
-using BepuUtilities.Memory;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 namespace RoboScapeSimulator
 {
-    public class SimulationInstance : IDisposable
+    public abstract class SimulationInstance : IDisposable
     {
-        /// <summary>
-        /// References to static bodies in the scene
-        /// </summary>
-        public Dictionary<string, StaticReference> NamedStatics = new();
-
-        /// <summary>
-        /// References to moving bodies in the scene
-        /// </summary>
-        public Dictionary<string, BodyReference> NamedBodies = new();
-
         public List<Entity> Entities = new();
 
         public IEnumerable<Robot> Robots => Entities.Where(e => e is Robot).Cast<Robot>();
 
         public IEnumerable<Trigger> Triggers => Entities.Where(e => e is Trigger).Cast<Trigger>();
 
-        public Simulation Simulation;
-
-        /// <summary>
-        /// Gets the buffer pool used by the demo's simulation.
-        /// </summary>
-        public BufferPool BufferPool { get; private set; }
-
-        internal CollidableProperty<BodyCollisionProperties> Properties = new();
-
         /// <summary>
         /// Time elapsed in this simulation
         /// </summary>
         public float Time = 0;
 
-        public SimulationInstanceIntegratorCallbacks IntegratorCallbacks;
-
-        public SimulationInstance()
-        {
-            Properties = new CollidableProperty<BodyCollisionProperties>();
-            BufferPool = new BufferPool();
-            IntegratorCallbacks = new SimulationInstanceIntegratorCallbacks(new Vector3(0, -9.81f, 0));
-            Simulation = Simulation.Create(BufferPool, new SimulationInstanceCallbacks(this, Properties), IntegratorCallbacks, new SolveDescription(3, 10), new DefaultTimestepper());
-        }
+        public SimulationInstance() { }
 
         bool disposed;
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (!disposed)
             {
                 disposed = true;
-                Simulation.Dispose();
-                BufferPool.Clear();
                 GC.SuppressFinalize(this);
             }
         }
@@ -64,7 +33,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Resets all resettable objects in the environment
         /// </summary>
-        public void Reset()
+        public virtual void Reset()
         {
             ((List<IResettable>)Entities.Where(e => e is IResettable)).ForEach(e => e.Reset());
         }
@@ -73,12 +42,11 @@ namespace RoboScapeSimulator
         /// Update the simulation
         /// </summary>
         /// <param name="dt">Delta time in s</param>
-        public void Update(float dt)
+        public virtual void Update(float dt)
         {
             if (dt <= 0)
                 return;
             Time += dt;
-            Simulation.Timestep(dt);
             foreach (var entity in Entities.ToList())
             {
                 try
@@ -97,7 +65,7 @@ namespace RoboScapeSimulator
         /// </summary>
         /// <param name="onlyAwake">Should only dynamic, non-sleeping objects be returned?</param>
         /// <returns>Dictionary with entity name as key, BodyInfo as value</returns>
-        public Dictionary<string, object> GetBodies(bool onlyAwake = false, bool allData = true)
+        public virtual Dictionary<string, object> GetBodies(bool onlyAwake = false, bool allData = true)
         {
             var output = new Dictionary<string, object>();
 
