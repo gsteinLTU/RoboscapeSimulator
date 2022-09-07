@@ -79,7 +79,7 @@ namespace RoboScapeSimulator.IoTScape.Devices
         /// Create LIDARSensor attached to a Robot
         /// </summary>
         /// <param name="robot">Robot to attach sensor to</param>
-        public LIDARSensor(Robot robot) : this(robot.BodyReference, robot.simulation, robot.ID) { }
+        public LIDARSensor(ParallaxRobot robot) : this(robot.BodyReference, robot.simulation, robot.ID) { }
 
         /// <summary>
         /// Create a LIDARSensor tracking a BodyReference

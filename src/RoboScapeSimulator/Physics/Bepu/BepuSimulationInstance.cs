@@ -155,6 +155,8 @@ namespace RoboScapeSimulator.Physics.Bepu
 
         public override Vector3 Size => BodyReference.BoundingBox.Max - BodyReference.BoundingBox.Min;
 
+        public RigidPose Pose => new RigidPose(Position, Orientation);
+
         public override void ApplyForce(Vector3 force)
         {
             BodyReference.ApplyLinearImpulse(force);

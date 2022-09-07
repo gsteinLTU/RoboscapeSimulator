@@ -60,144 +60,151 @@ namespace RoboScapeSimulator.Entities.Robots
 
         private bool whiskerR = false;
 
+        internal Simulation simulation;
+
         public ParallaxRobot(Room room, in Vector3? position = null, in Quaternion? rotation = null, bool debug = false, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f, bool internalUse = false) : base(room, position, rotation, visualInfo: visualInfo, spawnHeight: spawnHeight, internalUse: internalUse)
         {
             CreateHandlers();
 
-            var wheelShape = new Cylinder(0.03f, .01f);
-            var wheelInertia = wheelShape.ComputeInertia(0.25f);
-            var wheelShapeIndex = simulation.Shapes.Add(wheelShape);
+            if(room.SimInstance is BepuSimulationInstance bepuSimInstance && BodyReference is SimBodyBepu bepuBody){
+                simulation = bepuSimInstance.Simulation;
+                var wheelShape = new Cylinder(0.03f, .01f);
+                var wheelInertia = wheelShape.ComputeInertia(0.25f);
+                var wheelShapeIndex = simulation.Shapes.Add(wheelShape);
 
-            var rearWheelShape = new Sphere(0.01f);
-            _ = rearWheelShape.ComputeInertia(0.25f);
-            var rearWheelShapeIndex = simulation.Shapes.Add(rearWheelShape);
+                var rearWheelShape = new Sphere(0.01f);
+                _ = rearWheelShape.ComputeInertia(0.25f);
+                var rearWheelShapeIndex = simulation.Shapes.Add(rearWheelShape);
 
-            float wheelDistX = 0.05f;
-            float wheelDistY = 0.003f;
-            float wheelDistZ = 0.025f;
+                float wheelDistX = 0.05f;
+                float wheelDistY = 0.003f;
+                float wheelDistZ = 0.025f;
 
-            var lWheelOffset = new RigidPose(new Vector3(-wheelDistX, wheelDistY, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
-            RigidPose.MultiplyWithoutOverlap(lWheelOffset, BodyReference.Pose, out lWheelPose);
+                var lWheelOffset = new RigidPose(new Vector3(-wheelDistX, wheelDistY, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
+                RigidPose.MultiplyWithoutOverlap(lWheelOffset, bepuBody.Pose, out lWheelPose);
 
-            LWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
-                lWheelPose,
-                wheelInertia, new CollidableDescription(wheelShapeIndex, 0.1f), new BodyActivityDescription(0.01f)));
+                LWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
+                    lWheelPose,
+                    wheelInertia, new CollidableDescription(wheelShapeIndex, 0.1f), new BodyActivityDescription(0.01f)));
 
-            LMotor = simulation.Solver.Add(LWheel, BodyReference.Handle, new AngularAxisMotor
-            {
-                LocalAxisA = new Vector3(0, 1, 0),
-                Settings = default,
-                TargetVelocity = default
-            });
+                LMotor = simulation.Solver.Add(LWheel, bepuBody.BodyReference.Handle, new AngularAxisMotor
+                {
+                    LocalAxisA = new Vector3(0, 1, 0),
+                    Settings = default,
+                    TargetVelocity = default
+                });
 
-            LHinge = simulation.Solver.Add(BodyReference.Handle, LWheel, new AngularHinge
-            {
-                LocalHingeAxisA = new Vector3(1, 0, 0),
-                LocalHingeAxisB = new Vector3(0, 1, 0),
-                SpringSettings = new SpringSettings(30, 1)
-            });
+                LHinge = simulation.Solver.Add(bepuBody.BodyReference.Handle, LWheel, new AngularHinge
+                {
+                    LocalHingeAxisA = new Vector3(1, 0, 0),
+                    LocalHingeAxisB = new Vector3(0, 1, 0),
+                    SpringSettings = new SpringSettings(30, 1)
+                });
 
-            simulation.Solver.Add(BodyReference.Handle, LWheel, new LinearAxisServo
-            {
-                LocalPlaneNormal = new Vector3(0, -1, 0),
-                TargetOffset = 0.05f,
-                LocalOffsetA = new Vector3(-wheelDistX, wheelDistY, wheelDistZ),
-                LocalOffsetB = default,
-                ServoSettings = ServoSettings.Default,
-                SpringSettings = new SpringSettings(30, 1)
-            });
+                simulation.Solver.Add(bepuBody.BodyReference.Handle, LWheel, new LinearAxisServo
+                {
+                    LocalPlaneNormal = new Vector3(0, -1, 0),
+                    TargetOffset = 0.05f,
+                    LocalOffsetA = new Vector3(-wheelDistX, wheelDistY, wheelDistZ),
+                    LocalOffsetB = default,
+                    ServoSettings = ServoSettings.Default,
+                    SpringSettings = new SpringSettings(30, 1)
+                });
 
-            simulation.Solver.Add(BodyReference.Handle, LWheel, new PointOnLineServo
-            {
-                LocalDirection = new Vector3(0, -1, 0),
-                LocalOffsetA = new Vector3(-wheelDistX, wheelDistY, wheelDistZ),
-                LocalOffsetB = default,
-                ServoSettings = ServoSettings.Default,
-                SpringSettings = new SpringSettings(30, 1)
-            });
+                simulation.Solver.Add(bepuBody.BodyReference.Handle, LWheel, new PointOnLineServo
+                {
+                    LocalDirection = new Vector3(0, -1, 0),
+                    LocalOffsetA = new Vector3(-wheelDistX, wheelDistY, wheelDistZ),
+                    LocalOffsetB = default,
+                    ServoSettings = ServoSettings.Default,
+                    SpringSettings = new SpringSettings(30, 1)
+                });
 
-            var rWheelOffset = new RigidPose(new Vector3(wheelDistX, wheelDistY, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
+                var rWheelOffset = new RigidPose(new Vector3(wheelDistX, wheelDistY, 0.05f), QuaternionEx.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI * 0.5f));
 
-            RigidPose.MultiplyWithoutOverlap(rWheelOffset, BodyReference.Pose, out rWheelPose);
+                RigidPose.MultiplyWithoutOverlap(rWheelOffset, bepuBody.Pose, out rWheelPose);
 
-            RWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
-                rWheelPose,
-                wheelInertia, new CollidableDescription(wheelShapeIndex, 0.1f), new BodyActivityDescription(0.01f)));
+                RWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
+                    rWheelPose,
+                    wheelInertia, new CollidableDescription(wheelShapeIndex, 0.1f), new BodyActivityDescription(0.01f)));
 
-            RMotor = simulation.Solver.Add(RWheel, BodyReference.Handle, new AngularAxisMotor
-            {
-                LocalAxisA = new Vector3(0, -1, 0),
-                Settings = default,
-                TargetVelocity = default
-            });
+                RMotor = simulation.Solver.Add(RWheel, bepuBody.BodyReference.Handle, new AngularAxisMotor
+                {
+                    LocalAxisA = new Vector3(0, -1, 0),
+                    Settings = default,
+                    TargetVelocity = default
+                });
 
-            RHinge = simulation.Solver.Add(BodyReference.Handle, RWheel, new AngularHinge
-            {
-                LocalHingeAxisA = new Vector3(-1, 0, 0),
-                LocalHingeAxisB = new Vector3(0, 1, 0),
-                SpringSettings = new SpringSettings(30, 1)
-            });
-
-
-            simulation.Solver.Add(BodyReference.Handle, RWheel, new LinearAxisServo
-            {
-                LocalPlaneNormal = new Vector3(0, -1, 0),
-                TargetOffset = 0.05f,
-                LocalOffsetA = new Vector3(wheelDistX, wheelDistY, wheelDistZ),
-                LocalOffsetB = default,
-                ServoSettings = ServoSettings.Default,
-                SpringSettings = new SpringSettings(30, 1)
-            });
+                RHinge = simulation.Solver.Add(bepuBody.BodyReference.Handle, RWheel, new AngularHinge
+                {
+                    LocalHingeAxisA = new Vector3(-1, 0, 0),
+                    LocalHingeAxisB = new Vector3(0, 1, 0),
+                    SpringSettings = new SpringSettings(30, 1)
+                });
 
 
-            simulation.Solver.Add(BodyReference.Handle, RWheel, new PointOnLineServo
-            {
-                LocalDirection = new Vector3(0, -1, 0),
-                LocalOffsetA = new Vector3(wheelDistX, wheelDistY, wheelDistZ),
-                LocalOffsetB = default,
-                ServoSettings = ServoSettings.Default,
-                SpringSettings = new SpringSettings(30, 1)
-            });
+                simulation.Solver.Add(bepuBody.BodyReference.Handle, RWheel, new LinearAxisServo
+                {
+                    LocalPlaneNormal = new Vector3(0, -1, 0),
+                    TargetOffset = 0.05f,
+                    LocalOffsetA = new Vector3(wheelDistX, wheelDistY, wheelDistZ),
+                    LocalOffsetB = default,
+                    ServoSettings = ServoSettings.Default,
+                    SpringSettings = new SpringSettings(30, 1)
+                });
 
-            var rearWheelOffset = new RigidPose(new Vector3(0, -0.03f, -0.03f));
-            RigidPose.MultiplyWithoutOverlap(rearWheelOffset, BodyReference.Pose, out rearWheelPose);
 
-            RearWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
-                rearWheelPose,
-                wheelInertia, new CollidableDescription(rearWheelShapeIndex, 0.1f), new BodyActivityDescription(0.01f)));
+                simulation.Solver.Add(bepuBody.BodyReference.Handle, RWheel, new PointOnLineServo
+                {
+                    LocalDirection = new Vector3(0, -1, 0),
+                    LocalOffsetA = new Vector3(wheelDistX, wheelDistY, wheelDistZ),
+                    LocalOffsetB = default,
+                    ServoSettings = ServoSettings.Default,
+                    SpringSettings = new SpringSettings(30, 1)
+                });
 
-            simulation.Solver.Add(BodyReference.Handle, RearWheel, new BallSocket
-            {
-                LocalOffsetA = new Vector3(0, -0.065f, -0.08f),
-                LocalOffsetB = new Vector3(0, 0, 0),
-                SpringSettings = new SpringSettings(60, 1)
-            });
+                var rearWheelOffset = new RigidPose(new Vector3(0, -0.03f, -0.03f));
+                RigidPose.MultiplyWithoutOverlap(rearWheelOffset, bepuBody.Pose, out rearWheelPose);
 
-            // Setup collisions
-            ref var bodyProperties = ref room.SimInstance.Properties.Allocate(BodyReference.Handle);
-            bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 1) };
+                RearWheel = simulation.Bodies.Add(BodyDescription.CreateDynamic(
+                    rearWheelPose,
+                    wheelInertia, new CollidableDescription(rearWheelShapeIndex, 0.1f), new BodyActivityDescription(0.01f)));
 
-            ref var lwheelProperties = ref room.SimInstance.Properties.Allocate(LWheel);
-            lwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 1), Friction = 1 };
+                simulation.Solver.Add(bepuBody.BodyReference.Handle, RearWheel, new BallSocket
+                {
+                    LocalOffsetA = new Vector3(0, -0.065f, -0.08f),
+                    LocalOffsetB = new Vector3(0, 0, 0),
+                    SpringSettings = new SpringSettings(60, 1)
+                });
 
-            ref var rwheelProperties = ref room.SimInstance.Properties.Allocate(RWheel);
-            rwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 1), Friction = 1 };
+                // Setup collisions
+                ref var bodyProperties = ref bepuSimInstance.Properties.Allocate(bepuBody.BodyReference.Handle);
+                bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(bepuBody.BodyReference.Handle.Value, 1) };
 
-            ref var rearWheelProperties = ref room.SimInstance.Properties.Allocate(RearWheel);
-            rearWheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 1), Friction = 0.5f };
+                ref var lwheelProperties = ref bepuSimInstance.Properties.Allocate(LWheel);
+                lwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(bepuBody.BodyReference.Handle.Value, 1), Friction = 1 };
 
-            SubgroupCollisionFilter.DisableCollision(ref lwheelProperties.Filter, ref bodyProperties.Filter);
-            SubgroupCollisionFilter.DisableCollision(ref rwheelProperties.Filter, ref bodyProperties.Filter);
-            SubgroupCollisionFilter.DisableCollision(ref rearWheelProperties.Filter, ref bodyProperties.Filter);
-            SubgroupCollisionFilter.DisableCollision(ref rearWheelProperties.Filter, ref rwheelProperties.Filter);
-            SubgroupCollisionFilter.DisableCollision(ref rearWheelProperties.Filter, ref lwheelProperties.Filter);
-            SubgroupCollisionFilter.DisableCollision(ref rwheelProperties.Filter, ref lwheelProperties.Filter);
+                ref var rwheelProperties = ref bepuSimInstance.Properties.Allocate(RWheel);
+                rwheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(bepuBody.BodyReference.Handle.Value, 1), Friction = 1 };
 
-            if (debug)
-            {
-                room.SimInstance.NamedBodies.Add("wheelL", room.SimInstance.Simulation.Bodies.GetBodyReference(LWheel));
-                room.SimInstance.NamedBodies.Add("wheelR", room.SimInstance.Simulation.Bodies.GetBodyReference(RWheel));
-                room.SimInstance.NamedBodies.Add("wheelRear", room.SimInstance.Simulation.Bodies.GetBodyReference(RearWheel));
+                ref var rearWheelProperties = ref bepuSimInstance.Properties.Allocate(RearWheel);
+                rearWheelProperties = new BodyCollisionProperties { Filter = new SubgroupCollisionFilter(bepuBody.BodyReference.Handle.Value, 1), Friction = 0.5f };
+
+                SubgroupCollisionFilter.DisableCollision(ref lwheelProperties.Filter, ref bodyProperties.Filter);
+                SubgroupCollisionFilter.DisableCollision(ref rwheelProperties.Filter, ref bodyProperties.Filter);
+                SubgroupCollisionFilter.DisableCollision(ref rearWheelProperties.Filter, ref bodyProperties.Filter);
+                SubgroupCollisionFilter.DisableCollision(ref rearWheelProperties.Filter, ref rwheelProperties.Filter);
+                SubgroupCollisionFilter.DisableCollision(ref rearWheelProperties.Filter, ref lwheelProperties.Filter);
+                SubgroupCollisionFilter.DisableCollision(ref rwheelProperties.Filter, ref lwheelProperties.Filter);
+
+                if (debug)
+                {
+                    bepuSimInstance.NamedBodies.Add("wheelL", bepuSimInstance.Simulation.Bodies.GetBodyReference(LWheel));
+                    bepuSimInstance.NamedBodies.Add("wheelR", bepuSimInstance.Simulation.Bodies.GetBodyReference(RWheel));
+                    bepuSimInstance.NamedBodies.Add("wheelRear", bepuSimInstance.Simulation.Bodies.GetBodyReference(RearWheel));
+                }
+            } else {
+                throw new SimulationTypeNotSupportedException();
             }
         }
 
@@ -244,9 +251,9 @@ namespace RoboScapeSimulator.Entities.Robots
             {
                 // Do whisker tests
                 const int whiskerRange = 11;
-                var whiskerTestL = Utils.QuickRayCast(simulation, Position + Vector3.Transform(new Vector3(-0.05f, 0.05f, 0.15f), Orientation),
+                var whiskerTestL = BepuUtils.QuickRayCast(simulation, Position + Vector3.Transform(new Vector3(-0.05f, 0.05f, 0.15f), Orientation),
                                Vector3.Transform(new Vector3(0, 0, 1), Orientation), whiskerRange, room.SimInstance.Triggers);
-                var whiskerTestR = Utils.QuickRayCast(simulation, Position + Vector3.Transform(new Vector3(0.05f, 0.05f, 0.15f), Orientation),
+                var whiskerTestR = BepuUtils.QuickRayCast(simulation, Position + Vector3.Transform(new Vector3(0.05f, 0.05f, 0.15f), Orientation),
                                Vector3.Transform(new Vector3(0, 0, 1), Orientation), whiskerRange, room.SimInstance.Triggers);
 
                 if (whiskerTestL != whiskerL || whiskerTestR != whiskerR)
