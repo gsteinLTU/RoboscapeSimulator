@@ -146,6 +146,7 @@ namespace RoboScapeSimulator
         public abstract Vector3 AngularVelocity { get; set; }
         public abstract bool Awake { get; set; }
         public abstract float Mass { get; }
+        public abstract Vector3 Size { get; }
         public abstract void ApplyForce(Vector3 force);
     }
 

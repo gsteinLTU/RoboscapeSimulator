@@ -153,6 +153,8 @@ namespace RoboScapeSimulator.Physics.Bepu
 
         public override float Mass => (1.0f / BodyReference.LocalInertia.InverseMass);
 
+        public override Vector3 Size => BodyReference.BoundingBox.Max - BodyReference.BoundingBox.Min;
+
         public override void ApplyForce(Vector3 force)
         {
             BodyReference.ApplyLinearImpulse(force);
