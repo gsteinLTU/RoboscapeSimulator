@@ -46,9 +46,9 @@ class Cube : DynamicEntity, IResettable
         Vector3 position = initialPosition ?? new Vector3(rng.Next(-5, 5), rng.Next(3, 5), rng.Next(-5, 5));
         Quaternion orientation = initialOrientation ?? Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
         this.initialPosition = position;
-        this.initialOrientation = Orientation;
+        this.initialOrientation = orientation;
 
-        room.SimInstance.CreateBox(Name, position, orientation, width, height, depth, mass, isKinematic);
+        BodyReference = room.SimInstance.CreateBox(Name, position, orientation, width, height, depth, mass, isKinematic);
         room.SimInstance.Entities.Add(this);
     }
 

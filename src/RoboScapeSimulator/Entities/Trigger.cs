@@ -81,9 +81,9 @@ public class Trigger : DynamicEntity, IResettable
 
         RigidPose pose = new(initialPosition, initialOrientation);
 
-        SimBody triggerBody = room.SimInstance.CreateBox(Name, initialPosition, initialOrientation, width, height, depth, 1, true);
+        BodyReference = room.SimInstance.CreateBox(Name, initialPosition, initialOrientation, width, height, depth, 1, true);
 
-        if(room.SimInstance is BepuSimulationInstance bepuSim && triggerBody is SimBodyBepu bepuBody){
+        if(room.SimInstance is BepuSimulationInstance bepuSim && BodyReference is SimBodyBepu bepuBody){
             ref var bodyProperties = ref bepuSim.Properties.Allocate(bepuBody.BodyReference.Handle);
             bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(bepuBody.BodyReference.Handle.Value, 0), IsTrigger = true };
         } else {

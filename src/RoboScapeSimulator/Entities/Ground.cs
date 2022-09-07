@@ -32,7 +32,7 @@ class Ground : StaticEntity
             VisualInfo = visualInfo.Value;
         }
 
-        room.SimInstance.CreateStaticBox(Name, position ?? new Vector3(0, -thickness / 2, 0), null, xsize, thickness, zsize);
+        StaticReference = room.SimInstance.CreateStaticBox(Name, position ?? new Vector3(0, -thickness / 2, 0), null, xsize, thickness, zsize);
         room.SimInstance.Entities.Add(this);
     }
 }
