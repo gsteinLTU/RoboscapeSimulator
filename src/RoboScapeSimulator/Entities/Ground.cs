@@ -32,11 +32,7 @@ class Ground : StaticEntity
             VisualInfo = visualInfo.Value;
         }
 
-        var simulationInstance = room.SimInstance;
-        var groundHandle = simulationInstance.Simulation.Statics.Add(new StaticDescription(position ?? new Vector3(0, -thickness / 2, 0), simulationInstance.Simulation.Shapes.Add(new Box(xsize, thickness, zsize))));
-        StaticReference = simulationInstance.Simulation.Statics.GetStaticReference(groundHandle);
-
-        room.SimInstance.NamedStatics.Add(Name, StaticReference);
+        room.SimInstance.CreateStaticBox(Name, position ?? new Vector3(0, -thickness / 2, 0), null, xsize, thickness, zsize);
         room.SimInstance.Entities.Add(this);
     }
 }

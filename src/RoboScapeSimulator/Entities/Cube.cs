@@ -42,33 +42,13 @@ class Cube : DynamicEntity, IResettable
 
         AllowReset = allowReset;
 
-        var simulationInstance = room.SimInstance;
         var rng = new Random();
-        var box = new Box(width, height, depth);
-        var boxInertia = box.ComputeInertia(mass);
-
-        BodyHandle bodyHandle;
         Vector3 position = initialPosition ?? new Vector3(rng.Next(-5, 5), rng.Next(3, 5), rng.Next(-5, 5));
-        RigidPose pose = new(position, initialOrientation ?? Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI));
-
-        if (isKinematic)
-        {
-            bodyHandle = simulationInstance.Simulation.Bodies.Add(BodyDescription.CreateKinematic(pose, new CollidableDescription(simulationInstance.Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0.01f)));
-        }
-        else
-        {
-            bodyHandle = simulationInstance.Simulation.Bodies.Add(BodyDescription.CreateDynamic(pose, boxInertia, new CollidableDescription(simulationInstance.Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
-        }
-
-        BodyReference = simulationInstance.Simulation.Bodies.GetBodyReference(bodyHandle);
-
-        ref var bodyProperties = ref simulationInstance.Properties.Allocate(BodyReference.Handle);
-        bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 0) };
-
+        Quaternion orientation = initialOrientation ?? Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
         this.initialPosition = position;
         this.initialOrientation = Orientation;
 
-        room.SimInstance.NamedBodies.Add(Name, BodyReference);
+        room.SimInstance.CreateBox(Name, position, orientation, width, height, depth, mass, isKinematic);
         room.SimInstance.Entities.Add(this);
     }
 

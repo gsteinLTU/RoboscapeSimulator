@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using BepuPhysics;
+using BepuPhysics.Collidables;
 using BepuUtilities.Memory;
 using RoboScapeSimulator.Entities;
 namespace RoboScapeSimulator.Physics.Bepu
@@ -88,5 +89,53 @@ namespace RoboScapeSimulator.Physics.Bepu
             return output;
         }
 
+        public override SimBody CreateBox(string name, Vector3 position, Quaternion? orientation = null, float width = 1, float height = 1, float depth = 1, float mass = 1, bool isKinematic = false)
+        { 
+            var box = new Box(width, height, depth);
+            var boxInertia = box.ComputeInertia(mass);
+
+
+            BodyHandle bodyHandle;
+            RigidPose pose = new(position, orientation ?? Quaternion.Identity);
+
+            if (isKinematic)
+            {
+                bodyHandle = Simulation.Bodies.Add(BodyDescription.CreateKinematic(pose, new CollidableDescription(Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0.01f)));
+            }
+            else
+            {
+                bodyHandle = Simulation.Bodies.Add(BodyDescription.CreateDynamic(pose, boxInertia, new CollidableDescription(Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
+            }
+
+            SimBodyBepu simBody = new SimBodyBepu();
+            simBody.BodyReference = Simulation.Bodies.GetBodyReference(bodyHandle);
+
+            ref var bodyProperties = ref Properties.Allocate(simBody.BodyReference.Handle);
+            bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(simBody.BodyReference.Handle.Value, 0) };
+ 
+            NamedBodies.Add(name, simBody.BodyReference);
+
+            return simBody;
+        }
+
+        public override SimStatic CreateStaticBox(string name, Vector3 position, Quaternion? orientation = null, float width = 100, float height = 100, float depth = 1)
+        {
+            var groundHandle = Simulation.Statics.Add(new StaticDescription(position, Simulation.Shapes.Add(new Box(width, height, depth))));
+            
+            SimStaticBepu simStatic = new SimStaticBepu();
+            simStatic.StaticReference = Simulation.Statics.GetStaticReference(groundHandle);
+
+            NamedStatics.Add(name, simStatic.StaticReference);
+
+            return simStatic;
+        }
+    }
+
+    public class SimBodyBepu : SimBody {
+        public BodyReference BodyReference;
+    }
+
+    public class SimStaticBepu : SimStatic {
+        public StaticReference StaticReference;
     }
 }

@@ -30,6 +30,7 @@ namespace RoboScapeSimulator
             }
         }
 
+
         /// <summary>
         /// Resets all resettable objects in the environment
         /// </summary>
@@ -59,6 +60,9 @@ namespace RoboScapeSimulator
                 }
             }
         }
+
+        public abstract SimBody CreateBox(string name, Vector3 position, Quaternion? orientation = null, float width = 1, float height = 1, float depth = 1, float mass = 1, bool isKinematic = false);
+        public abstract SimStatic CreateStaticBox(string name, Vector3 position, Quaternion? orientation = null, float width = 100, float height = 100, float depth = 1);
 
         /// <summary>
         /// Get a Dictionary of bodies in the simulation
@@ -134,4 +138,8 @@ namespace RoboScapeSimulator
         public float y;
         public float z;
     }
+
+    public abstract class SimBody {}
+
+    public abstract class SimStatic {}
 }

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Environments.Helpers;
 using RoboScapeSimulator.IoTScape.Devices;
+using RoboScapeSimulator.Physics.Bepu;
 
 namespace RoboScapeSimulator.Environments
 {
@@ -26,7 +27,9 @@ namespace RoboScapeSimulator.Environments
         {
             Trace.WriteLine("Setting up PhysicsTestEnvironment environment");
 
-            room.SimInstance.IntegratorCallbacks.LinearDamping = 0;
+            if(room.SimInstance is BepuSimulationInstance bSim){ 
+                bSim.IntegratorCallbacks.LinearDamping = 0;
+            }
 
             // Ground
             _ = new Ground(room);
