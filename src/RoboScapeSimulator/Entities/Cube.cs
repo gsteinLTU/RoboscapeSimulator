@@ -60,8 +60,8 @@ class Cube : DynamicEntity, IResettable
         {
             Position = initialPosition;
             Orientation = initialOrientation;
-            BodyReference.Velocity.Linear = new Vector3();
-            BodyReference.Velocity.Angular = new Vector3();
+            BodyReference.LinearVelocity = new Vector3();
+            BodyReference.AngularVelocity = new Vector3();
             OnReset?.Invoke(this, EventArgs.Empty);
         }
     }

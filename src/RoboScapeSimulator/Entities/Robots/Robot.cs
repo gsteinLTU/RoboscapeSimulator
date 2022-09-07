@@ -332,8 +332,8 @@ namespace RoboScapeSimulator.Entities.Robots
             // Later scenarios may provide more complex handling for this
             Position = _initialPosition;
             Orientation = _initialOrientation;
-            BodyReference.Velocity.Linear = new Vector3();
-            BodyReference.Velocity.Angular = new Vector3();
+            BodyReference.LinearVelocity = new Vector3();
+            BodyReference.AngularVelocity = new Vector3();
 
             time.Restart();
             lastMessageTime = 0;

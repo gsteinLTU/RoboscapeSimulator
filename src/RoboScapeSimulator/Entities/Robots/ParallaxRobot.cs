@@ -5,6 +5,7 @@ using BepuPhysics.Collidables;
 using BepuPhysics.Constraints;
 using BepuUtilities;
 using BepuUtilities.Memory;
+using RoboScapeSimulator.Physics.Bepu;
 
 namespace RoboScapeSimulator.Entities.Robots
 {

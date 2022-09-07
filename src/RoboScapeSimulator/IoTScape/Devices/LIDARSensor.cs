@@ -2,6 +2,7 @@ using System.Numerics;
 using BepuPhysics;
 using BepuUtilities.Memory;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Physics.Bepu;
 
 namespace RoboScapeSimulator.IoTScape.Devices
 {
@@ -85,48 +86,53 @@ namespace RoboScapeSimulator.IoTScape.Devices
         /// </summary>
         /// <param name="trackedBody">Body to track position/heading of</param>
         /// <param name="id">ID to assign sensor</param>
-        public LIDARSensor(BodyReference trackedBody, Simulation simulation, string? id = null) : base(definition, id)
+        public LIDARSensor(SimBody trackedBody, Simulation simulation, string? id = null) : base(definition, id)
         {
-            unsafe
+            if(trackedBody is SimBodyBepu bepuBody)
             {
-                Methods["getRange"] = (string[] args) =>
+                unsafe
                 {
-                    List<float> ranges = new();
-
-                    simulation.BufferPool.Take(1, out Buffer<RayHit> results);
-
-                    float distance;
-
-                    Vector3 axis = Vector3.Transform(Vector3.UnitY, trackedBody.Pose.Orientation);
-
-
-                    float angleDelta = AngleRange / MathF.Max(1, NumRays - 1);
-
-                    for (int i = 0; i < NumRays; i++)
+                    Methods["getRange"] = (string[] args) =>
                     {
-                        distance = MaxDistance;
+                        List<float> ranges = new();
 
-                        int intersectionCount = 0;
-                        HitHandler hitHandler = new()
+                        simulation.BufferPool.Take(1, out Buffer<RayHit> results);
+
+                        float distance;
+
+                        Vector3 axis = Vector3.Transform(Vector3.UnitY, trackedBody.Orientation);
+
+
+                        float angleDelta = AngleRange / MathF.Max(1, NumRays - 1);
+
+                        for (int i = 0; i < NumRays; i++)
                         {
-                            Hits = results,
-                            IntersectionCount = &intersectionCount
-                        };
+                            distance = MaxDistance;
 
-                        Vector3 direction = Vector3.Transform(Vector3.Transform(Vector3.UnitZ, Quaternion.CreateFromAxisAngle(axis, -angleDelta * i + StartAngle)), trackedBody.Pose.Orientation);
-                        simulation.RayCast(trackedBody.Pose.Position + Vector3.Transform(Offset, trackedBody.Pose.Orientation) + direction * MinDistance,
-                                           direction, MaxDistance, ref hitHandler);
+                            int intersectionCount = 0;
+                            HitHandler hitHandler = new()
+                            {
+                                Hits = results,
+                                IntersectionCount = &intersectionCount
+                            };
 
-                        if (intersectionCount > 0)
-                        {
-                            distance = Math.Min(hitHandler.Hits[0].T + MinDistance, MaxDistance);
+                            Vector3 direction = Vector3.Transform(Vector3.Transform(Vector3.UnitZ, Quaternion.CreateFromAxisAngle(axis, -angleDelta * i + StartAngle)), trackedBody.Orientation);
+                            simulation.RayCast(trackedBody.Position + Vector3.Transform(Offset, trackedBody.Orientation) + direction * MinDistance,
+                                            direction, MaxDistance, ref hitHandler);
+
+                            if (intersectionCount > 0)
+                            {
+                                distance = Math.Min(hitHandler.Hits[0].T + MinDistance, MaxDistance);
+                            }
+
+                            ranges.Add(distance * OutputMulitplier);
                         }
 
-                        ranges.Add(distance * OutputMulitplier);
-                    }
-
-                    return ranges.Select(range => range.ToString()).ToArray();
-                };
+                        return ranges.Select(range => range.ToString()).ToArray();
+                    };
+                }
+            } else {
+                throw new SimulationTypeNotSupportedException();
             }
         }
     }

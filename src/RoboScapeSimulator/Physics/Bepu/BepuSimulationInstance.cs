@@ -34,7 +34,7 @@ namespace RoboScapeSimulator.Physics.Bepu
             Properties = new CollidableProperty<BodyCollisionProperties>();
             BufferPool = new BufferPool();
             IntegratorCallbacks = new SimulationInstanceIntegratorCallbacks(new Vector3(0, -9.81f, 0));
-            Simulation = Simulation.Create(BufferPool, new SimulationInstanceCallbacks(this, Properties), IntegratorCallbacks, new SolveDescription(3, 10), new DefaultTimestepper());
+            Simulation = Simulation.Create(BufferPool, new BepuSimulationInstanceCallbacks(this, Properties), IntegratorCallbacks, new SolveDescription(3, 10), new DefaultTimestepper());
         }
 
         bool disposed;
@@ -130,12 +130,41 @@ namespace RoboScapeSimulator.Physics.Bepu
             return simStatic;
         }
     }
-
+  
     public class SimBodyBepu : SimBody {
         public BodyReference BodyReference;
+
+        public override Vector3 Position { get => BodyReference.Pose.Position; set 
+            {
+                BodyReference.Pose.Position = value;
+                BodyReference.Awake = true;
+            }
+        }
+        public override Quaternion Orientation { get => BodyReference.Pose.Orientation;set 
+            {
+                BodyReference.Pose.Orientation = value;
+                BodyReference.Awake = true;
+            }
+        }
+
+        public override Vector3 LinearVelocity { get => BodyReference.Velocity.Linear; set => BodyReference.Velocity.Linear = value; }
+        public override Vector3 AngularVelocity { get => BodyReference.Velocity.Angular; set => BodyReference.Velocity.Angular = value;  }
+        public override bool Awake {  get => BodyReference.Awake; set => BodyReference.Awake = value; }
+
+        public override float Mass => (1.0f / BodyReference.LocalInertia.InverseMass);
+
+        public override void ApplyForce(Vector3 force)
+        {
+            BodyReference.ApplyLinearImpulse(force);
+        }
     }
 
     public class SimStaticBepu : SimStatic {
         public StaticReference StaticReference;
+
+        public override Vector3 Position { get => StaticReference.Pose.Position; set => StaticReference.Pose.Position = value; }
+        public override Quaternion Orientation { get => StaticReference.Pose.Orientation; set => StaticReference.Pose.Orientation = value; }
+
+        public override Vector3 Size => StaticReference.BoundingBox.Max - StaticReference.BoundingBox.Min;
     }
 }

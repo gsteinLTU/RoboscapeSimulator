@@ -67,7 +67,7 @@ namespace RoboScapeSimulator.Environments
             radiationSensor.Methods["getIntensity"] = (string[] args) =>
             {
                 float intensity = 0;
-                float distance = (sensorBody.Pose.Position - targetBody.Pose.Position).LengthSquared();
+                float distance = (sensorBody.Position - targetBody.Position).LengthSquared();
                 intensity = targetIntensity / distance;
 
                 return new string[] { intensity.ToString() };

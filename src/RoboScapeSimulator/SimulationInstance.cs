@@ -131,7 +131,7 @@ namespace RoboScapeSimulator
     }
 
     [Serializable]
-    public struct Vec3
+    public struct Vec3 
     {
         public static implicit operator Vec3(Vector3 vector3) => new() { x = vector3.X, y = vector3.Y, z = vector3.Z };
         public float x;
@@ -139,7 +139,21 @@ namespace RoboScapeSimulator
         public float z;
     }
 
-    public abstract class SimBody {}
+    public abstract class SimBody {
+        public abstract Vector3 Position { get; set; }
+        public abstract Quaternion Orientation { get; set; }
+        public abstract Vector3 LinearVelocity { get; set; }
+        public abstract Vector3 AngularVelocity { get; set; }
+        public abstract bool Awake { get; set; }
+        public abstract float Mass { get; }
+        public abstract void ApplyForce(Vector3 force);
+    }
 
-    public abstract class SimStatic {}
+    public abstract class SimStatic {
+        public abstract Vector3 Position { get; set; }
+        public abstract Quaternion Orientation { get; set; }
+        public abstract Vector3 Size { get; }
+    }
+
+    public class SimulationTypeNotSupportedException : Exception {}
 }
