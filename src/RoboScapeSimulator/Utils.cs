@@ -230,5 +230,42 @@ namespace RoboScapeSimulator
                 }
             }
         }
+
+        /// <summary>
+        /// Get the largest component of this vector
+        /// </summary>
+        public static float Max(this Vector3 vec){
+            return MathF.Max(vec.X, MathF.Max(vec.Y, vec.Z));
+        }
+
+        /// <summary>
+        /// Get the component-wise maximum of this Vector3 and another Vector3
+        /// </summary>
+        public static Vector3 Max(this Vector3 vec, Vector3 v2){
+            return new Vector3(MathF.Max(vec.X, v2.X), MathF.Max(vec.Y, v2.Y), MathF.Max(vec.Z, v2.Z));
+        }
+
+        /// <summary>
+        /// Get the smallest component of this vector
+        /// </summary>
+        public static float Min(this Vector3 vec){
+            return MathF.Min(vec.X, MathF.Min(vec.Y, vec.Z));
+        }
+
+        /// <summary>
+        /// Get the component-wise minimum of this Vector3 and another Vector3
+        /// </summary>
+        public static Vector3 Min(this Vector3 vec, Vector3 v2){
+            return new Vector3(MathF.Min(vec.X, v2.X), MathF.Min(vec.Y, v2.Y), MathF.Min(vec.Z, v2.Z));
+        }
+
+        /// <summary>
+        /// Clamp the components of this vector component-wise between two other vectors
+        /// </summary>
+        public static void Clamp(this Vector3 vec, Vector3 min, Vector3 max){
+            vec.X = Clamp(vec.X, min.X, max.X);
+            vec.Y = Clamp(vec.Y, min.Y, max.Y);
+            vec.Z = Clamp(vec.Z, min.Z, max.Z);
+        }
     }
 }
