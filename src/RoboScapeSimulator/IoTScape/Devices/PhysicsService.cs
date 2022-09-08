@@ -1,7 +1,7 @@
 using System.Numerics;
-using BepuPhysics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Physics;
 
 namespace RoboScapeSimulator.IoTScape.Devices
 {
@@ -43,6 +43,32 @@ namespace RoboScapeSimulator.IoTScape.Devices
                         new IoTScapeMethodParams() {
                             documentation = "Z coordinate",
                             name = "z",
+                            optional = false,
+                            type = "number"
+                        },
+                    },
+                    returns = new IoTScapeMethodReturns(){type = new List<string>(){
+                        "void"
+                    }}
+                }},
+                {"setOrientation", new IoTScapeMethodDescription(){
+                    documentation = "Rotate the object",
+                    paramsList = new List<IoTScapeMethodParams>(){
+                        new IoTScapeMethodParams() {
+                            documentation = "Pitch",
+                            name = "pitch",
+                            optional = false,
+                            type = "number"
+                        },
+                        new IoTScapeMethodParams() {
+                            documentation = "Yaw",
+                            name = "yaw",
+                            optional = false,
+                            type = "number"
+                        },
+                        new IoTScapeMethodParams() {
+                            documentation = "Roll",
+                            name = "roll",
                             optional = false,
                             type = "number"
                         },
@@ -134,35 +160,49 @@ namespace RoboScapeSimulator.IoTScape.Devices
         /// </summary>
         /// <param name="trackedBody">Body to track position/heading of</param>
         /// <param name="id">ID to assign sensor</param>
-        public PhysicsService(BodyReference trackedBody, string? id = null) : base(definition, id)
+        public PhysicsService(SimBody trackedBody, string? id = null) : base(definition, id)
         {
             Methods["getPosition"] = (string[] args) =>
             {
-                return new string[] { trackedBody.Pose.Position.X.ToString(), trackedBody.Pose.Position.Y.ToString(), trackedBody.Pose.Position.Z.ToString() };
+                return new string[] { trackedBody.Position.X.ToString(), trackedBody.Position.Y.ToString(), trackedBody.Position.Z.ToString() };
             };
 
             Methods["getOrientation"] = (string[] args) =>
             {
-                trackedBody.Pose.Orientation.ExtractYawPitchRoll(out var yaw, out var pitch, out var roll);
+                trackedBody.Orientation.ExtractYawPitchRoll(out var yaw, out var pitch, out var roll);
                 return new string[] { (pitch * 180.0f / MathF.PI).ToString(), (yaw * 180.0f / MathF.PI).ToString(), (roll * 180.0f / MathF.PI).ToString() };
             };
 
             Methods["getMass"] = (string[] args) =>
             {
-                return new string[] { (1.0f / trackedBody.LocalInertia.InverseMass).ToString() };
+                return new string[] { trackedBody.Mass.ToString() };
             };
 
             Methods["applyForce"] = (string[] args) =>
             {
                 trackedBody.Awake = true;
-                trackedBody.ApplyLinearImpulse(new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2])));
+                trackedBody.ApplyForce(new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2])));
                 return Array.Empty<string>();
             };
 
             Methods["setVelocity"] = (string[] args) =>
             {
                 trackedBody.Awake = true;
-                trackedBody.Velocity.Linear = new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
+                trackedBody.LinearVelocity = new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
+                return Array.Empty<string>();
+            };
+
+            Methods["setPosition"] = (string[] args) =>
+            {
+                trackedBody.Awake = true;
+                trackedBody.Position = new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
+                return Array.Empty<string>();
+            };
+
+            Methods["setOrientation"] = (string[] args) =>
+            {
+                trackedBody.Awake = true;
+                trackedBody.Orientation = Quaternion.CreateFromYawPitchRoll(float.Parse(args[1]), float.Parse(args[0]), float.Parse(args[2]));
                 return Array.Empty<string>();
             };
         }

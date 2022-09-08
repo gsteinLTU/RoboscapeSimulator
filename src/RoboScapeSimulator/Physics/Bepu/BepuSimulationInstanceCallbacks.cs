@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -9,7 +8,7 @@ using BepuPhysics.Constraints;
 using BepuUtilities;
 using RoboScapeSimulator.Entities;
 
-namespace RoboScapeSimulator;
+namespace RoboScapeSimulator.Physics.Bepu;
 
 struct BodyCollisionProperties
 {
@@ -95,7 +94,7 @@ public struct SubgroupCollisionFilter
 
 }
 
-struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
+struct BepuSimulationInstanceCallbacks : INarrowPhaseCallbacks
 {
     public CollidableProperty<BodyCollisionProperties> Properties;
     public SpringSettings ContactSpringiness;
@@ -104,7 +103,7 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
 
     public SimulationInstance SimInstance;
 
-    public SimulationInstanceCallbacks(SimulationInstance simInstance, CollidableProperty<BodyCollisionProperties> properties)
+    public BepuSimulationInstanceCallbacks(SimulationInstance simInstance, CollidableProperty<BodyCollisionProperties> properties)
     {
         SimInstance = simInstance;
         Properties = properties;
@@ -157,9 +156,9 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
                 // If environments begin to get very complex, this search may need to be replaced with a Dictionary lookup keyed on handle values
                 var triggerEntity = SimInstance.Entities.Find(e =>
                     {
-                        if (e is DynamicEntity d)
+                        if (e is DynamicEntity d && d.BodyReference is SimBodyBepu bepuBody)
                         {
-                            return d.BodyReference.Handle.Value == triggerHandle.Value;
+                            return bepuBody.BodyReference.Handle.Value == triggerHandle.Value;
                         }
                         return false;
                     }
@@ -171,9 +170,9 @@ struct SimulationInstanceCallbacks : INarrowPhaseCallbacks
                     {
                         var other = SimInstance.Entities.Find(e =>
                             {
-                                if (e is DynamicEntity d)
+                                if (e is DynamicEntity d && d.BodyReference is SimBodyBepu bepuBody)
                                 {
-                                    return d.BodyReference.Handle.Value == otherHandle.Value;
+                                    return bepuBody.BodyReference.Handle.Value == otherHandle.Value;
                                 }
                                 return false;
                             }

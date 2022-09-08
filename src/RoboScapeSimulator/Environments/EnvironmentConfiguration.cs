@@ -1,3 +1,5 @@
+using RoboScapeSimulator.Physics.Bepu;
+
 namespace RoboScapeSimulator.Environments
 {
     /// <summary>
@@ -5,6 +7,11 @@ namespace RoboScapeSimulator.Environments
     /// </summary>
     abstract class EnvironmentConfiguration : ICloneable
     {
+        /// <summary>
+        /// SimulationInstance subtype this environment prefers
+        /// </summary>
+        internal Type PreferredSimulationInstanceType = typeof(BepuSimulationInstance);
+
         /// <summary>
         /// Displayed name of this environment
         /// </summary>

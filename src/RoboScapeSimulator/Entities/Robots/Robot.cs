@@ -14,11 +14,6 @@ namespace RoboScapeSimulator.Entities.Robots
     public abstract class Robot : DynamicEntity, IResettable
     {
         /// <summary>
-        /// Reference to the simulation this robot is inside of
-        /// </summary>
-        internal Simulation simulation;
-
-        /// <summary>
         /// Reference to the room this robot is inside of
         /// </summary>
         internal Room room;
@@ -45,50 +40,23 @@ namespace RoboScapeSimulator.Entities.Robots
         public Robot(Room room, in Vector3? position = null, in Quaternion? rotation = null, in Vector3? size = null, float mass = 2, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f, bool internalUse = false)
         {
             this.room = room;
-            simulation = room.SimInstance.Simulation;
             var rng = new Random();
-
-            Box box;
 
             VisualInfo = visualInfo ?? new VisualInfo() { ModelName = "parallax_robot.glb" };
 
-            if (size == null)
-            {
-                box = new Box(0.10f, 0.1f, 0.15f);
-            }
-            else
-            {
-                var tempSize = size.GetValueOrDefault();
-                box = new Box(tempSize.Z, tempSize.Y, tempSize.X);
-            }
+            SetupRobot(internalUse);
+            Name = "robot_" + BytesToHexstring(MacAddress, "");
 
-            var boxInertia = box.ComputeInertia(mass);
-
-            var bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(position ?? new Vector3(rng.Next(-5, 5), spawnHeight, rng.Next(-5, 5)), boxInertia, new CollidableDescription(simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
-            BodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
-
-            Width = BodyReference.BoundingBox.Max.X - BodyReference.BoundingBox.Min.X;
-            Height = BodyReference.BoundingBox.Max.Y - BodyReference.BoundingBox.Min.Y;
-            Depth = BodyReference.BoundingBox.Max.Z - BodyReference.BoundingBox.Min.Z;
-
-            if (rotation == null)
-            {
-                Orientation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI);
-            }
-            else
-            {
-                Orientation = rotation.GetValueOrDefault();
-            }
+            BodyReference = room.SimInstance.CreateBox(Name, 
+                position ?? new Vector3(rng.Next(-5, 5), spawnHeight, rng.Next(-5, 5)), 
+                rotation ?? Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI),
+                size?.Z ?? 0.1f, size?.Y ?? 0.1f, size?.X ?? 0.1f, mass);
 
             _initialPosition = Position;
             _initialOrientation = Orientation;
 
-            SetupRobot(internalUse);
             time.Start();
 
-            Name = "robot_" + BytesToHexstring(MacAddress, "");
-
-            room.SimInstance.NamedBodies.Add(Name, BodyReference);
             room.SimInstance.Entities.Add(this);
 
             claimable = true;
@@ -332,8 +300,8 @@ namespace RoboScapeSimulator.Entities.Robots
             // Later scenarios may provide more complex handling for this
             Position = _initialPosition;
             Orientation = _initialOrientation;
-            BodyReference.Velocity.Linear = new Vector3();
-            BodyReference.Velocity.Angular = new Vector3();
+            BodyReference.LinearVelocity = new Vector3();
+            BodyReference.AngularVelocity = new Vector3();
 
             time.Restart();
             lastMessageTime = 0;

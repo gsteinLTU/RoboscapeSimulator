@@ -68,7 +68,7 @@ namespace RoboScapeSimulator.Environments
             }
 
             // Robots
-            List<Robot> robots = new()
+            List<ParallaxRobot> robots = new()
             {
                 new ParallaxRobot(room, new Vector3(0, 0.25f, 1.25f), Quaternion.Identity, visualInfo: new() { ModelName = "car1_red.gltf" }, debug: false)
             };

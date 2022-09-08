@@ -1,6 +1,6 @@
-using BepuPhysics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Physics;
 
 namespace RoboScapeSimulator.IoTScape.Devices
 {
@@ -67,31 +67,31 @@ namespace RoboScapeSimulator.IoTScape.Devices
         /// </summary>
         /// <param name="trackedBody">Body to track position/heading of</param>
         /// <param name="id">ID to assign sensor</param>
-        public PositionSensor(BodyReference trackedBody, string? id = null) : base(definition, id)
+        public PositionSensor(SimBody trackedBody, string? id = null) : base(definition, id)
         {
             Methods["getX"] = (string[] args) =>
             {
-                return new string[] { trackedBody.Pose.Position.X.ToString() };
+                return new string[] { trackedBody.Position.X.ToString() };
             };
 
             Methods["getY"] = (string[] args) =>
             {
-                return new string[] { trackedBody.Pose.Position.Y.ToString() };
+                return new string[] { trackedBody.Position.Y.ToString() };
             };
 
             Methods["getZ"] = (string[] args) =>
             {
-                return new string[] { trackedBody.Pose.Position.Z.ToString() };
+                return new string[] { trackedBody.Position.Z.ToString() }; 
             };
 
             Methods["getPosition"] = (string[] args) =>
             {
-                return new string[] { trackedBody.Pose.Position.X.ToString(), trackedBody.Pose.Position.Y.ToString(), trackedBody.Pose.Position.Z.ToString() };
+                return new string[] { trackedBody.Position.X.ToString(), trackedBody.Position.Y.ToString(), trackedBody.Position.Z.ToString() };
             };
 
             Methods["getHeading"] = (string[] args) =>
             {
-                trackedBody.Pose.Orientation.ExtractYawPitchRoll(out var yaw, out var _, out var _);
+                trackedBody.Orientation.ExtractYawPitchRoll(out var yaw, out var _, out var _);
                 return new string[] { (yaw * 180.0f / MathF.PI).ToString() };
             };
         }

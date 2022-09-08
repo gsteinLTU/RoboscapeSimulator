@@ -1,16 +1,10 @@
 using System.Diagnostics;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using BepuPhysics;
-using BepuPhysics.Collidables;
-using BepuPhysics.Trees;
-using BepuUtilities.Memory;
 using EmbedIO;
-using RoboScapeSimulator.Entities;
 
 namespace RoboScapeSimulator
 {
@@ -220,18 +214,6 @@ namespace RoboScapeSimulator
             }
         }
 
-        public unsafe static bool QuickRayCast(Simulation simulation, Vector3 origin, Vector3 direction, float maxRange = 300, IEnumerable<DynamicEntity>? ignoreList = null)
-        {
-            int intersectionCount = 0;
-            simulation.BufferPool.Take(1, out Buffer<RayHit> results);
-
-            HitHandler hitHandler = new(results, &intersectionCount, ignoreList);
-
-            simulation.RayCast(origin, direction, maxRange / 100f, ref hitHandler);
-            simulation.BufferPool.Return(ref results);
-            return intersectionCount > 0;
-        }
-
         private class SmallerFloatFormatConverter : JsonConverter<float>
         {
             public override float Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.GetSingle();
@@ -248,71 +230,55 @@ namespace RoboScapeSimulator
                 }
             }
         }
-    }
 
-    public struct RayHit
-    {
-        public Vector3 Normal;
-        public float T;
-        public CollidableReference Collidable;
-        public bool Hit;
-    }
-
-    public unsafe struct HitHandler : IRayHitHandler
-    {
-        public HitHandler(Buffer<RayHit> hits, int* intersectionCount, List<BodyHandle>? ignoreList)
-        {
-            Hits = hits;
-            IntersectionCount = intersectionCount;
-            IgnoreList = ignoreList;
+        /// <summary>
+        /// Get the largest component of this vector
+        /// </summary>
+        public static float Max(this Vector3 vec){
+            return MathF.Max(vec.X, MathF.Max(vec.Y, vec.Z));
         }
 
-        public HitHandler(Buffer<RayHit> hits, int* intersectionCount, IEnumerable<DynamicEntity>? ignoreList = null)
-        {
-            Hits = hits;
-            IntersectionCount = intersectionCount;
-            IgnoreList = ignoreList?.Select(e => e.BodyReference.Handle).ToList();
+        /// <summary>
+        /// Get the component-wise maximum of this Vector3 and another Vector3
+        /// </summary>
+        public static Vector3 Max(this Vector3 vec, Vector3 v2){
+            return new Vector3(MathF.Max(vec.X, v2.X), MathF.Max(vec.Y, v2.Y), MathF.Max(vec.Z, v2.Z));
         }
 
-        public List<BodyHandle>? IgnoreList = null;
-        public Buffer<RayHit> Hits;
-        public int* IntersectionCount;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool AllowTest(CollidableReference collidable)
-        {
-            if (IgnoreList != null)
-            {
-                return !IgnoreList.Contains(collidable.BodyHandle);
-            }
-            return true;
+        /// <summary>
+        /// Get the smallest component of this vector
+        /// </summary>
+        public static float Min(this Vector3 vec){
+            return MathF.Min(vec.X, MathF.Min(vec.Y, vec.Z));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool AllowTest(CollidableReference collidable, int childIndex)
-        {
-            if (IgnoreList != null)
-            {
-                return !IgnoreList.Contains(collidable.BodyHandle);
-            }
-
-            return true;
+        /// <summary>
+        /// Get the component-wise minimum of this Vector3 and another Vector3
+        /// </summary>
+        public static Vector3 Min(this Vector3 vec, Vector3 v2){
+            return new Vector3(MathF.Min(vec.X, v2.X), MathF.Min(vec.Y, v2.Y), MathF.Min(vec.Z, v2.Z));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void OnRayHit(in RayData ray, ref float maximumT, float t, in Vector3 normal, CollidableReference collidable, int childIndex)
-        {
-            maximumT = t;
-            ref var hit = ref Hits[ray.Id];
-            // if (t < hit.T)
-            // {
-            //     if (hit.T != float.MaxValue)
-            ++*IntersectionCount;
-            hit.Normal = normal;
-            hit.T = t;
-            hit.Collidable = collidable;
-            hit.Hit = true;
-            // }
+        /// <summary>
+        /// Clamp the components of this vector component-wise between two other vectors
+        /// </summary>
+        public static Vector3 Clamp(this Vector3 vec, Vector3 min, Vector3 max){
+            vec.X = Clamp(vec.X, min.X, max.X);
+            vec.Y = Clamp(vec.Y, min.Y, max.Y);
+            vec.Z = Clamp(vec.Z, min.Z, max.Z);
+            return vec;
+        }
+
+        /// <summary>
+        /// Test if this vector is inside a cubic region defined by two corners
+        /// </summary>
+        /// <param name="vec"></param>
+        /// <param name="min">Lowest values of components</param>
+        /// <param name="max">Largest values of components</param>
+        /// <returns>If this Vector3's components are all between min and max.</returns>
+        public static bool Inside(this Vector3 vec, Vector3 min, Vector3 max){
+            return vec.X >= min.X && vec.Y >= min.Y && vec.Z >= min.Z &&
+                vec.X <= max.X && vec.Y <= max.Y && vec.Z <= max.Z;
         }
     }
 }

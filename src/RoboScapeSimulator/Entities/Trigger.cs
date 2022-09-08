@@ -1,6 +1,8 @@
 using System.Numerics;
 using BepuPhysics;
 using BepuPhysics.Collidables;
+using RoboScapeSimulator.Physics;
+using RoboScapeSimulator.Physics.Bepu;
 
 namespace RoboScapeSimulator.Entities;
 
@@ -80,16 +82,17 @@ public class Trigger : DynamicEntity, IResettable
 
         RigidPose pose = new(initialPosition, initialOrientation);
 
-        // Body created which never sleeps, so trigger can repeatedly know bodies inside it
-        BodyHandle bodyHandle = simulationInstance.Simulation.Bodies.Add(BodyDescription.CreateKinematic(pose, new CollidableDescription(simulationInstance.Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(-1)));
-        BodyReference = simulationInstance.Simulation.Bodies.GetBodyReference(bodyHandle);
+        BodyReference = room.SimInstance.CreateBox(Name, initialPosition, initialOrientation, width, height, depth, 1, true);
 
-        ref var bodyProperties = ref simulationInstance.Properties.Allocate(BodyReference.Handle);
-        bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(BodyReference.Handle.Value, 0), IsTrigger = true };
+        if(room.SimInstance is BepuSimulationInstance bepuSim && BodyReference is SimBodyBepu bepuBody){
+            ref var bodyProperties = ref bepuSim.Properties.Allocate(bepuBody.BodyReference.Handle);
+            bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(bepuBody.BodyReference.Handle.Value, 0), IsTrigger = true };
+        } else {
+            // Current simulation type does not support creating triggers
+            throw new SimulationTypeNotSupportedException();
+        }
 
         this.OneTime = oneTime;
-
-        room.SimInstance.NamedBodies.Add(Name, BodyReference);
         room.SimInstance.Entities.Add(this);
     }
 

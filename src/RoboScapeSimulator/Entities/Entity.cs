@@ -1,6 +1,6 @@
 using System.Numerics;
 using System.Text.Json.Serialization;
-using BepuPhysics;
+using RoboScapeSimulator.Physics;
 
 namespace RoboScapeSimulator.Entities;
 
@@ -174,16 +174,16 @@ public abstract class StaticEntity : Entity
     /// <summary>
     /// The reference to this object in the simulation
     /// </summary>
-    public StaticReference StaticReference;
+    public SimStatic StaticReference;
 
     public new Vector3 Position
     {
-        get => StaticReference.Pose.Position;
+        get => StaticReference.Position;
     }
 
     public new Quaternion Orientation
     {
-        get => StaticReference.Pose.Orientation;
+        get => StaticReference.Orientation;
     }
 
     public override BodyInfo GetBodyInfo(bool allData)
@@ -192,14 +192,14 @@ public abstract class StaticEntity : Entity
         {
             label = allData ? Name : null,
             pos = {
-                            x = StaticReference.Pose.Position.X,
-                            y = StaticReference.Pose.Position.Y,
-                            z = StaticReference.Pose.Position.Z
+                            x = StaticReference.Position.X,
+                            y = StaticReference.Position.Y,
+                            z = StaticReference.Position.Z
                         },
-            angle = StaticReference.Pose.Orientation,
-            width = allData ? StaticReference.BoundingBox.Max.X - StaticReference.BoundingBox.Min.X : null,
-            height = allData ? StaticReference.BoundingBox.Max.Y - StaticReference.BoundingBox.Min.Y : null,
-            depth = allData ? StaticReference.BoundingBox.Max.Z - StaticReference.BoundingBox.Min.Z : null,
+            angle = StaticReference.Orientation,
+            width = allData ? StaticReference.Size.X : null,
+            height = allData ? StaticReference.Size.Y : null,
+            depth = allData ? StaticReference.Size.Z : null,
             visualInfo = allData ? VisualInfo : null,
             claimable = allData ? claimable : null,
             claimedBy = allData ? claimedByUser : null
@@ -218,26 +218,24 @@ public abstract class DynamicEntity : Entity
     /// <summary>
     /// The reference to this object's body in the simulation
     /// </summary>
-    public BodyReference BodyReference;
+    public SimBody BodyReference;
 
     public new Vector3 Position
     {
-        get => BodyReference.Pose.Position;
+        get => BodyReference.Position;
         set
         {
-            BodyReference.Pose.Position = value;
-            BodyReference.Awake = true;
+            BodyReference.Position = value;
             forceUpdate = true;
         }
     }
 
     public new Quaternion Orientation
     {
-        get => BodyReference.Pose.Orientation;
+        get => BodyReference.Orientation;
         set
         {
-            BodyReference.Pose.Orientation = value;
-            BodyReference.Awake = true;
+            BodyReference.Orientation = value;
             forceUpdate = true;
         }
     }
@@ -263,7 +261,7 @@ public abstract class DynamicEntity : Entity
             height = allData ? Height : null,
             depth = allData ? Depth : null,
             visualInfo = allData ? VisualInfo : null,
-            vel = BodyReference.Velocity.Linear,
+            vel = BodyReference.LinearVelocity,
             claimable = allData ? claimable : null,
             claimedBy = allData ? claimedByUser : null
         };
