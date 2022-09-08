@@ -5,12 +5,21 @@ using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 namespace RoboScapeSimulator
 {
+    /// <summary>
+    /// Abstract base class providing interface used for interacting with physics engine
+    /// </summary>
     public abstract class SimulationInstance : IDisposable
     {
         public List<Entity> Entities = new();
 
+        /// <summary>
+        /// Enumerable of Robot-type Entities in the current simulation
+        /// </summary>
         public IEnumerable<Robot> Robots => Entities.Where(e => e is Robot).Cast<Robot>();
 
+        /// <summary>
+        /// Enumerable of Trigger-type Entities in the current simulation
+        /// </summary>
         public IEnumerable<Trigger> Triggers => Entities.Where(e => e is Trigger).Cast<Trigger>();
 
         /// <summary>
@@ -61,7 +70,30 @@ namespace RoboScapeSimulator
             }
         }
 
+        /// <summary>
+        /// Add a cubic body to the simulation
+        /// </summary>
+        /// <param name="name">Name to give this body</param>
+        /// <param name="position">Initial position of body</param>
+        /// <param name="orientation">Initial orientation of body, or null to use default</param>
+        /// <param name="width">Width (X) of cubic volume</param>
+        /// <param name="height">Height (Y) of cubic volume</param>
+        /// <param name="depth">Depth (Z) of cubic volume</param>
+        /// <param name="mass">Mass of body, only needed for non-kinematic bodies</param>
+        /// <param name="isKinematic">If the body should have motion physics applied to it</param>
+        /// <returns>SimBody containing information about body</returns>
         public abstract SimBody CreateBox(string name, Vector3 position, Quaternion? orientation = null, float width = 1, float height = 1, float depth = 1, float mass = 1, bool isKinematic = false);
+        
+        /// <summary>
+        /// Add a static cubic body to the simulation
+        /// </summary>
+        /// <param name="name">Name to give this body</param>
+        /// <param name="position">Position of body</param>
+        /// <param name="orientation">Orientation of body, or null to use default</param>
+        /// <param name="width">Width (X) of cubic volume</param>
+        /// <param name="height">Height (Y) of cubic volume</param>
+        /// <param name="depth">Depth (Z) of cubic volume</param>
+        /// <returns>SimStatic containing information about body</returns>
         public abstract SimStatic CreateStaticBox(string name, Vector3 position, Quaternion? orientation = null, float width = 100, float height = 100, float depth = 1);
 
         /// <summary>
@@ -94,6 +126,9 @@ namespace RoboScapeSimulator
 
     }
 
+    /// <summary>
+    /// Information about a body, sent to the client
+    /// </summary>
     [Serializable]
     public struct BodyInfo
     {
@@ -139,6 +174,9 @@ namespace RoboScapeSimulator
         public float z;
     }
 
+    /// <summary>
+    /// Provides access to a body in the simulation. Subclasses for use in specific subtypes of SimulationInstance may provide more direct access to underlying simulation
+    /// </summary>
     public abstract class SimBody {
         public abstract Vector3 Position { get; set; }
         public abstract Quaternion Orientation { get; set; }
@@ -150,11 +188,19 @@ namespace RoboScapeSimulator
         public abstract void ApplyForce(Vector3 force);
     }
 
+    /// <summary>
+    /// Provides access to a static object in the simulation. Subclasses for use in specific subtypes of SimulationInstance may provide more direct access to underlying simulation
+    /// </summary>
     public abstract class SimStatic {
         public abstract Vector3 Position { get; set; }
         public abstract Quaternion Orientation { get; set; }
         public abstract Vector3 Size { get; }
     }
 
-    public class SimulationTypeNotSupportedException : Exception {}
+    /// <summary>
+    /// Exception thrown when a method/function/environment/etc requires features of a specific physics engine not provided to it
+    /// </summary>
+    public class SimulationTypeNotSupportedException : Exception {
+        public SimulationTypeNotSupportedException() : base("SimulationInstance type not supported") {}
+    }
 }

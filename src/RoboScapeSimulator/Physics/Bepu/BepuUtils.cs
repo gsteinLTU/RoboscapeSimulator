@@ -9,7 +9,7 @@ using RoboScapeSimulator.Entities;
 namespace RoboScapeSimulator.Physics.Bepu
 {
     /// <summary>
-    /// Various utility and helper functions
+    /// Various utility and helper functions for the Bepu physics engine specifically
     /// </summary>
     public static class BepuUtils
     {

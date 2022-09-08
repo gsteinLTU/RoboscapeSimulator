@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Numerics;
 using BepuPhysics;
 using BepuPhysics.Collidables;
@@ -6,6 +5,9 @@ using BepuUtilities.Memory;
 using RoboScapeSimulator.Entities;
 namespace RoboScapeSimulator.Physics.Bepu
 {
+    /// <summary>
+    /// SimulationInstance subclass for using bepuphysics v2
+    /// </summary>
     public class BepuSimulationInstance : SimulationInstance
     {
         /// <summary>
