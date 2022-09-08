@@ -20,8 +20,6 @@ namespace RoboScapeSimulator.Environments
             Category = "§_Testing";
         }
 
-        PositionSensor? locationSensor;
-
         public override object Clone()
         {
             return new PhysicsTestEnvironment();
@@ -41,17 +39,13 @@ namespace RoboScapeSimulator.Environments
             // Walls
             EnvironmentUtils.MakeWalls(room, 100, 100);
 
-            var cube = new Cube(room, initialPosition: new Vector3(0f, 0.5f, 0f), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { Color = "#B85" });
+            var cube = new Cube(room, initialPosition: new Vector3(0f, 0f, 1f), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { Color = "#B85" });
+            var cube2 = new Cube(room, 0.8f, 0.675f, 0.8f, initialPosition: new Vector3(0f, 0f, 0f), initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, MathF.PI), visualInfo: new VisualInfo() { ModelName = "car1_blue.gltf", ModelScale = 5f });
 
             PhysicsService physicsService = new(cube);
             physicsService.Setup(room);
-
-            locationSensor = new(cube.BodyReference, "")
-            {
-                IDOverride = physicsService.ID
-            };
-
-            locationSensor.Setup(room);
+            PhysicsService physicsService2 = new(cube2);
+            physicsService2.Setup(room);
         }
     }
 }

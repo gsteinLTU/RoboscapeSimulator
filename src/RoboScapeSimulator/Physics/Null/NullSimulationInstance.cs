@@ -66,7 +66,7 @@ namespace RoboScapeSimulator.Physics.Null
                     // Test each corner
                     if(!corner.Inside(MinBoundary, MaxBoundary)){
                         Vector3 delta = corner.Clamp(MinBoundary, MaxBoundary) - corner;
-                        Trace.WriteLine($"Corner at {corner} is outside, moving position by {delta}");
+                        Debug.WriteLine($"Corner at {corner} is outside, moving position by {delta}");
                         // Move corner back inside
                         body.Position += delta;
                     }
@@ -104,14 +104,14 @@ namespace RoboScapeSimulator.Physics.Null
 
         public IEnumerable<Vector3> GetCorners(bool oriented = true){
             List<Vector3> corners = new List<Vector3>(){
-                new Vector3(Size.X, Size.Y, Size.Z),
-                new Vector3(Size.X, Size.Y, -Size.Z),
-                new Vector3(Size.X, -Size.Y, Size.Z),
-                new Vector3(Size.X, -Size.Y, -Size.Z),
-                new Vector3(-Size.X, Size.Y, Size.Z),
-                new Vector3(-Size.X, Size.Y, -Size.Z),
-                new Vector3(-Size.X, -Size.Y, Size.Z),
-                new Vector3(-Size.X, -Size.Y, -Size.Z),
+                new Vector3(Size.X / 2f, Size.Y / 2f, Size.Z / 2f),
+                new Vector3(Size.X / 2f, Size.Y / 2f, -Size.Z / 2f),
+                new Vector3(Size.X / 2f, -Size.Y / 2f, Size.Z / 2f),
+                new Vector3(Size.X / 2f, -Size.Y / 2f, -Size.Z / 2f),
+                new Vector3(-Size.X / 2f, Size.Y / 2f, Size.Z / 2f),
+                new Vector3(-Size.X / 2f, Size.Y / 2f, -Size.Z / 2f),
+                new Vector3(-Size.X / 2f, -Size.Y / 2f, Size.Z / 2f),
+                new Vector3(-Size.X / 2f, -Size.Y / 2f, -Size.Z / 2f),
             };
 
             if(!oriented){
