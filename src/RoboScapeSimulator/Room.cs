@@ -138,11 +138,10 @@ namespace RoboScapeSimulator
         /// <param name="name">Name of this Room, leave empty to be assigned a random name</param>
         /// <param name="password">Password to restrict entry to this Room with</param>
         /// <param name="environment">ID of EnvironmentConfiguration to setup this Room with</param>
-        /// <param name="simulationInstance">SimulationInstance to run this Room with, or null to use the default BepuPhysics</param>
+        /// <param name="simulationInstance">SimulationInstance to run this Room with, or null to use the default</param>
         public Room(string name = "", string password = "", string environment = "default", SimulationInstance? simulationInstance = null)
         {
             Trace.WriteLine($"Setting up room {name} with environment {environment}");
-            SimInstance = simulationInstance ?? new BepuSimulationInstance();
 
             // Find requested environment (or use default)
             if (!Environments.Any((env) => env.ID == environment))
@@ -161,6 +160,7 @@ namespace RoboScapeSimulator
                 environmentConfiguration = new DefaultEnvironment();
             }
 
+            SimInstance = (simulationInstance ?? Activator.CreateInstance(environmentConfiguration.PreferredSimulationInstanceType) as SimulationInstance) ?? new BepuSimulationInstance();
             environmentConfiguration.Setup(this);
 
             // Give randomized default name
