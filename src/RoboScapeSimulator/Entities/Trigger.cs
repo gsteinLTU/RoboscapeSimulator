@@ -1,6 +1,7 @@
 using System.Numerics;
 using BepuPhysics;
 using BepuPhysics.Collidables;
+using RoboScapeSimulator.Physics;
 using RoboScapeSimulator.Physics.Bepu;
 
 namespace RoboScapeSimulator.Entities;

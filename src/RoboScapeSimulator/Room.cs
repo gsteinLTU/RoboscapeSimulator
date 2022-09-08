@@ -5,6 +5,7 @@ using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.Environments;
 using RoboScapeSimulator.Node;
+using RoboScapeSimulator.Physics;
 using RoboScapeSimulator.Physics.Bepu;
 
 namespace RoboScapeSimulator

@@ -10,7 +10,7 @@ namespace RoboScapeSimulator.Environments
         /// <summary>
         /// SimulationInstance subtype this environment prefers
         /// </summary>
-        internal readonly Type PreferredSimulationInstanceType = typeof(BepuSimulationInstance);
+        internal Type PreferredSimulationInstanceType = typeof(BepuSimulationInstance);
 
         /// <summary>
         /// Displayed name of this environment

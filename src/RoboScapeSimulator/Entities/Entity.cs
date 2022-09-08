@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Text.Json.Serialization;
+using RoboScapeSimulator.Physics;
 
 namespace RoboScapeSimulator.Entities;
 

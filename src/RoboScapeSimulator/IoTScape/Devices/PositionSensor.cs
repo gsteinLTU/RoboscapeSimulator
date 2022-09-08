@@ -1,6 +1,6 @@
-using BepuPhysics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Physics;
 
 namespace RoboScapeSimulator.IoTScape.Devices
 {

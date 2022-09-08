@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Text;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Robots;
-namespace RoboScapeSimulator
+namespace RoboScapeSimulator.Physics
 {
     /// <summary>
     /// Abstract base class providing interface used for interacting with physics engine

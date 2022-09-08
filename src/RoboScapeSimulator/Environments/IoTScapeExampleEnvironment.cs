@@ -5,6 +5,7 @@ using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.Environments.Helpers;
 using RoboScapeSimulator.IoTScape;
 using RoboScapeSimulator.IoTScape.Devices;
+using RoboScapeSimulator.Physics;
 using RoboScapeSimulator.Physics.Bepu;
 
 namespace RoboScapeSimulator.Environments
@@ -33,7 +34,7 @@ namespace RoboScapeSimulator.Environments
             if(room.SimInstance is BepuSimulationInstance bSim){ 
                 bSim.IntegratorCallbacks.LinearDamping = 0;
             }
-            
+
             // Ground
             var ground = new Ground(room);
 

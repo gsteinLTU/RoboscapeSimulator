@@ -3,6 +3,7 @@ using BepuPhysics;
 using BepuUtilities.Memory;
 using RoboScapeSimulator.Entities.Robots;
 using RoboScapeSimulator.Physics.Bepu;
+using RoboScapeSimulator.Physics;
 
 namespace RoboScapeSimulator.IoTScape.Devices
 {

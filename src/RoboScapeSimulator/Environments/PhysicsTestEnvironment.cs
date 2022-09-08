@@ -1,15 +1,19 @@
 using System.Diagnostics;
+using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Environments.Helpers;
 using RoboScapeSimulator.IoTScape.Devices;
 using RoboScapeSimulator.Physics.Bepu;
+using RoboScapeSimulator.Physics.Null;
 
 namespace RoboScapeSimulator.Environments
 {
     class PhysicsTestEnvironment : EnvironmentConfiguration
     {
+        
         public PhysicsTestEnvironment()
         {
+            PreferredSimulationInstanceType = typeof(NullSimulationInstance);
             Name = "PhysicsTestEnvironment";
             ID = "phystest";
             Description = "Physics demo environment";
@@ -37,7 +41,7 @@ namespace RoboScapeSimulator.Environments
             // Walls
             EnvironmentUtils.MakeWalls(room);
 
-            var cube = new Cube(room, visualInfo: new VisualInfo() { Color = "#B85" });
+            var cube = new Cube(room, initialPosition: new Vector3(0f, 0.5f, 0f), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { Color = "#B85" });
 
             PhysicsService physicsService = new(cube);
             physicsService.Setup(room);

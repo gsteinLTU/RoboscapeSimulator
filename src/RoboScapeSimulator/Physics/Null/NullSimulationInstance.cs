@@ -11,9 +11,9 @@ namespace RoboScapeSimulator.Physics.Null
         public Dictionary<string, SimBodyNull> Bodies = new();
         public Dictionary<string, SimStaticNull> StaticBodies = new();
 
-        public Vector3 MaxBoundary = new Vector3(float.PositiveInfinity,float.PositiveInfinity,float.PositiveInfinity);
+        public Vector3 MaxBoundary = new Vector3(100,float.PositiveInfinity,100);
 
-        public Vector3 MinBoundary = new Vector3(float.NegativeInfinity,float.NegativeInfinity,float.NegativeInfinity);
+        public Vector3 MinBoundary = new Vector3(float.NegativeInfinity,0,float.NegativeInfinity);
 
         public override SimBody CreateBox(string name, Vector3 position, Quaternion? orientation = null, float width = 1, float height = 1, float depth = 1, float mass = 1, bool isKinematic = false)
         {
@@ -51,7 +51,8 @@ namespace RoboScapeSimulator.Physics.Null
             foreach (var body in Bodies.Values)
             {
                 body.Position += dt * body.LinearVelocity;
-                body.Orientation += body.Orientation * Quaternion.CreateFromYawPitchRoll(body.AngularVelocity.Y, body.AngularVelocity.X, body.AngularVelocity.Z);
+                body.Orientation.ExtractYawPitchRoll(out var yaw, out var pitch, out var roll);
+                body.Orientation = Quaternion.CreateFromYawPitchRoll(yaw + dt * body.AngularVelocity.Y,pitch + dt * body.AngularVelocity.X, roll + dt * body.AngularVelocity.Z);
                 body.Position.Clamp(MinBoundary, MaxBoundary);
             }
 
