@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 
 namespace RoboScapeSimulator.Physics.Null
@@ -11,9 +12,9 @@ namespace RoboScapeSimulator.Physics.Null
         public Dictionary<string, SimBodyNull> Bodies = new();
         public Dictionary<string, SimStaticNull> StaticBodies = new();
 
-        public Vector3 MaxBoundary = new Vector3(100,float.PositiveInfinity,100);
+        public Vector3 MaxBoundary = new Vector3(50,float.PositiveInfinity,50);
 
-        public Vector3 MinBoundary = new Vector3(float.NegativeInfinity,0,float.NegativeInfinity);
+        public Vector3 MinBoundary = new Vector3(-50,0,-50);
 
         public override SimBody CreateBox(string name, Vector3 position, Quaternion? orientation = null, float width = 1, float height = 1, float depth = 1, float mass = 1, bool isKinematic = false)
         {
@@ -23,7 +24,8 @@ namespace RoboScapeSimulator.Physics.Null
                 angularVel = new Vector3(),
                 linearVel = new Vector3(),
                 mass = mass,
-                size = new Vector3(width, height, depth)
+                size = new Vector3(width, height, depth),
+                isKinematic = isKinematic
             });
             return Bodies[name];
         }
@@ -50,10 +52,25 @@ namespace RoboScapeSimulator.Physics.Null
             // Update positions
             foreach (var body in Bodies.Values)
             {
+                if(body.isKinematic){
+                    continue;
+                }
+
                 body.Position += dt * body.LinearVelocity;
                 body.Orientation.ExtractYawPitchRoll(out var yaw, out var pitch, out var roll);
                 body.Orientation = Quaternion.CreateFromYawPitchRoll(yaw + dt * body.AngularVelocity.Y,pitch + dt * body.AngularVelocity.X, roll + dt * body.AngularVelocity.Z);
-                body.Position.Clamp(MinBoundary, MaxBoundary);
+                
+                // Keep in bounds
+                foreach (var corner in body.GetCorners())
+                {
+                    // Test each corner
+                    if(!corner.Inside(MinBoundary, MaxBoundary)){
+                        Vector3 delta = corner.Clamp(MinBoundary, MaxBoundary) - corner;
+                        Trace.WriteLine($"Corner at {corner} is outside, moving position by {delta}");
+                        // Move corner back inside
+                        body.Position += delta;
+                    }
+                }
             }
 
             base.Update(dt);
@@ -68,6 +85,7 @@ namespace RoboScapeSimulator.Physics.Null
         internal Vector3 linearVel;
         internal Vector3 angularVel;
         internal float mass;
+        internal bool isKinematic = false;
 
         public override Vector3 Position { get => position; set => position = value; }
         public override Quaternion Orientation { get => orientation; set => orientation = value; }

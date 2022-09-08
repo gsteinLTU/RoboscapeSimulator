@@ -36,10 +36,10 @@ namespace RoboScapeSimulator.Environments
             }
 
             // Ground
-            _ = new Ground(room);
+            _ = new Ground(room, 100, 100);
 
             // Walls
-            EnvironmentUtils.MakeWalls(room);
+            EnvironmentUtils.MakeWalls(room, 100, 100);
 
             var cube = new Cube(room, initialPosition: new Vector3(0f, 0.5f, 0f), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { Color = "#B85" });
 

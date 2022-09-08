@@ -262,10 +262,23 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Clamp the components of this vector component-wise between two other vectors
         /// </summary>
-        public static void Clamp(this Vector3 vec, Vector3 min, Vector3 max){
+        public static Vector3 Clamp(this Vector3 vec, Vector3 min, Vector3 max){
             vec.X = Clamp(vec.X, min.X, max.X);
             vec.Y = Clamp(vec.Y, min.Y, max.Y);
             vec.Z = Clamp(vec.Z, min.Z, max.Z);
+            return vec;
+        }
+
+        /// <summary>
+        /// Test if this vector is inside a cubic region defined by two corners
+        /// </summary>
+        /// <param name="vec"></param>
+        /// <param name="min">Lowest values of components</param>
+        /// <param name="max">Largest values of components</param>
+        /// <returns>If this Vector3's components are all between min and max.</returns>
+        public static bool Inside(this Vector3 vec, Vector3 min, Vector3 max){
+            return vec.X >= min.X && vec.Y >= min.Y && vec.Z >= min.Z &&
+                vec.X <= max.X && vec.Y <= max.Y && vec.Z <= max.Z;
         }
     }
 }
