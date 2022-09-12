@@ -42,9 +42,9 @@ namespace RoboScapeSimulator.Environments
             var cube = new Cube(room, initialPosition: new Vector3(0f, 0f, 1f), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { Color = "#B85" });
             var cube2 = new Cube(room, 0.8f, 0.675f, 0.8f, initialPosition: new Vector3(0f, 0f, 0f), initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, MathF.PI), visualInfo: new VisualInfo() { ModelName = "car1_blue.gltf", ModelScale = 5f });
 
-            PhysicsService physicsService = new(cube);
+            PhysicsService physicsService = new(cube, room.Name + "_cube");
             physicsService.Setup(room);
-            PhysicsService physicsService2 = new(cube2);
+            PhysicsService physicsService2 = new(cube2, room.Name + "_robot");
             physicsService2.Setup(room);
         }
     }
