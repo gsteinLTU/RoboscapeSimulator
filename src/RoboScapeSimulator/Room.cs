@@ -484,6 +484,7 @@ namespace RoboScapeSimulator
             new FinalChallengeEnvironment(),
             new FinalChallengeEnvironment(true),
             new PhysicsTestEnvironment(),
+            new PhysicsTestEnvironment(true),
             new GateEnvironment(),
             new GateEnvironment(GateEnvironment.Courses.Default, 3),
             new GateEnvironment(GateEnvironment.Courses.Obstacles),

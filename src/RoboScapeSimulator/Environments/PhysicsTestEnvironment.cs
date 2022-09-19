@@ -10,19 +10,21 @@ namespace RoboScapeSimulator.Environments
 {
     class PhysicsTestEnvironment : EnvironmentConfiguration
     {
-        
-        public PhysicsTestEnvironment()
+        bool _extraObjects = false;
+
+        public PhysicsTestEnvironment(bool extraObjects = false)
         {
+            _extraObjects = extraObjects;
             PreferredSimulationInstanceType = typeof(NullSimulationInstance);
-            Name = "PhysicsTestEnvironment";
-            ID = "phystest";
+            Name = "Physics Environment"  + (extraObjects ? " with extra objects" : "");
+            ID = "phystest" + (extraObjects ? "_extra" : "");
             Description = "Physics demo environment";
             Category = "§_Testing";
         }
 
         public override object Clone()
         {
-            return new PhysicsTestEnvironment();
+            return new PhysicsTestEnvironment(_extraObjects);
         }
 
         public override void Setup(Room room)
@@ -46,6 +48,16 @@ namespace RoboScapeSimulator.Environments
             physicsService.Setup(room);
             PhysicsService physicsService2 = new(cube2, room.Name + "_robot");
             physicsService2.Setup(room);
+
+            if(_extraObjects){
+                var cube3 = new Cube(room, 0.8f, 0.675f, 0.8f, initialPosition: new Vector3(1f, 0f, 0f), initialOrientation: Quaternion.CreateFromAxisAngle(Vector3.UnitY, MathF.PI), visualInfo: new VisualInfo() { ModelName = "car1_green.gltf", ModelScale = 5f });
+                var cube4 = new Cube(room, depth: 2, initialPosition: new Vector3(0f, 0f, 4f), initialOrientation: Quaternion.Identity, visualInfo: new VisualInfo() { Color = "#58b" });
+
+                PhysicsService physicsService3 = new(cube3, room.Name + "_robot2");
+                physicsService3.Setup(room);
+                PhysicsService physicsService4 = new(cube4, room.Name + "_cube2");
+                physicsService4.Setup(room);
+            }
         }
     }
 }
