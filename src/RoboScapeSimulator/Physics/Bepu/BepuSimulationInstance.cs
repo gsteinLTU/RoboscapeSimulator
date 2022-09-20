@@ -82,9 +82,10 @@ namespace RoboScapeSimulator.Physics.Bepu
                 {
                     output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }
-                else if (allData || entity.ShouldUpdate)
+                else if (allData || entity.ShouldUpdate || entity.ShouldUpdateVisualInfo)
                 {
                     output.Add(entity.Name, entity.GetBodyInfo(allData));
+                    entity.ShouldUpdateVisualInfo = false;
                 }
             }
 

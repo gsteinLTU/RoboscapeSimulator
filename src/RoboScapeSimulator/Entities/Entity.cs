@@ -39,7 +39,9 @@ public abstract class Entity : IDisposable
     /// <summary>
     /// VisualInfo describing this Entity's appearance
     /// </summary>
-    public VisualInfo VisualInfo = VisualInfo.DefaultCube;
+    private VisualInfo visualInfo = VisualInfo.DefaultCube;
+
+    public bool ShouldUpdateVisualInfo = false;
 
     private bool disposedValue;
 
@@ -80,6 +82,11 @@ public abstract class Entity : IDisposable
     public abstract BodyInfo GetBodyInfo(bool allData);
 
     public abstract bool ShouldUpdate { get; }
+    public VisualInfo VisualInfo { get => visualInfo; set {
+        visualInfo = value;
+        ShouldUpdateVisualInfo = true;
+     }
+    }
 
     /// <summary>
     /// A user ID "claiming" the robot
@@ -197,10 +204,10 @@ public abstract class StaticEntity : Entity
                             z = StaticReference.Position.Z
                         },
             angle = StaticReference.Orientation,
-            width = allData ? StaticReference.Size.X : null,
-            height = allData ? StaticReference.Size.Y : null,
-            depth = allData ? StaticReference.Size.Z : null,
-            visualInfo = allData ? VisualInfo : null,
+            width = (allData || ShouldUpdateVisualInfo) ? StaticReference.Size.X : null,
+            height = (allData || ShouldUpdateVisualInfo) ? StaticReference.Size.Y : null,
+            depth = (allData || ShouldUpdateVisualInfo) ? StaticReference.Size.Z : null,
+            visualInfo = (allData || ShouldUpdateVisualInfo) ? VisualInfo : null,
             claimable = allData ? claimable : null,
             claimedBy = allData ? claimedByUser : null
         };
@@ -257,10 +264,10 @@ public abstract class DynamicEntity : Entity
                 z = Position.Z
             },
             angle = Orientation,
-            width = allData ? Width : null,
-            height = allData ? Height : null,
-            depth = allData ? Depth : null,
-            visualInfo = allData ? VisualInfo : null,
+            width = (allData || ShouldUpdateVisualInfo) ? Width : null,
+            height = (allData || ShouldUpdateVisualInfo) ? Height : null,
+            depth = (allData || ShouldUpdateVisualInfo) ? Depth : null,
+            visualInfo = (allData || ShouldUpdateVisualInfo) ? VisualInfo : null,
             vel = BodyReference.LinearVelocity,
             claimable = allData ? claimable : null,
             claimedBy = allData ? claimedByUser : null
