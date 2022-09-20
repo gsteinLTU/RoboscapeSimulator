@@ -24,8 +24,8 @@ class Ground : StaticEntity
         if (visualInfo == null)
         {
             VisualInfo = GroundDefault;
-            VisualInfo.uScale = zsize;
-            VisualInfo.vScale = xsize;
+            this.visualInfo.uScale = zsize;
+            this.visualInfo.vScale = xsize;
         }
         else
         {

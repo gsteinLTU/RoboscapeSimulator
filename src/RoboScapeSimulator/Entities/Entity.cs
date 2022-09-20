@@ -39,7 +39,7 @@ public abstract class Entity : IDisposable
     /// <summary>
     /// VisualInfo describing this Entity's appearance
     /// </summary>
-    private VisualInfo visualInfo = VisualInfo.DefaultCube;
+    internal VisualInfo visualInfo = VisualInfo.DefaultCube;
 
     public bool ShouldUpdateVisualInfo = false;
 
