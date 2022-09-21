@@ -124,7 +124,6 @@ namespace RoboScapeSimulator.Physics
 
             return output;
         }
-
     }
 
     /// <summary>

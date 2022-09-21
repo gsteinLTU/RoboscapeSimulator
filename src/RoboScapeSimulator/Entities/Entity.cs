@@ -112,6 +112,16 @@ public struct VisualInfo
 {
     public VisualInfo() { }
 
+    public VisualInfo(VisualInfo toCopy) : this()
+    {
+        ModelName = toCopy.ModelName;
+        ModelScale = toCopy.ModelScale;
+        Color = toCopy.Color;
+        Image = toCopy.Image;
+        uScale = toCopy.uScale;
+        vScale = toCopy.vScale;
+    }
+
     /// <summary>
     /// Name of the model to be displayed, if any
     /// </summary>

@@ -1,6 +1,4 @@
 using System.Numerics;
-using BepuPhysics;
-using BepuPhysics.Collidables;
 
 namespace RoboScapeSimulator.Entities;
 
@@ -23,7 +21,7 @@ class Ground : StaticEntity
 
         if (visualInfo == null)
         {
-            VisualInfo = GroundDefault;
+            VisualInfo = new VisualInfo(GroundDefault);
             this.visualInfo.uScale = zsize;
             this.visualInfo.vScale = xsize;
         }

@@ -63,35 +63,6 @@ namespace RoboScapeSimulator.Physics.Bepu
             base.Update(dt);
         }
 
-        /// <summary>
-        /// Get a Dictionary of bodies in the simulation
-        /// </summary>
-        /// <param name="onlyAwake">Should only dynamic, non-sleeping objects be returned?</param>
-        /// <returns>Dictionary with entity name as key, BodyInfo as value</returns>
-        public override Dictionary<string, object> GetBodies(bool onlyAwake = false, bool allData = true)
-        {
-            var output = new Dictionary<string, object>();
-
-            foreach (var entity in Entities)
-            {
-                if (!onlyAwake && entity is StaticEntity)
-                {
-                    output.Add(entity.Name, entity.GetBodyInfo(allData));
-                }
-                else if (entity is DynamicEntity dynamicEntity && (!onlyAwake || dynamicEntity.BodyReference.Awake))
-                {
-                    output.Add(entity.Name, entity.GetBodyInfo(allData));
-                }
-                else if (allData || entity.ShouldUpdate || entity.ShouldUpdateVisualInfo)
-                {
-                    output.Add(entity.Name, entity.GetBodyInfo(allData));
-                }
-                entity.ShouldUpdateVisualInfo = false;
-            }
-
-            return output;
-        }
-
         public override SimBody CreateBox(string name, Vector3 position, Quaternion? orientation = null, float width = 1, float height = 1, float depth = 1, float mass = 1, bool isKinematic = false)
         { 
             var box = new Box(width, height, depth);
