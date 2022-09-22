@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO.Pipes;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -11,19 +10,8 @@ namespace RoboScapeSimulator.Node;
 /// <summary>
 /// Connection to Node.js-based communications program
 /// </summary>
-public class Server : IDisposable
+public class Server : ServerBase, IDisposable
 {
-    readonly List<Action<Socket>> connectionCallbacks = new();
-
-    /// <summary>
-    /// Add a callback run when a socket connects
-    /// </summary>
-    /// <param name="callback"></param>
-    public void OnConnection(Action<Socket> callback)
-    {
-        connectionCallbacks.Add(callback);
-    }
-
     /// <summary>
     /// Node.js process
     /// </summary>
@@ -39,17 +27,12 @@ public class Server : IDisposable
 
     CancellationTokenSource cancellationTokenSource = new();
 
-    /// <summary>
-    /// Sockets known to this server
-    /// </summary>
-    readonly ConcurrentDictionary<string, Socket> sockets = new();
-
     private bool disposedValue;
 
     /// <summary>
     /// Start the server
     /// </summary>
-    public void Start()
+    public override void Start()
     {
         if (client != null && !client.HasExited)
         {
@@ -189,14 +172,9 @@ public class Server : IDisposable
         }
     }
 
-    internal enum ReceiveMessageType
-    {
-        Message, SocketConnected, SocketDisconnected
-    }
-
     StreamWriter? sw;
 
-    internal void Send(string data)
+    public override void Send(string data)
     {
         if (pipeWriter != null)
         {
@@ -247,7 +225,7 @@ public class Server : IDisposable
 /// <summary>
 /// A Socket.io socket
 /// </summary>
-public class Socket
+public class Socket : SocketBase
 {
     /// <summary>
     /// Create a new Socket
@@ -271,16 +249,11 @@ public class Socket
     public string ID;
 
     /// <summary>
-    /// Callbacks for message types
-    /// </summary>
-    internal readonly Dictionary<string, List<Action<Socket, JsonNode[]>>> callbacks = new();
-
-    /// <summary>
     /// Add a callback for an event
     /// </summary>
     /// <param name="eventName">Name of event</param>
     /// <param name="callback">Callback to run when event occurs</param>
-    public void On(string eventName, Action<Socket, JsonNode[]> callback)
+    public override void On(string eventName, Action<SocketBase, JsonNode[]> callback)
     {
         if (callbacks.ContainsKey(eventName))
         {
@@ -288,7 +261,7 @@ public class Socket
         }
         else
         {
-            callbacks.Add(eventName, new List<Action<Socket, JsonNode[]>>() { callback });
+            callbacks.Add(eventName, new List<Action<SocketBase, JsonNode[]>>() { callback });
         }
     }
 
@@ -297,18 +270,16 @@ public class Socket
     /// </summary>
     /// <param name="eventName">Name of event</param>
     /// <param name="callback">Callback to run when event occurs</param>
-    public void On(string eventName, Action callback)
+    public override void On(string eventName, Action callback)
     {
-        On(eventName, (Socket sock, JsonNode[] args) => callback());
+        On(eventName, (SocketBase sock, JsonNode[] args) => callback());
     }
-
-    internal readonly List<Action> onDisconnect = new();
 
     /// <summary>
     /// Setup a callback to run when this Socket disconnects
     /// </summary>
     /// <param name="callback">Callback to run when socket disconnects</param>
-    public void OnDisconnect(Action callback)
+    public override void OnDisconnect(Action callback)
     {
         onDisconnect.Add(callback);
     }
@@ -318,7 +289,7 @@ public class Socket
     /// </summary>
     /// <param name="eventName">Event to remove callback from</param>
     /// <param name="callback">Callback to remove</param>
-    public void Off(string eventName, Action<Socket, JsonNode[]> callback)
+    public override void Off(string eventName, Action<SocketBase, JsonNode[]> callback)
     {
         if (callbacks.ContainsKey(eventName))
         {
@@ -331,7 +302,7 @@ public class Socket
     /// </summary>
     /// <param name="eventName">Name of event to emit</param>
     /// <param name="data">Data to send</param>
-    public void Emit(string eventName, JsonNode data)
+    public override void Emit(string eventName, JsonNode data)
     {
         string buffer = "0";
         buffer += ID;
@@ -341,7 +312,7 @@ public class Socket
         server.Send(buffer);
     }
 
-    public void Emit(string eventName, string data)
+    public override void Emit(string eventName, string data)
     {
         string buffer = "0";
         buffer += ID;
@@ -355,7 +326,7 @@ public class Socket
     /// Send an event to the client of this Socket
     /// </summary>
     /// <param name="eventName">Name of event to emit</param>
-    public void Emit(string eventName)
+    public override void Emit(string eventName)
     {
         Emit(eventName, "");
     }
