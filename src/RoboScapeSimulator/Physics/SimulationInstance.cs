@@ -115,15 +115,15 @@ namespace RoboScapeSimulator.Physics
                 {
                     output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }
-                else if (allData || entity.ShouldUpdate)
+                else if (allData || entity.ShouldUpdate || entity.ShouldUpdateVisualInfo)
                 {
                     output.Add(entity.Name, entity.GetBodyInfo(allData));
                 }
+                entity.ShouldUpdateVisualInfo = false;
             }
 
             return output;
         }
-
     }
 
     /// <summary>
