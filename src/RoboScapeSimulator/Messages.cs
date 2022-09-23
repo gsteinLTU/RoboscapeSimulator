@@ -11,7 +11,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Send the available rooms and environments to a socket
         /// </summary>
-        internal static void SendAvailableRooms(Node.Socket socket, IDictionary<string, Room> rooms)
+        internal static void SendAvailableRooms(Node.SocketBase socket, IDictionary<string, Room> rooms)
         {
             Utils.SendAsJSON(socket, "availableRooms", new Dictionary<string, object> { { "availableRooms", rooms.Select(room => room.Value.GetRoomInfo()) }, { "canCreate", rooms.Count(r => !r.Value.Hibernating) < SettingsManager.MaxRooms } });
             Utils.SendAsJSON(socket, "availableEnvironments", Room.ListEnvironments());
@@ -20,7 +20,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Send the rooms created  and environments to a socket
         /// </summary>
-        internal static void SendUserRooms(Node.Socket socket, string user)
+        internal static void SendUserRooms(Node.SocketBase socket, string user)
         {
             SendAvailableRooms(socket, Program.Rooms.Where(pair => pair.Value.Visitors.Contains(user)).ToDictionary(pair => pair.Key, pair => pair.Value));
         }
@@ -28,7 +28,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Send update on room's status to user
         /// </summary>
-        internal static void SendUpdate(Node.Socket socket, Room room, bool isFullUpdate = false)
+        internal static void SendUpdate(Node.SocketBase socket, Room room, bool isFullUpdate = false)
         {
             Dictionary<string, object> updateData = room.SimInstance.GetBodies(!isFullUpdate, isFullUpdate);
             updateData.Add("time", room.SimInstance.Time);
@@ -36,7 +36,7 @@ namespace RoboScapeSimulator
             Utils.SendAsJSON(socket, isFullUpdate ? "fullUpdate" : "u", updateData);
         }
 
-        internal static void HandleJoinRoom(JsonNode[] args, Node.Socket socket, ref string socketRoom)
+        internal static void HandleJoinRoom(JsonNode[] args, Node.SocketBase socket, ref string socketRoom)
         {
             // Remove from existing room
             if (!string.IsNullOrWhiteSpace(socketRoom))

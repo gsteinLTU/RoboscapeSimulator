@@ -140,7 +140,7 @@ namespace RoboScapeSimulator
         /// <param name="socket">Socket to send to</param>
         /// <param name="eventName">Name of event to send</param>
         /// <param name="data">Data to serialize and send</param>
-        public static void SendAsJSON<T>(Node.Socket socket, string eventName, T data)
+        public static void SendAsJSON<T>(Node.SocketBase socket, string eventName, T data)
         {
             if (data != null)
             {

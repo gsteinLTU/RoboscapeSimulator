@@ -18,7 +18,7 @@ namespace RoboScapeSimulator
         /// <summary>
         /// List of sockets for users connected to this room
         /// </summary>
-        public List<Node.Socket> activeSockets = new();
+        public List<Node.SocketBase> activeSockets = new();
 
         /// <summary>
         /// Visible string used to identify this room
@@ -250,7 +250,7 @@ namespace RoboScapeSimulator
         /// </summary>
         /// <param name="socket">Socket to add to active sockets list</param>
         /// <param name="username">Username of user joining</param>
-        internal void AddSocket(Node.Socket socket, string? username)
+        internal void AddSocket(Node.SocketBase socket, string? username)
         {
             LastInteractionTime = Environment.TickCount64;
             lock (activeSockets)
@@ -274,7 +274,7 @@ namespace RoboScapeSimulator
         /// Handles a request to reset a robot
         /// </summary>
         /// <param name="args">Input from event</param>
-        private void HandleResetRobot(Socket s, JsonNode[] args)
+        private void HandleResetRobot(SocketBase s, JsonNode[] args)
         {
             if (args.Length < 2)
             {
@@ -292,7 +292,7 @@ namespace RoboScapeSimulator
         /// Handles a request to reset the entire environment
         /// </summary>
         /// <param name="args">Input from event</param>
-        private void HandleResetAll(Socket? s = null, JsonNode[]? args = null)
+        private void HandleResetAll(SocketBase? s = null, JsonNode[]? args = null)
         {
             LastInteractionTime = Environment.TickCount64;
 
@@ -311,7 +311,7 @@ namespace RoboScapeSimulator
         /// Handles a request to press the button on a robot
         /// </summary>
         /// <param name="args">Input from event</param>
-        private void HandleRobotButton(Socket s, JsonNode[] args)
+        private void HandleRobotButton(SocketBase s, JsonNode[] args)
         {
             if (args.Length < 3)
             {
@@ -335,7 +335,7 @@ namespace RoboScapeSimulator
         /// Handles a request to claim a robot
         /// </summary>
         /// <param name="args">Input from event</param>
-        private void HandleClaimRobot(Socket s, JsonNode[] args)
+        private void HandleClaimRobot(SocketBase s, JsonNode[] args)
         {
             if (args.Length < 3)
             {
@@ -400,7 +400,7 @@ namespace RoboScapeSimulator
         /// Removes a socket from active list and removes message listeners
         /// </summary>
         /// <param name="socket">Socket to remove from active sockets list</param>
-        internal void RemoveSocket(Socket socket)
+        internal void RemoveSocket(SocketBase socket)
         {
             socket.Off("resetRobot", HandleResetRobot);
             socket.Off("resetAll", HandleResetAll);
