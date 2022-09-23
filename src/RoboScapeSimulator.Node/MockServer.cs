@@ -35,19 +35,4 @@ class MockSocket : SocketBase
     {
         
     }
-
-    public override void Off(string eventName, Action<SocketBase, JsonNode[]> callback)
-    {
-        
-    }
-
-    public override void On(string eventName, Action callback)
-    {
-        
-    }
-
-    public override void On(string eventName, Action<SocketBase, JsonNode[]> callback)
-    {
-        
-    }
 }
