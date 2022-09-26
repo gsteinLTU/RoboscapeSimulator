@@ -17,6 +17,12 @@ class MockServer : ServerBase
         // Nothing to start for a MockServer
         Debug.WriteLine("MockServer Start");
     }
+
+    public string CreateMockSocket(){
+        var id = Guid.NewGuid().ToString();
+        sockets[id] = new MockSocket();
+        return id;
+    }
 }
 
 class MockSocket : SocketBase

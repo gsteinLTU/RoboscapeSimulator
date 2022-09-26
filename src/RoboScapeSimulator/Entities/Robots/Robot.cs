@@ -1,9 +1,6 @@
 using System.Diagnostics;
 using System.Net;
-using System.Net.Sockets;
 using System.Numerics;
-using BepuPhysics;
-using BepuPhysics.Collidables;
 using RoboScapeSimulator.Environments.Helpers;
 
 namespace RoboScapeSimulator.Entities.Robots
@@ -70,7 +67,7 @@ namespace RoboScapeSimulator.Entities.Robots
         /// <summary>
         /// Socket used to talk to server for this Robot
         /// </summary>
-        internal UdpClient? socket = null;
+        internal IUdpClient? socket = null;
 
         /// <summary>
         /// Simulated MAC address of this Robot, used for identification with server
@@ -149,7 +146,7 @@ namespace RoboScapeSimulator.Entities.Robots
         {
             if (!internalUse)
             {
-                socket = new UdpClient();
+                socket = new UdpClientWrapper();
 
                 // Remove port from host to make localhost use easier
                 string host = SettingsManager.RoboScapeHostWithoutPort;
