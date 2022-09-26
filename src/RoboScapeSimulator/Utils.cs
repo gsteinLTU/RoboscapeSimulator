@@ -290,6 +290,9 @@ namespace RoboScapeSimulator
         }
     }
 
+    /// <summary>
+    /// Interface to allow for mocking of UdpSocket
+    /// </summary>
     public interface IUdpSocket
     {
         public int Available { get; }
@@ -299,6 +302,9 @@ namespace RoboScapeSimulator
         public int SendTo(Byte[] jsonBytes, SocketFlags none, EndPoint hostEndPoint);
     }
 
+    /// <summary>
+    /// UdpSocket wrapper, automatically creates a bound UDP Socket 
+    /// </summary>
     public class UdpSocketWrapper : Socket, IUdpSocket
     {
         public UdpSocketWrapper() : base(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)
@@ -307,6 +313,9 @@ namespace RoboScapeSimulator
         }
     }
 
+    /// <summary>
+    /// Interface to allow mocking of UdpClient type
+    /// </summary>
     public interface IUdpClient
     {
         public int Available { get; }
@@ -316,10 +325,14 @@ namespace RoboScapeSimulator
         public Task<int> SendAsync(byte[] datagram, int bytes);
     }
 
+    /// <summary>
+    /// Wrapper around UdpClient class
+    /// </summary>
     public class UdpClientWrapper : UdpClient, IUdpClient
     {
         public UdpClientWrapper() : base()
         {
+            Trace.WriteLine("UdpClientWrapper");
         }
     }
 

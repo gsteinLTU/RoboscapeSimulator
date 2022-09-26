@@ -34,14 +34,14 @@ namespace RoboScapeSimulator.Entities.Robots
         /// Instantiate a Robot inside a given simulation instance
         /// </summary>
         /// <param name="room">Room this Robot exists inside</param>
-        public Robot(Room room, in Vector3? position = null, in Quaternion? rotation = null, in Vector3? size = null, float mass = 2, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f, IUdpClient? client = null)
+        public Robot(Room room, in Vector3? position = null, in Quaternion? rotation = null, in Vector3? size = null, float mass = 2, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f, Type? udpClientOverride = null)
         {
             this.room = room;
             var rng = new Random();
 
             VisualInfo = visualInfo ?? new VisualInfo() { ModelName = "parallax_robot.glb" };
 
-            SetupRobot(client);
+            SetupRobot(udpClientOverride ?? room.UdpClientType);
 
             Name = "robot_" + BytesToHexstring(MacAddress, "");
 
@@ -143,9 +143,10 @@ namespace RoboScapeSimulator.Entities.Robots
             MessageHandlers.Remove(messageCode);
         }
 
-        private void SetupRobot(IUdpClient? socket = null)
+        private void SetupRobot(Type? clientType = null)
         {
-            if(socket != null){
+            if(clientType != null){
+                socket = (IUdpClient)Activator.CreateInstance(clientType);
                 // Remove port from host to make localhost use easier
                 string host = SettingsManager.RoboScapeHostWithoutPort;
 
@@ -235,7 +236,7 @@ namespace RoboScapeSimulator.Entities.Robots
             // Setup robots
             if (MacAddress == Array.Empty<byte>())
             {
-                SetupRobot(socket);
+                SetupRobot();
             }
 
             if ((lastHeartbeat + HeartbeatPeriod) < time.ElapsedSeconds || lastHeartbeat < 0)

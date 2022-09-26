@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Numerics;
 using RoboScapeSimulator.Entities.Robots;
@@ -9,9 +10,10 @@ public class RobotTests
     [Fact]
     public void CreateRobot()
     {
-        Room testRoom = new("testroom");
+        Room testRoom = new("testroom", udpClientType: typeof(MockUdpClient));
 
         Robot robot = testRoom.SimInstance.Robots.First();
+        
         Wait(testRoom, 100);
 
         testRoom.ResetRobot(robot.ID);
@@ -25,7 +27,7 @@ public class RobotTests
     [Fact]
     public void DriveRobot()
     {
-        Room testRoom = new("testroom");
+        Room testRoom = new("testroom", udpClientType: typeof(MockUdpClient));
 
         ParallaxRobot robot = (ParallaxRobot)testRoom.SimInstance.Robots.First();
 
@@ -54,7 +56,7 @@ public class RobotTests
     [Fact]
     public void ResetRobot()
     {
-        Room testRoom = new("testroom");
+        Room testRoom = new("testroom", udpClientType: typeof(MockUdpClient));
 
         ParallaxRobot robot = (ParallaxRobot)testRoom.SimInstance.Robots.First();
         Wait(testRoom, 100);
@@ -96,7 +98,7 @@ public class RobotTests
     [Fact]
     public void ResetRobotAndDrive()
     {
-        Room testRoom = new("testroom");
+        Room testRoom = new("testroom", udpClientType: typeof(MockUdpClient));
 
         ParallaxRobot robot = (ParallaxRobot)testRoom.SimInstance.Robots.First();
 

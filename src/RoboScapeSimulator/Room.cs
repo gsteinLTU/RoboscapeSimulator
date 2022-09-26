@@ -21,6 +21,11 @@ namespace RoboScapeSimulator
         public List<Node.SocketBase> activeSockets = new();
 
         /// <summary>
+        /// Subtype of IUdpSocket to pass to robots and other Entities that use networking
+        /// </summary>
+        public Type UdpClientType = typeof(UdpClientWrapper);
+
+        /// <summary>
         /// Visible string used to identify this room
         /// </summary>
         public string Name;
@@ -140,7 +145,7 @@ namespace RoboScapeSimulator
         /// <param name="password">Password to restrict entry to this Room with</param>
         /// <param name="environment">ID of EnvironmentConfiguration to setup this Room with</param>
         /// <param name="simulationInstance">SimulationInstance to run this Room with, or null to use the default</param>
-        public Room(string name = "", string password = "", string environment = "default", SimulationInstance? simulationInstance = null)
+        public Room(string name = "", string password = "", string environment = "default", SimulationInstance? simulationInstance = null, Type? udpClientType = null)
         {
             // Give randomized default name
             if (string.IsNullOrWhiteSpace(name))
@@ -164,6 +169,10 @@ namespace RoboScapeSimulator
 
             EnvironmentID = env.ID;
 
+            if(udpClientType != null){
+                UdpClientType = udpClientType;
+            }
+            
             // Create instance of requested environment
             environmentConfiguration = (EnvironmentConfiguration?)env.Clone();
 

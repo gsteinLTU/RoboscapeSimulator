@@ -51,7 +51,7 @@ namespace RoboScapeSimulator.Environments
             Vector3 initialPosition, robotTarget;
             (initialPosition, robotTarget) = robotGen(rng);
 
-            var targetRobot = new ParallaxRobot(room, initialPosition, Quaternion.Identity, debug: false, client: null);
+            var targetRobot = new ParallaxRobot(room, initialPosition, Quaternion.Identity, debug: false, udpClientOverride: null);
             var startMarker = new VisualOnlyEntity(room, initialPosition: initialPosition, initialOrientation: Quaternion.Identity, width: 0.1f, height: 0.025f, depth: 0.1f, visualInfo: new VisualInfo() { Color = "#363" });
             var endMarker = new VisualOnlyEntity(room, initialPosition: robotTarget, initialOrientation: Quaternion.Identity, width: 0.1f, height: 0.025f, depth: 0.1f, visualInfo: new VisualInfo() { Color = "#633" });
 
