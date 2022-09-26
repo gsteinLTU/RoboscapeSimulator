@@ -27,7 +27,7 @@ namespace RoboScapeSimulator.IoTScape
 
         private float timer = 0.0f;
 
-        public IoTScapeManager()
+        public IoTScapeManager(IUdpSocket? socket = null)
         {
             var hostIpAddress = Dns.GetHostAddresses(SettingsManager.RoboScapeHostWithoutPort)[0];
             hostEndPoint = new IPEndPoint(hostIpAddress, SettingsManager.IoTScapePort);
@@ -35,7 +35,7 @@ namespace RoboScapeSimulator.IoTScape
             idprefix = Random.Shared.Next(0, 0x10000);
             Manager = this;
 
-            _socket = new UdpSocketWrapper();
+            _socket = socket ?? new UdpSocketWrapper();
         }
 
         /// <summary>
