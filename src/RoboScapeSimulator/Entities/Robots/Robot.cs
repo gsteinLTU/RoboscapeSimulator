@@ -34,14 +34,15 @@ namespace RoboScapeSimulator.Entities.Robots
         /// Instantiate a Robot inside a given simulation instance
         /// </summary>
         /// <param name="room">Room this Robot exists inside</param>
-        public Robot(Room room, in Vector3? position = null, in Quaternion? rotation = null, in Vector3? size = null, float mass = 2, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f, bool internalUse = false)
+        public Robot(Room room, in Vector3? position = null, in Quaternion? rotation = null, in Vector3? size = null, float mass = 2, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f, IUdpClient? client = null)
         {
             this.room = room;
             var rng = new Random();
 
             VisualInfo = visualInfo ?? new VisualInfo() { ModelName = "parallax_robot.glb" };
 
-            SetupRobot(internalUse);
+            SetupRobot(client);
+
             Name = "robot_" + BytesToHexstring(MacAddress, "");
 
             BodyReference = room.SimInstance.CreateBox(Name, 
@@ -142,16 +143,13 @@ namespace RoboScapeSimulator.Entities.Robots
             MessageHandlers.Remove(messageCode);
         }
 
-        private void SetupRobot(bool internalUse = false)
+        private void SetupRobot(IUdpClient? socket = null)
         {
-            if (!internalUse)
-            {
-                socket = new UdpClientWrapper();
-
+            if(socket != null){
                 // Remove port from host to make localhost use easier
                 string host = SettingsManager.RoboScapeHostWithoutPort;
 
-                socket.Connect(host, SettingsManager.RoboScapePort);
+                this.socket?.Connect(host, SettingsManager.RoboScapePort);
             }
 
             if (MacAddress?.Length != 6)
@@ -237,7 +235,7 @@ namespace RoboScapeSimulator.Entities.Robots
             // Setup robots
             if (MacAddress == Array.Empty<byte>())
             {
-                SetupRobot();
+                SetupRobot(socket);
             }
 
             if ((lastHeartbeat + HeartbeatPeriod) < time.ElapsedSeconds || lastHeartbeat < 0)
@@ -252,7 +250,7 @@ namespace RoboScapeSimulator.Entities.Robots
                 IPEndPoint? remoteEP = null;
                 var msg = socket.Receive(ref remoteEP);
 
-                Debug.WriteLine($"Message from {remoteEP.Address}: {BytesToHexstring(msg)}");
+                Debug.WriteLine($"Message from {remoteEP?.Address}: {BytesToHexstring(msg)}");
 
                 room.LastInteractionTime = Environment.TickCount64;
 
