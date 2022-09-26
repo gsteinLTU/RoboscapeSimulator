@@ -63,7 +63,7 @@ namespace RoboScapeSimulator.Entities.Robots
 
         internal Simulation simulation;
 
-        public ParallaxRobot(Room room, in Vector3? position = null, in Quaternion? rotation = null, bool debug = false, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f, bool internalUse = false) : base(room, position, rotation, visualInfo: visualInfo, spawnHeight: spawnHeight, internalUse: internalUse)
+        public ParallaxRobot(Room room, in Vector3? position = null, in Quaternion? rotation = null, bool debug = false, in VisualInfo? visualInfo = null, float spawnHeight = 0.4f, Type? udpClientOverride = null) : base(room, position, rotation, visualInfo: visualInfo, spawnHeight: spawnHeight, udpClientOverride: udpClientOverride)
         {
             CreateHandlers();
 

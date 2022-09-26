@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
 using System.Numerics;
 using System.Text;
 using System.Text.Json;
@@ -140,7 +142,7 @@ namespace RoboScapeSimulator
         /// <param name="socket">Socket to send to</param>
         /// <param name="eventName">Name of event to send</param>
         /// <param name="data">Data to serialize and send</param>
-        public static void SendAsJSON<T>(Node.Socket socket, string eventName, T data)
+        public static void SendAsJSON<T>(Node.SocketBase socket, string eventName, T data)
         {
             if (data != null)
             {
@@ -234,35 +236,40 @@ namespace RoboScapeSimulator
         /// <summary>
         /// Get the largest component of this vector
         /// </summary>
-        public static float Max(this Vector3 vec){
+        public static float Max(this Vector3 vec)
+        {
             return MathF.Max(vec.X, MathF.Max(vec.Y, vec.Z));
         }
 
         /// <summary>
         /// Get the component-wise maximum of this Vector3 and another Vector3
         /// </summary>
-        public static Vector3 Max(this Vector3 vec, Vector3 v2){
+        public static Vector3 Max(this Vector3 vec, Vector3 v2)
+        {
             return new Vector3(MathF.Max(vec.X, v2.X), MathF.Max(vec.Y, v2.Y), MathF.Max(vec.Z, v2.Z));
         }
 
         /// <summary>
         /// Get the smallest component of this vector
         /// </summary>
-        public static float Min(this Vector3 vec){
+        public static float Min(this Vector3 vec)
+        {
             return MathF.Min(vec.X, MathF.Min(vec.Y, vec.Z));
         }
 
         /// <summary>
         /// Get the component-wise minimum of this Vector3 and another Vector3
         /// </summary>
-        public static Vector3 Min(this Vector3 vec, Vector3 v2){
+        public static Vector3 Min(this Vector3 vec, Vector3 v2)
+        {
             return new Vector3(MathF.Min(vec.X, v2.X), MathF.Min(vec.Y, v2.Y), MathF.Min(vec.Z, v2.Z));
         }
 
         /// <summary>
         /// Clamp the components of this vector component-wise between two other vectors
         /// </summary>
-        public static Vector3 Clamp(this Vector3 vec, Vector3 min, Vector3 max){
+        public static Vector3 Clamp(this Vector3 vec, Vector3 min, Vector3 max)
+        {
             vec.X = Clamp(vec.X, min.X, max.X);
             vec.Y = Clamp(vec.Y, min.Y, max.Y);
             vec.Z = Clamp(vec.Z, min.Z, max.Z);
@@ -276,9 +283,58 @@ namespace RoboScapeSimulator
         /// <param name="min">Lowest values of components</param>
         /// <param name="max">Largest values of components</param>
         /// <returns>If this Vector3's components are all between min and max.</returns>
-        public static bool Inside(this Vector3 vec, Vector3 min, Vector3 max){
+        public static bool Inside(this Vector3 vec, Vector3 min, Vector3 max)
+        {
             return vec.X >= min.X && vec.Y >= min.Y && vec.Z >= min.Z &&
                 vec.X <= max.X && vec.Y <= max.Y && vec.Z <= max.Z;
         }
     }
+
+    /// <summary>
+    /// Interface to allow for mocking of UdpSocket
+    /// </summary>
+    public interface IUdpSocket
+    {
+        public int Available { get; }
+
+        public int Receive(Byte[] incoming);
+
+        public int SendTo(Byte[] jsonBytes, SocketFlags none, EndPoint hostEndPoint);
+    }
+
+    /// <summary>
+    /// UdpSocket wrapper, automatically creates a bound UDP Socket 
+    /// </summary>
+    public class UdpSocketWrapper : Socket, IUdpSocket
+    {
+        public UdpSocketWrapper() : base(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)
+        {
+            Bind(new IPEndPoint(IPAddress.Any, 0));
+        }
+    }
+
+    /// <summary>
+    /// Interface to allow mocking of UdpClient type
+    /// </summary>
+    public interface IUdpClient
+    {
+        public int Available { get; }
+        public void Close();
+        public void Connect(string host, int port);
+        public byte[] Receive(ref IPEndPoint? remoteEP);
+        public Task<int> SendAsync(byte[] datagram, int bytes);
+    }
+
+    /// <summary>
+    /// Wrapper around UdpClient class
+    /// </summary>
+    public class UdpClientWrapper : UdpClient, IUdpClient
+    {
+        public UdpClientWrapper() : base()
+        {
+            Trace.WriteLine("UdpClientWrapper");
+        }
+    }
+
+
 }

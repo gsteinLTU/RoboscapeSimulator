@@ -40,7 +40,7 @@ public static class Program
         using Server server = new();
 
         // Socket.io setup
-        server.OnConnection((Socket socket) =>
+        server.OnConnection((SocketBase socket) =>
         {
             string? socketRoom = "";
 
@@ -70,14 +70,14 @@ public static class Program
             });
 
             // Send room info
-            socket.On("getRooms", (Socket s, JsonNode[] args) =>
+            socket.On("getRooms", (SocketBase s, JsonNode[] args) =>
             {
                 if (args.Length == 0) return;
                 var user = args[0]?.ToString() ?? "";
                 Messages.SendUserRooms(socket, user);
             });
 
-            socket.On("joinRoom", (Socket s, JsonNode[] args) =>
+            socket.On("joinRoom", (SocketBase s, JsonNode[] args) =>
             {
                 Messages.HandleJoinRoom(args, socket, ref socketRoom);
             });
