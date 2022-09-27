@@ -1,6 +1,6 @@
 using System.Numerics;
 using RoboScapeSimulator.Entities;
-using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Entities.RobotScape;
 using RoboScapeSimulator.Physics;
 
 namespace RoboScapeSimulator.IoTScape.Devices

@@ -3,7 +3,7 @@ using System.Net;
 using System.Numerics;
 using RoboScapeSimulator.Environments.Helpers;
 
-namespace RoboScapeSimulator.Entities.Robots
+namespace RoboScapeSimulator.Entities.RobotScape
 {
     /// <summary>
     /// Base class for any RoboScape robot, subclasses must implement actuators/sensors

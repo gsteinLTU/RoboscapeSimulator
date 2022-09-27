@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Text;
 using RoboScapeSimulator.Entities;
-using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Entities.RobotScape;
 namespace RoboScapeSimulator.Physics
 {
     /// <summary>
