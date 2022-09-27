@@ -146,11 +146,15 @@ namespace RoboScapeSimulator.Entities.Robots
         private void SetupRobot(Type? clientType = null)
         {
             if(clientType != null){
-                socket = (IUdpClient)Activator.CreateInstance(clientType);
-                // Remove port from host to make localhost use easier
-                string host = SettingsManager.RoboScapeHostWithoutPort;
+                var newSocket = Activator.CreateInstance(clientType);
+                if(newSocket == null){
+                    throw new Exception("Unable to instantiate UDP client");
+                }
 
-                this.socket?.Connect(host, SettingsManager.RoboScapePort);
+                socket = (IUdpClient)newSocket;
+
+                // Remove port from host to make localhost use easier
+                socket.Connect(SettingsManager.RoboScapeHostWithoutPort, SettingsManager.RoboScapePort);
             }
 
             if (MacAddress?.Length != 6)

@@ -1,6 +1,4 @@
 using System.Numerics;
-using BepuPhysics;
-using BepuPhysics.Collidables;
 using RoboScapeSimulator.Physics;
 using RoboScapeSimulator.Physics.Bepu;
 
@@ -76,12 +74,6 @@ public class Trigger : DynamicEntity, IResettable
         Height = height;
         Depth = depth;
 
-        var simulationInstance = room.SimInstance;
-
-        var box = new Box(width, height, depth);
-
-        RigidPose pose = new(initialPosition, initialOrientation);
-
         BodyReference = room.SimInstance.CreateBox(Name, initialPosition, initialOrientation, width, height, depth, 1, true);
 
         if(room.SimInstance is BepuSimulationInstance bepuSim && BodyReference is SimBodyBepu bepuBody){
@@ -92,7 +84,7 @@ public class Trigger : DynamicEntity, IResettable
             throw new SimulationTypeNotSupportedException();
         }
 
-        this.OneTime = oneTime;
+        OneTime = oneTime;
         room.SimInstance.Entities.Add(this);
     }
 

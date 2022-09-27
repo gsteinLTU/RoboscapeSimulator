@@ -2,7 +2,7 @@ using System.Numerics;
 using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuUtilities.Memory;
-using RoboScapeSimulator.Entities;
+
 namespace RoboScapeSimulator.Physics.Bepu
 {
     /// <summary>
@@ -20,6 +20,9 @@ namespace RoboScapeSimulator.Physics.Bepu
         /// </summary>
         public Dictionary<string, BodyReference> NamedBodies = new();
         
+        /// <summary>
+        /// Underlying Bepu simulation
+        /// </summary>
         public Simulation Simulation;
 
         /// <summary>
@@ -81,8 +84,9 @@ namespace RoboScapeSimulator.Physics.Bepu
                 bodyHandle = Simulation.Bodies.Add(BodyDescription.CreateDynamic(pose, boxInertia, new CollidableDescription(Simulation.Shapes.Add(box), 0.1f), new BodyActivityDescription(0)));
             }
 
-            SimBodyBepu simBody = new SimBodyBepu();
-            simBody.BodyReference = Simulation.Bodies.GetBodyReference(bodyHandle);
+            SimBodyBepu simBody = new(){
+                BodyReference = Simulation.Bodies.GetBodyReference(bodyHandle)
+            };
 
             ref var bodyProperties = ref Properties.Allocate(simBody.BodyReference.Handle);
             bodyProperties = new BodyCollisionProperties { Friction = 1f, Filter = new SubgroupCollisionFilter(simBody.BodyReference.Handle.Value, 0) };
@@ -95,9 +99,11 @@ namespace RoboScapeSimulator.Physics.Bepu
         public override SimStatic CreateStaticBox(string name, Vector3 position, Quaternion? orientation = null, float width = 100, float height = 100, float depth = 1)
         {
             var groundHandle = Simulation.Statics.Add(new StaticDescription(position, Simulation.Shapes.Add(new Box(width, height, depth))));
-            
-            SimStaticBepu simStatic = new SimStaticBepu();
-            simStatic.StaticReference = Simulation.Statics.GetStaticReference(groundHandle);
+
+            SimStaticBepu simStatic = new()
+            {
+                StaticReference = Simulation.Statics.GetStaticReference(groundHandle)
+            };
 
             NamedStatics.Add(name, simStatic.StaticReference);
 
@@ -129,7 +135,7 @@ namespace RoboScapeSimulator.Physics.Bepu
 
         public override Vector3 Size => BodyReference.BoundingBox.Max - BodyReference.BoundingBox.Min;
 
-        public RigidPose Pose => new RigidPose(Position, Orientation);
+        public RigidPose Pose => new(Position, Orientation);
 
         public override void ApplyForce(Vector3 force)
         {

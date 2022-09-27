@@ -12,19 +12,19 @@ namespace RoboScapeSimulator.Physics.Null
         public Dictionary<string, SimBodyNull> Bodies = new();
         public Dictionary<string, SimStaticNull> StaticBodies = new();
 
-        public Vector3 MaxBoundary = new Vector3(50,float.PositiveInfinity,50);
+        public Vector3 MaxBoundary = new(50,float.PositiveInfinity,50);
 
-        public Vector3 MinBoundary = new Vector3(-50,0,-50);
+        public Vector3 MinBoundary = new(-50,0,-50);
 
         public override SimBody CreateBox(string name, Vector3 position, Quaternion? orientation = null, float width = 1, float height = 1, float depth = 1, float mass = 1, bool isKinematic = false)
         {
             Bodies.Add(name, new SimBodyNull(){
                 position = position,
                 orientation = orientation ?? Quaternion.Identity,
-                angularVel = new Vector3(),
-                linearVel = new Vector3(),
+                angularVel = new(),
+                linearVel = new(),
                 mass = mass,
-                size = new Vector3(width, height, depth),
+                size = new(width, height, depth),
                 isKinematic = isKinematic
             });
             return Bodies[name];
@@ -35,7 +35,7 @@ namespace RoboScapeSimulator.Physics.Null
             StaticBodies.Add(name, new SimStaticNull(){
                 position = position,
                 orientation = orientation ?? Quaternion.Identity,
-                size = new Vector3(width, height, depth)
+                size = new(width, height, depth)
             });
             return StaticBodies[name];
         } 
@@ -67,6 +67,7 @@ namespace RoboScapeSimulator.Physics.Null
                     if(!corner.Inside(MinBoundary, MaxBoundary)){
                         Vector3 delta = corner.Clamp(MinBoundary, MaxBoundary) - corner;
                         Debug.WriteLine($"Corner at {corner} is outside, moving position by {delta}");
+                        
                         // Move corner back inside
                         body.Position += delta;
                     }
@@ -103,7 +104,7 @@ namespace RoboScapeSimulator.Physics.Null
         }
 
         public IEnumerable<Vector3> GetCorners(bool oriented = true){
-            List<Vector3> corners = new List<Vector3>(){
+            List<Vector3> corners = new(){
                 new Vector3(Size.X / 2f, Size.Y / 2f, Size.Z / 2f),
                 new Vector3(Size.X / 2f, Size.Y / 2f, -Size.Z / 2f),
                 new Vector3(Size.X / 2f, -Size.Y / 2f, Size.Z / 2f),
