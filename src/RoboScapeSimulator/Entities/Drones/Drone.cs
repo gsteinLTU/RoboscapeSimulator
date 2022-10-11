@@ -35,17 +35,20 @@ class Drone : DynamicEntity, IResettable
         BodyReference = room.SimInstance.CreateBox(Name,
             position ?? new Vector3(rng.Next(-5, 5), spawnHeight, rng.Next(-5, 5)),
             rotation ?? Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI),
-            0.1f, 0.1f, 0.1f, 1);
+            0.175f, 0.025f, 0.175f, 0.5f);
 
         _initialPosition = Position;
         _initialOrientation = Orientation;
 
         room.SimInstance.Entities.Add(this);
+        DroneService droneService = new(this);
+        droneService.Setup(room);
     }
 
     public readonly int NumMotors = 4;
 
     public float[] MotorSpeeds = { 0, 0, 0, 0 };
+    public float[] MotorSpeedTargets = { 0, 0, 0, 0 };
 
     public event EventHandler? OnReset;
 
@@ -59,6 +62,34 @@ class Drone : DynamicEntity, IResettable
 
         // Set all speeds to 0
         Array.Fill(MotorSpeeds, 0);
+        Array.Fill(MotorSpeedTargets, 0);
+    }
+
+    float k_M = 1.5e-9f;
+    float k_F = 6.11e-8f;
+    float k_m = 20;
+
+    Matrix4x4 I = Utils.MakeMatrix3x3(  2.32e-3f, 0, 0,
+                                        0, 4e-3f, 0,
+                                        0, 0, 2.32e-3f);
+
+    public override void Update(float dt)
+    {
+        base.Update(dt);
+
+        // Update motor speeds
+        for (int i = 0; i < MotorSpeeds.Length; i++)
+        {
+            MotorSpeeds[i] += dt * k_m * (MotorSpeedTargets[i] - MotorSpeeds[i]);
+        }
+
+        float motorForce = MotorSpeeds.Sum(speed => speed * speed * k_F);
+        Vector3 updateLinearForce = (1.0f / BodyReference.Mass) * Vector3.Transform(new Vector3(0, motorForce, 0),BodyReference.Orientation);
+
+        Vector3 updateAngularForce = new();
+
+        BodyReference.LinearVelocity += dt * updateLinearForce;
+        BodyReference.AngularVelocity += dt * updateAngularForce;
     }
 
     class DroneService : IoTScapeObject
@@ -113,7 +144,7 @@ class Drone : DynamicEntity, IResettable
 
                 try
                 {
-                    drone.MotorSpeeds = args.Select(arg => float.Parse(arg)).ToArray();
+                    drone.MotorSpeedTargets = args.Select(arg => float.Parse(arg)).ToArray();
                 }
                 catch (Exception)
                 {

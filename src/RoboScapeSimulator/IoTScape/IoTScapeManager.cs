@@ -13,7 +13,7 @@ namespace RoboScapeSimulator.IoTScape
         private static IoTScapeManager? manager;
         public static IoTScapeManager? Manager { get => manager; set => manager = value; }
 
-        private readonly IUdpSocket _socket;
+        private readonly IUdpClient _socket;
 
         readonly private int idprefix;
 
@@ -27,7 +27,7 @@ namespace RoboScapeSimulator.IoTScape
 
         private float timer = 0.0f;
 
-        public IoTScapeManager(IUdpSocket? socket = null)
+        public IoTScapeManager(IUdpClient? socket = null)
         {
             var hostIpAddress = Dns.GetHostAddresses(SettingsManager.RoboScapeHostWithoutPort)[0];
             hostEndPoint = new IPEndPoint(hostIpAddress, SettingsManager.IoTScapePort);
@@ -35,7 +35,8 @@ namespace RoboScapeSimulator.IoTScape
             idprefix = Random.Shared.Next(0, 0x10000);
             Manager = this;
 
-            _socket = socket ?? new UdpSocketWrapper();
+            _socket = socket ?? new UdpClientWrapper();
+            _socket.Connect(SettingsManager.RoboScapeHostWithoutPort, SettingsManager.IoTScapePort);
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace RoboScapeSimulator.IoTScape
             Debug.WriteLine($"Announcing service {o.Definition.name} from object with ID {o.Definition.id}");
             var jsonBytes = JsonSerializer.SerializeToUtf8Bytes(new Dictionary<string, IoTScapeServiceDefinition>() { { o.Definition.name, o.Definition } });
             Debug.WriteLine(Encoding.UTF8.GetString(jsonBytes));
-            _socket.SendTo(jsonBytes, SocketFlags.None, hostEndPoint);
+            _socket.SendAsync(jsonBytes, jsonBytes.Length);
         }
 
         /// <summary>
@@ -145,10 +146,10 @@ namespace RoboScapeSimulator.IoTScape
             // Parse incoming messages
             if (_socket.Available > 0)
             {
-                byte[] incoming = new byte[2048];
-                int len = _socket.Receive(incoming);
+                IPEndPoint? remote = null;
+                byte[] incoming = _socket.Receive(ref remote);
 
-                string incomingString = Encoding.UTF8.GetString(incoming, 0, len);
+                string incomingString = Encoding.UTF8.GetString(incoming, 0, incoming.Length);
 
                 try
                 {
@@ -216,8 +217,9 @@ namespace RoboScapeSimulator.IoTScape
         internal void SendToServer(in IoTScapeResponse response)
         {
             // Send response
-            _socket.SendTo(JsonSerializer.SerializeToUtf8Bytes(response,
-                new JsonSerializerOptions { IncludeFields = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }), SocketFlags.None, hostEndPoint);
+            var serializedResponse = JsonSerializer.SerializeToUtf8Bytes(response,
+                new JsonSerializerOptions { IncludeFields = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+            _socket.SendAsync(serializedResponse, serializedResponse.Length);
         }
     }
 

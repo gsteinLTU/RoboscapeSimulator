@@ -288,28 +288,23 @@ namespace RoboScapeSimulator
             return vec.X >= min.X && vec.Y >= min.Y && vec.Z >= min.Z &&
                 vec.X <= max.X && vec.Y <= max.Y && vec.Z <= max.Z;
         }
-    }
 
-    /// <summary>
-    /// Interface to allow for mocking of UdpSocket
-    /// </summary>
-    public interface IUdpSocket
-    {
-        public int Available { get; }
-
-        public int Receive(Byte[] incoming);
-
-        public int SendTo(Byte[] jsonBytes, SocketFlags none, EndPoint hostEndPoint);
-    }
-
-    /// <summary>
-    /// UdpSocket wrapper, automatically creates a bound UDP Socket 
-    /// </summary>
-    public class UdpSocketWrapper : Socket, IUdpSocket
-    {
-        public UdpSocketWrapper() : base(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)
+        /// <summary>
+        /// Create a Matrix4x4 from the entries for a 3x3 matrix (i.e. the extra rows/columns are from the 4x4 identity matrix)
+        /// </summary>
+        /// <param name="m11"></param>
+        /// <param name="m12"></param>
+        /// <param name="m13"></param>
+        /// <param name="m21"></param>
+        /// <param name="m22"></param>
+        /// <param name="m23"></param>
+        /// <param name="m31"></param>
+        /// <param name="m32"></param>
+        /// <param name="m33"></param>
+        /// <returns></returns>
+        public static Matrix4x4 MakeMatrix3x3(float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32, float m33)
         {
-            Bind(new IPEndPoint(IPAddress.Any, 0));
+            return new Matrix4x4(m11, m12, m13, 0, m21, m22, m23, 0, m31, m32, m33, 0, 0, 0, 0, 1);
         }
     }
 
