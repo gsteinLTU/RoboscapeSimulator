@@ -36,7 +36,7 @@ namespace RoboScapeSimulator.Environments
             for (int i = 0; i < _drones; i++)
             {
                 var drone = new Drone(room);
-                var positionSensor = new PositionSensor(drone);
+                var positionSensor = new PositionSensor(drone, drone.Name);
                 positionSensor.Setup(room);
             }
         }
