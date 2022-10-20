@@ -23,19 +23,24 @@ class Drone : DynamicEntity, IResettable
 
     static internal int id = 0;
 
-    public Drone(Room room, in Vector3? position = null, in Quaternion? rotation = null, in VisualInfo? visualInfo = null, float spawnHeight = 0.2f)
+    public Drone(Room room, in Vector3? position = null, in Quaternion? rotation = null, in VisualInfo? visualInfo = null, float spawnHeight = 0.2f, float radius = 0.175f, float height = 0.025f)
     {
         this.room = room;
         var rng = new Random();
 
-        VisualInfo = visualInfo ?? new VisualInfo() {};
+        VisualInfo = visualInfo ?? new VisualInfo() { ModelName = "quadcopter.glb", ModelScale = 2f * radius / 0.175f };
 
         Name = "drone" + id++;
 
         BodyReference = room.SimInstance.CreateBox(Name,
             position ?? new Vector3(rng.Next(-5, 5), spawnHeight, rng.Next(-5, 5)),
             rotation ?? Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)rng.NextDouble() * MathF.PI),
-            0.175f, 0.025f, 0.175f, 0.5f);
+            radius * 2, height, radius * 2, 0.5f * MathF.Pow(radius / 0.175f, 3));
+
+        // Calculate moment of inertia
+        I.M11 = (BodyReference.Mass * 0.3f) / 2f * radius * radius + 2f / 0.5f * (BodyReference.Mass * 0.7f) * MathF.Pow(height / 2f, 2);
+        I.M33 = I.M11;
+        I.M22 = (BodyReference.Mass * 0.3f) * radius * radius + 2f / 0.5f * (BodyReference.Mass * 0.7f) * MathF.Pow(height / 2f, 2);
 
         _initialPosition = Position;
         _initialOrientation = Orientation;
