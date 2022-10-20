@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Drones;
+using RoboScapeSimulator.IoTScape.Devices;
 
 namespace RoboScapeSimulator.Environments
 {
@@ -34,7 +35,9 @@ namespace RoboScapeSimulator.Environments
             // Demo drones
             for (int i = 0; i < _drones; i++)
             {
-                var _ = new Drone(room);
+                var drone = new Drone(room);
+                var positionSensor = new PositionSensor(drone);
+                positionSensor.Setup(room);
             }
         }
     }
