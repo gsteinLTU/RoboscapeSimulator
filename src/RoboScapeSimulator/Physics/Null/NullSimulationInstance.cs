@@ -16,6 +16,8 @@ namespace RoboScapeSimulator.Physics.Null
 
         public Vector3 MinBoundary = new(-50,0,-50);
 
+        public Vector3 Gravity = Vector3.Zero;
+
         public override SimBody CreateBox(string name, Vector3 position, Quaternion? orientation = null, float width = 1, float height = 1, float depth = 1, float mass = 1, bool isKinematic = false)
         {
             Bodies.Add(name, new SimBodyNull(){
@@ -56,6 +58,8 @@ namespace RoboScapeSimulator.Physics.Null
                     continue;
                 }
 
+                body.LinearVelocity += dt * Gravity;
+
                 body.Position += dt * body.LinearVelocity;
                 body.Orientation.ExtractYawPitchRoll(out var yaw, out var pitch, out var roll);
                 body.Orientation = Quaternion.CreateFromYawPitchRoll(yaw + dt * body.AngularVelocity.Y,pitch + dt * body.AngularVelocity.X, roll + dt * body.AngularVelocity.Z);
@@ -70,6 +74,7 @@ namespace RoboScapeSimulator.Physics.Null
                         
                         // Move corner back inside
                         body.Position += delta;
+                        body.LinearVelocity += dt * delta;
                     }
                 }
             }

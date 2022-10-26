@@ -1,7 +1,9 @@
 using System.Diagnostics;
+using System.Numerics;
 using RoboScapeSimulator.Entities;
 using RoboScapeSimulator.Entities.Drones;
 using RoboScapeSimulator.IoTScape.Devices;
+using RoboScapeSimulator.Physics.Null;
 
 namespace RoboScapeSimulator.Environments
 {
@@ -18,6 +20,8 @@ namespace RoboScapeSimulator.Environments
             Description = "Drone test";
             Category = "§_Testing";
             _drones = drones;
+
+            PreferredSimulationInstanceType = typeof(NullSimulationInstance);
         }
 
         public override object Clone()
@@ -28,6 +32,10 @@ namespace RoboScapeSimulator.Environments
         public override void Setup(Room room)
         {
             Trace.WriteLine("Setting up DroneTestEnvironment environment");
+
+            if(room.SimInstance is NullSimulationInstance nullSim){
+                nullSim.Gravity = new Vector3(0, -9.81f, 0);
+            }
 
             // Ground
             _ = new Ground(room);

@@ -42,6 +42,8 @@ class Drone : DynamicEntity, IResettable
         I.M33 = I.M11;
         I.M22 = (BodyReference.Mass * 0.3f) * radius * radius + 2f / 0.5f * (BodyReference.Mass * 0.7f) * MathF.Pow(height / 2f, 2);
 
+        L = radius;
+
         _initialPosition = Position;
         _initialOrientation = Orientation;
 
@@ -74,6 +76,8 @@ class Drone : DynamicEntity, IResettable
     float k_F = 6.11e-8f;
     float k_m = 20;
 
+    float L = 0.175f;
+
     Matrix4x4 I = Utils.MakeMatrix3x3(  2.32e-3f, 0, 0,
                                         0, 4e-3f, 0,
                                         0, 0, 2.32e-3f);
@@ -88,13 +92,30 @@ class Drone : DynamicEntity, IResettable
             MotorSpeeds[i] += dt * k_m * (MotorSpeedTargets[i] - MotorSpeeds[i]);
         }
 
-        float motorForce = MotorSpeeds.Sum(speed => speed * speed * k_F);
-        Vector3 updateLinearForce = (1.0f / BodyReference.Mass) * Vector3.Transform(new Vector3(0, motorForce, 0),BodyReference.Orientation);
+        var motorForces = MotorSpeeds.Select(speed => speed * speed * k_F).ToArray();
+        Vector3 updateLinearForce = (1.0f / BodyReference.Mass) * Vector3.Transform(new Vector3(0, motorForces.Sum(), 0),BodyReference.Orientation);
 
-        Vector3 updateAngularForce = new();
+        Vector3 updateAngularAcc = new();
+
+        Vector3 tempCross = Vector3.Cross(BodyReference.AngularVelocity, new Vector3(
+            I.M11 * BodyReference.AngularVelocity.X, I.M22 * BodyReference.AngularVelocity.Y, I.M33 * BodyReference.AngularVelocity.Z)
+        );
+
+        float gamma = k_M / k_F;
+
+        updateAngularAcc += Vector3.Transform(Vector3.UnitX, BodyReference.Orientation) *
+            1f / I.M11 * (L * (motorForces[1] - motorForces[3]) - tempCross.X);
+
+        updateAngularAcc += Vector3.Transform(Vector3.UnitY, BodyReference.Orientation) *
+            1f / I.M22 * (gamma * (motorForces[0] - motorForces[1] + motorForces[2] - motorForces[3]) - tempCross.Y);
+
+        updateAngularAcc += Vector3.Transform(Vector3.UnitZ, BodyReference.Orientation) *
+            1f / I.M33 * (L * (motorForces[2] - motorForces[0]) - tempCross.Z);
+
+        updateAngularAcc = Vector3.Transform(updateAngularAcc, BodyReference.Orientation);
 
         BodyReference.LinearVelocity += dt * updateLinearForce;
-        BodyReference.AngularVelocity += dt * updateAngularForce;
+        BodyReference.AngularVelocity += dt * updateAngularAcc;
     }
 
     class DroneService : IoTScapeObject
