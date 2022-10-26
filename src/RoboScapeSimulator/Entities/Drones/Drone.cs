@@ -44,6 +44,12 @@ class Drone : DynamicEntity, IResettable
 
         L = radius;
 
+        D = k_D * new Vector3(
+            L * height,
+            L * L,
+            L * height
+        );
+
         _initialPosition = Position;
         _initialOrientation = Orientation;
 
@@ -76,11 +82,29 @@ class Drone : DynamicEntity, IResettable
     float k_F = 6.11e-8f;
     float k_m = 20;
 
+    /// <summary>
+    /// Drag coefficient
+    /// </summary>
+    float k_D = 0.5f;
+
+    /// <summary>
+    /// Arm length
+    /// </summary>
     float L = 0.175f;
 
+    /// <summary>
+    /// Moment of Inertia
+    /// </summary>
+    /// <returns></returns>
     Matrix4x4 I = Utils.MakeMatrix3x3(  2.32e-3f, 0, 0,
                                         0, 4e-3f, 0,
                                         0, 0, 2.32e-3f);
+
+    /// <summary>
+    /// Drag coefficent
+    /// </summary>
+    /// <returns></returns>
+    Vector3 D = new();
 
     public override void Update(float dt)
     {
@@ -89,11 +113,12 @@ class Drone : DynamicEntity, IResettable
         // Update motor speeds
         for (int i = 0; i < MotorSpeeds.Length; i++)
         {
-            MotorSpeeds[i] += dt * k_m * (MotorSpeedTargets[i] - MotorSpeeds[i]);
+            MotorSpeeds[i] = MotorSpeedTargets[i];
+            //MotorSpeeds[i] += dt * k_m * (MotorSpeedTargets[i] - MotorSpeeds[i]);
         }
 
         var motorForces = MotorSpeeds.Select(speed => speed * speed * k_F).ToArray();
-        Vector3 updateLinearForce = (1.0f / BodyReference.Mass) * Vector3.Transform(new Vector3(0, motorForces.Sum(), 0),BodyReference.Orientation);
+        Vector3 updateLinearAcc = (1.0f / BodyReference.Mass) * Vector3.Transform(new Vector3(0, motorForces.Sum(), 0),BodyReference.Orientation);
 
         Vector3 updateAngularAcc = new();
 
@@ -114,7 +139,11 @@ class Drone : DynamicEntity, IResettable
 
         updateAngularAcc = Vector3.Transform(updateAngularAcc, BodyReference.Orientation);
 
-        BodyReference.LinearVelocity += dt * updateLinearForce;
+        var linearDrag = - D * (BodyReference.LinearVelocity * BodyReference.LinearVelocity) / BodyReference.Mass;
+
+        updateLinearAcc -= linearDrag;
+
+        BodyReference.LinearVelocity += dt * updateLinearAcc;
         BodyReference.AngularVelocity += dt * updateAngularAcc;
     }
 

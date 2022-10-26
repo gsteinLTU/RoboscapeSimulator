@@ -48,7 +48,7 @@ namespace RoboScapeSimulator.Physics.Null
         /// <param name="dt">Delta time in s</param>
         public override void Update(float dt)
         {
-            if (dt <= 0)
+            if (dt <= float.Epsilon)
                 return;
 
             // Update positions
@@ -74,7 +74,7 @@ namespace RoboScapeSimulator.Physics.Null
                         
                         // Move corner back inside
                         body.Position += delta;
-                        body.LinearVelocity += dt * delta;
+                        body.LinearVelocity += 1f / dt * delta;
                     }
                 }
             }
