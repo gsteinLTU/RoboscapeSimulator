@@ -20,8 +20,6 @@ namespace RoboScapeSimulator.IoTScape
         readonly private ConcurrentDictionary<string, IoTScapeObject> objects = new();
         readonly private ConcurrentDictionary<string, int> lastIDs = new();
 
-        readonly private EndPoint hostEndPoint;
-
         // Wait time in seconds.
         private const float announcePeriod = 30.0f;
 
@@ -29,9 +27,6 @@ namespace RoboScapeSimulator.IoTScape
 
         public IoTScapeManager(IUdpClient? socket = null)
         {
-            var hostIpAddress = Dns.GetHostAddresses(SettingsManager.RoboScapeHostWithoutPort)[0];
-            hostEndPoint = new IPEndPoint(hostIpAddress, SettingsManager.IoTScapePort);
-
             idprefix = Random.Shared.Next(0, 0x10000);
             Manager = this;
 
