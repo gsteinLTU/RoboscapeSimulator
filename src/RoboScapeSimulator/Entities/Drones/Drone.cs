@@ -96,7 +96,7 @@ class Drone : DynamicEntity, IResettable
     /// Moment of Inertia
     /// </summary>
     /// <returns></returns>
-    Matrix4x4 I = Utils.MakeMatrix3x3(  2.32e-3f, 0, 0,
+    Matrix4x4 I = Utils.MakeMatrix3x3(2.32e-3f, 0, 0,
                                         0, 4e-3f, 0,
                                         0, 0, 2.32e-3f);
 
@@ -118,7 +118,7 @@ class Drone : DynamicEntity, IResettable
         }
 
         var motorForces = MotorSpeeds.Select(speed => speed * speed * k_F).ToArray();
-        Vector3 updateLinearAcc = (1.0f / BodyReference.Mass) * Vector3.Transform(new Vector3(0, motorForces.Sum(), 0),BodyReference.Orientation);
+        Vector3 updateLinearAcc = (1.0f / BodyReference.Mass) * Vector3.Transform(new Vector3(0, motorForces.Sum(), 0), BodyReference.Orientation);
 
         Vector3 updateAngularAcc = new();
 
@@ -139,11 +139,25 @@ class Drone : DynamicEntity, IResettable
 
         updateAngularAcc = Vector3.Transform(updateAngularAcc, BodyReference.Orientation);
 
-        var linearDrag = - D * (BodyReference.LinearVelocity * BodyReference.LinearVelocity) / BodyReference.Mass;
+        var linearDrag = -D * (BodyReference.LinearVelocity * BodyReference.LinearVelocity) / BodyReference.Mass;
 
         updateLinearAcc -= linearDrag;
 
         BodyReference.LinearVelocity += dt * updateLinearAcc;
         BodyReference.AngularVelocity += dt * updateAngularAcc;
     }
+
+    /// <summary>
+    /// State of the Drone's controller
+    /// SetMotorSpeed - Manually set speed of motors (hardest)
+    /// SetAnglesAndVelocity - Set target pitch/yaw/roll and speed
+    /// SetTargetSpeeds - Set requested speeds on X/Y/Z axes
+    /// GoToCoords - Set target X/Y/Z coordinates (easiest)
+    /// </summary>
+    internal enum DroneDriveState
+    {
+        SetMotorSpeed, SetAnglesAndVelocity, SetTargetSpeeds, GoToCoords
+    }
+
+    internal DroneDriveState DriveState = DroneDriveState.SetMotorSpeed;  
 }

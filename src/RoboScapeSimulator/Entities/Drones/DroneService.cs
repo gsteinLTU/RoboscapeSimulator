@@ -43,6 +43,119 @@ internal class DroneService : IoTScapeObject
                     returns = new IoTScapeMethodReturns(){
                         type = new List<string>(){"void"}
                     }
+                }},
+                {"setTargetAngles", new IoTScapeMethodDescription(){
+                    documentation = "Set the target angles for the drone",
+                    paramsList = new List<IoTScapeMethodParams>(){
+                        new IoTScapeMethodParams(){
+                            name = "pitch",
+                            type = "number",
+                            documentation = "Pitch (x-axis)"
+                        },
+                        new IoTScapeMethodParams(){
+                            name = "yaw",
+                            type = "number",
+                            documentation = "Yaw (Y-axis)"
+                        },
+                        new IoTScapeMethodParams(){
+                            name = "roll",
+                            type = "number",
+                            documentation = "Roll (z-axis)"
+                        },
+                    },
+                    returns = new IoTScapeMethodReturns(){
+                        type = new List<string>(){"void"}
+                    }
+                }},
+                {"setTargetSpeed", new IoTScapeMethodDescription(){
+                    documentation = "Set the target speed for the drone",
+                    paramsList = new List<IoTScapeMethodParams>(){
+                        new IoTScapeMethodParams(){
+                            name = "speed",
+                            type = "number",
+                            documentation = "Desired speed (m/s)"
+                        },
+                    },
+                    returns = new IoTScapeMethodReturns(){
+                        type = new List<string>(){"void"}
+                    }
+                }},
+                {"setSpeed", new IoTScapeMethodDescription(){
+                    documentation = "Set the target speeds for the drone",
+                    paramsList = new List<IoTScapeMethodParams>(){
+                        new IoTScapeMethodParams(){
+                            name = "x",
+                            type = "number",
+                            documentation = "X position"
+                        },
+                        new IoTScapeMethodParams(){
+                            name = "y",
+                            type = "number",
+                            documentation = "Y position"
+                        },
+                        new IoTScapeMethodParams(){
+                            name = "z",
+                            type = "number",
+                            documentation = "Z position"
+                        },
+                    },
+                    returns = new IoTScapeMethodReturns(){
+                        type = new List<string>(){"void"}
+                    }
+                }},
+                {"setTargetHeight", new IoTScapeMethodDescription(){
+                    documentation = "Set the target height for the drone",
+                    paramsList = new List<IoTScapeMethodParams>(){
+                        new IoTScapeMethodParams(){
+                            name = "height",
+                            type = "number",
+                            documentation = "Desired height"
+                        },
+                    },
+                    returns = new IoTScapeMethodReturns(){
+                        type = new List<string>(){"void"}
+                    }
+                }},
+                {"setSpeedXZ", new IoTScapeMethodDescription(){
+                    documentation = "Set the target X and Z speeds for the drone",
+                    paramsList = new List<IoTScapeMethodParams>(){
+                        new IoTScapeMethodParams(){
+                            name = "x",
+                            type = "number",
+                            documentation = "X speed"
+                        },
+                        new IoTScapeMethodParams(){
+                            name = "z",
+                            type = "number",
+                            documentation = "Z speed"
+                        },
+                    },
+                    returns = new IoTScapeMethodReturns(){
+                        type = new List<string>(){"void"}
+                    }
+                }},
+                {"goTo", new IoTScapeMethodDescription(){
+                    documentation = "Set the target position for the drone",
+                    paramsList = new List<IoTScapeMethodParams>(){
+                        new IoTScapeMethodParams(){
+                            name = "x",
+                            type = "number",
+                            documentation = "X position"
+                        },
+                        new IoTScapeMethodParams(){
+                            name = "y",
+                            type = "number",
+                            documentation = "Y position"
+                        },
+                        new IoTScapeMethodParams(){
+                            name = "z",
+                            type = "number",
+                            documentation = "Z position"
+                        },
+                    },
+                    returns = new IoTScapeMethodReturns(){
+                        type = new List<string>(){"void"}
+                    }
                 }}
         },
         new Dictionary<string, IoTScapeEventDescription>());
@@ -55,6 +168,8 @@ internal class DroneService : IoTScapeObject
             {
                 return Array.Empty<string>();
             }
+
+            drone.DriveState = Drone.DroneDriveState.SetMotorSpeed;
 
             try
             {
