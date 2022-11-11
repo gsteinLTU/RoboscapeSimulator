@@ -331,5 +331,42 @@ namespace RoboScapeSimulator
         }
     }
 
+    /// <summary>
+    /// A PID controller with customizable parameters
+    /// </summary>
+    public class PIDController {
+        public float Kp;
+        public float Ki;
+        public float Kd;
+
+        public float Target;
+
+        internal float I;
+
+        internal float D;
+
+        private float lastValue;
+
+        public void Reset() {
+            Target = 0;
+            lastValue = 0;
+            I = 0;
+            D = 0;
+        }
+
+        public float Update(float current, float dt) {
+            float error = current - Target;
+
+            I += error * dt;
+
+            if(dt > 0){
+                D = (current - lastValue) / dt;
+            }
+
+            lastValue = current;
+
+            return Kp * error + Ki * I + Kd * D;
+        }
+    }
 
 }

@@ -80,23 +80,23 @@ internal class DroneService : IoTScapeObject
                         type = new List<string>(){"void"}
                     }
                 }},
-                {"setSpeed", new IoTScapeMethodDescription(){
+                {"setTargetVelocity", new IoTScapeMethodDescription(){
                     documentation = "Set the target speeds for the drone",
                     paramsList = new List<IoTScapeMethodParams>(){
                         new IoTScapeMethodParams(){
                             name = "x",
                             type = "number",
-                            documentation = "X position"
+                            documentation = "X speed"
                         },
                         new IoTScapeMethodParams(){
                             name = "y",
                             type = "number",
-                            documentation = "Y position"
+                            documentation = "Y speed"
                         },
                         new IoTScapeMethodParams(){
                             name = "z",
                             type = "number",
-                            documentation = "Z position"
+                            documentation = "Z speed"
                         },
                     },
                     returns = new IoTScapeMethodReturns(){
@@ -179,6 +179,48 @@ internal class DroneService : IoTScapeObject
             {
                 Trace.WriteLine("Error parsing motor speeds");
             }
+            return Array.Empty<string>();
+        };
+
+        Methods["setTargetAngles"] = (string[] args) =>
+        {
+            drone.DriveState = Drone.DroneDriveState.SetAnglesAndSpeed;
+
+            return Array.Empty<string>();
+        };
+
+        Methods["setTargetSpeed"] = (string[] args) =>
+        {
+            drone.DriveState = Drone.DroneDriveState.SetAnglesAndSpeed;
+
+            return Array.Empty<string>();
+        };
+
+        Methods["setTargetVelocity"] = (string[] args) =>
+        {
+            drone.DriveState = Drone.DroneDriveState.SetTargetVelocity;
+
+            return Array.Empty<string>();
+        };
+
+        Methods["setTargetHeight"] = (string[] args) =>
+        {
+            drone.DriveState = Drone.DroneDriveState.SetTargetVelocityXZ;
+
+            return Array.Empty<string>();
+        };
+
+        Methods["setSpeedXZ"] = (string[] args) =>
+        {
+            drone.DriveState = Drone.DroneDriveState.SetTargetVelocityXZ;
+
+            return Array.Empty<string>();
+        };
+
+        Methods["goTo"] = (string[] args) =>
+        {
+            drone.DriveState = Drone.DroneDriveState.GoToCoords;
+
             return Array.Empty<string>();
         };
     }

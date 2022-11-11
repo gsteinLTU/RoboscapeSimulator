@@ -60,6 +60,8 @@ class Drone : DynamicEntity, IResettable
 
     public readonly int NumMotors = 4;
 
+    public readonly float MaxMotorSpeed = 6000;
+
     public float[] MotorSpeeds = { 0, 0, 0, 0 };
     public float[] MotorSpeedTargets = { 0, 0, 0, 0 };
 
@@ -113,8 +115,8 @@ class Drone : DynamicEntity, IResettable
         // Update motor speeds
         for (int i = 0; i < MotorSpeeds.Length; i++)
         {
-            MotorSpeeds[i] = MotorSpeedTargets[i];
-            //MotorSpeeds[i] += dt * k_m * (MotorSpeedTargets[i] - MotorSpeeds[i]);
+            MotorSpeeds[i] = MathF.Min(MaxMotorSpeed, MotorSpeedTargets[i]);
+            //MotorSpeeds[i] += dt * k_m * (MathF.Min(MaxMotorSpeed, MotorSpeedTargets[i]) - MotorSpeeds[i]);
         }
 
         var motorForces = MotorSpeeds.Select(speed => speed * speed * k_F).ToArray();
@@ -150,13 +152,14 @@ class Drone : DynamicEntity, IResettable
     /// <summary>
     /// State of the Drone's controller
     /// SetMotorSpeed - Manually set speed of motors (hardest)
-    /// SetAnglesAndVelocity - Set target pitch/yaw/roll and speed
-    /// SetTargetSpeeds - Set requested speeds on X/Y/Z axes
+    /// SetAnglesAndSpeed - Set target pitch/yaw/roll and speed
+    /// SetTargetVelocityXZ - Set target for X/Z axes, target height on Y axis
+    /// SetTargetVelocity - Set requested speeds on X/Y/Z axes
     /// GoToCoords - Set target X/Y/Z coordinates (easiest)
     /// </summary>
     internal enum DroneDriveState
     {
-        SetMotorSpeed, SetAnglesAndVelocity, SetTargetSpeeds, GoToCoords
+        SetMotorSpeed, SetAnglesAndSpeed, SetTargetVelocityXZ, SetTargetVelocity, GoToCoords
     }
 
     internal DroneDriveState DriveState = DroneDriveState.SetMotorSpeed;  
