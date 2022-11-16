@@ -323,13 +323,7 @@ namespace RoboScapeSimulator
     /// <summary>
     /// Wrapper around UdpClient class
     /// </summary>
-    public class UdpClientWrapper : UdpClient, IUdpClient
-    {
-        public UdpClientWrapper() : base()
-        {
-            Trace.WriteLine("UdpClientWrapper");
-        }
-    }
+    public class UdpClientWrapper : UdpClient, IUdpClient {}
 
     /// <summary>
     /// A PID controller with customizable parameters
