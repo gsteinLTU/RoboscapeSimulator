@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using RoboScapeSimulator.Entities;
-using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Entities.RobotScape;
 using RoboScapeSimulator.Environments;
 using RoboScapeSimulator.Node;
 using RoboScapeSimulator.Physics;
@@ -21,7 +21,7 @@ namespace RoboScapeSimulator
         public List<Node.SocketBase> activeSockets = new();
 
         /// <summary>
-        /// Subtype of IUdpSocket to pass to robots and other Entities that use networking
+        /// Subtype of IUdpClient to pass to robots and other Entities that use networking
         /// </summary>
         public Type UdpClientType = typeof(UdpClientWrapper);
 
@@ -497,7 +497,8 @@ namespace RoboScapeSimulator
             new GateEnvironment(),
             new GateEnvironment(GateEnvironment.Courses.Default, 3),
             new GateEnvironment(GateEnvironment.Courses.Obstacles),
-            new RatEnvironment()
+            new RatEnvironment(),
+            new DroneTestEnvironment()
         };
 
         public DateTime LastInteractionDateTime

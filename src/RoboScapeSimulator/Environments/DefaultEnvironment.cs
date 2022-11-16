@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using RoboScapeSimulator.Entities;
-using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Entities.RobotScape;
 namespace RoboScapeSimulator.Environments
 {
     class DefaultEnvironment : EnvironmentConfiguration

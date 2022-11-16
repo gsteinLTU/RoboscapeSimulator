@@ -1,7 +1,7 @@
 using System.Numerics;
 using BepuPhysics;
 using BepuUtilities.Memory;
-using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Entities.RobotScape;
 using RoboScapeSimulator.Physics.Bepu;
 using RoboScapeSimulator.Physics;
 

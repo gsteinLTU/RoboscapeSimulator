@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using RoboScapeSimulator.Entities;
-using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Entities.RobotScape;
 using RoboScapeSimulator.IoTScape;
 
 namespace RoboScapeSimulator.Environments.Helpers;

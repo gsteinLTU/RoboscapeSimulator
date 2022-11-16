@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Numerics;
-using RoboScapeSimulator.Entities.Robots;
+using RoboScapeSimulator.Entities.RobotScape;
 using Xunit;
 namespace RoboScapeSimulator.Tests;
 

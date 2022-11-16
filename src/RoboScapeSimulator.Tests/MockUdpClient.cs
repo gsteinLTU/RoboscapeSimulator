@@ -22,7 +22,7 @@ class MockUdpClient : IUdpClient
 
     public byte[] Receive(ref IPEndPoint? remoteEP)
     {
-        return new byte[0];
+        return System.Array.Empty<byte>();
     }
 
     public Task<int> SendAsync(byte[] datagram, int bytes)

@@ -8,7 +8,7 @@ using BepuUtilities.Memory;
 using RoboScapeSimulator.Physics;
 using RoboScapeSimulator.Physics.Bepu;
 
-namespace RoboScapeSimulator.Entities.Robots
+namespace RoboScapeSimulator.Entities.RobotScape
 {
     /// <summary>
     /// Robot subtype based on the Parallax ActivityBot 360 used in physical classrooms
