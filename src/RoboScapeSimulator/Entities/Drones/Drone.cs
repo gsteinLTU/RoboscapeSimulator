@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using System.Numerics;
-using RoboScapeSimulator.IoTScape;
 
 namespace RoboScapeSimulator.Entities.Drones;
 
@@ -80,19 +78,19 @@ class Drone : DynamicEntity, IResettable
         Array.Fill(MotorSpeedTargets, 0);
     }
 
-    float k_M = 1.5e-9f;
-    float k_F = 6.11e-8f;
-    float k_m = 20;
+    readonly float k_M = 1.5e-9f;
+    readonly float k_F = 6.11e-8f;
+    readonly float k_m = 20;
 
     /// <summary>
     /// Drag coefficient
     /// </summary>
-    float k_D = 0.5f;
+    readonly float k_D = 0.5f;
 
     /// <summary>
     /// Arm length
     /// </summary>
-    float L = 0.175f;
+    readonly float L = 0.175f;
 
     /// <summary>
     /// Moment of Inertia
