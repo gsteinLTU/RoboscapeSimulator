@@ -50,9 +50,10 @@ public static class Program
             socket.OnDisconnect(() =>
             {
                 Trace.WriteLine("Client disconnected!");
-                if (!string.IsNullOrEmpty(socketRoom) && Rooms.ContainsKey(socketRoom))
+                
+                if (!string.IsNullOrEmpty(socketRoom) && Rooms.TryGetValue(socketRoom, out var room))
                 {
-                    Rooms[socketRoom].RemoveSocket(socket);
+                    room.RemoveSocket(socket);
                 }
 
                 socketRoom = null;
@@ -61,10 +62,10 @@ public static class Program
             // Cleanup a bit on disconnect
             socket.On("leaveRoom", () =>
             {
-                if (!string.IsNullOrEmpty(socketRoom) && Rooms.ContainsKey(socketRoom))
+                if (!string.IsNullOrEmpty(socketRoom) && Rooms.TryGetValue(socketRoom, out var room))
                 {
                     Trace.WriteLine("Client left room!");
-                    Rooms[socketRoom].RemoveSocket(socket);
+                    room.RemoveSocket(socket);
                 }
                 socketRoom = null;
             });

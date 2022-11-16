@@ -44,9 +44,9 @@ public abstract class SocketBase
     /// <param name="callback">Callback to run when event occurs</param>
     public virtual void On(string eventName, Action<SocketBase, JsonNode[]> callback)
     {
-        if (callbacks.ContainsKey(eventName))
+        if (callbacks.TryGetValue(eventName, out var value))
         {
-            callbacks[eventName].Add(callback);
+            value.Add(callback);
         }
         else
         {
@@ -71,9 +71,9 @@ public abstract class SocketBase
     /// <param name="callback">Callback to remove</param>
     public virtual void Off(string eventName, Action<SocketBase, JsonNode[]> callback)
     {
-        if (callbacks.ContainsKey(eventName))
+        if (callbacks.TryGetValue(eventName, out var value))
         {
-            callbacks[eventName].Remove(callback);
+            value.Remove(callback);
         }
     }
 
@@ -96,5 +96,5 @@ public abstract class SocketBase
     /// <summary>
     /// ID of this Socket
     /// </summary>
-    public string ID;
+    public string? ID;
 }

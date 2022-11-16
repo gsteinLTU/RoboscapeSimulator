@@ -152,15 +152,12 @@ namespace RoboScapeSimulator.IoTScape
                     Debug.WriteLine(request);
 
                     // Verify device exists
-                    if (request != null && objects.ContainsKey(request.service + ":" + request.device))
+                    if (request != null && objects.TryGetValue(request.service + ":" + request.device, out var device))
                     {
-                        var device = objects[request.service + ":" + request.device];
-
                         // Call function if valid
-                        if (request.function != null && device.Methods.ContainsKey(request.function))
+                        if (request.function != null && device.Methods.TryGetValue(request.function, out var method))
                         {
-                            string[] result = device.Methods[request.function].Invoke(request.ParamsList.ToArray());
-
+                            string[] result = method.Invoke(request.ParamsList.ToArray());
 
                             // Keep room active if received non-heartbeat IoTScape message
                             if (request.function != "heartbeat" && device._room != null)
