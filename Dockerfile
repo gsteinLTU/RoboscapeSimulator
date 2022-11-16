@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 
+FROM mcr.microsoft.com/dotnet/sdk:7.0 
 
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     &&  apt-get update \
