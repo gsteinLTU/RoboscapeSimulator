@@ -10,6 +10,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "socket.io-client": "^4.4.1"
+    "socket.io-client": "^4.5.3"
   }
 }
