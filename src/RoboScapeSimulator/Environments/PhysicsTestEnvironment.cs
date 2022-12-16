@@ -10,7 +10,7 @@ namespace RoboScapeSimulator.Environments
 {
     class PhysicsTestEnvironment : EnvironmentConfiguration
     {
-        bool _extraObjects = false;
+        readonly bool _extraObjects = false;
 
         public PhysicsTestEnvironment(bool extraObjects = false)
         {

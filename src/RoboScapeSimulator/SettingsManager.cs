@@ -119,10 +119,7 @@ namespace RoboScapeSimulator
             loadedSettings = section.Get<RoboScapeSimSettings>();
 
             // Validate
-            if (loadedSettings == null)
-            {
-                loadedSettings = DefaultSettings;
-            }
+            loadedSettings ??= DefaultSettings;
 
             if (string.IsNullOrWhiteSpace(loadedSettings.RoboScapeHost))
             {

@@ -27,7 +27,7 @@ namespace RoboScapeSimulator.Environments
             Random rng = new();
 
             // Demo robot
-            _ = new ParallaxRobot(room, rng.PointOnCircle(1, 0.25f), debug: false);
+            _ = new ParallaxRobot(room, rng.PointOnCircle(0.5f, 0.25f), debug: false);
 
             for (int i = 0; i < 3; i++)
             {

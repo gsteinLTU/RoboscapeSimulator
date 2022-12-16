@@ -3,7 +3,7 @@
 This repository contains a server for a simple simulation of [RoboScape](https://www.netsblox.org/roboscape) robots written in C#. This is intended for use with the [RoboScape Online NetsBlox extension](https://extensions.netsblox.org).
 
 ## Requirements
-The only dependency that must be pre-installed is the [.NET runtime](https://github.com/dotnet/runtime) >6.0. The other dependencies are either (for pre-built binaries) included or (if building locally) acquired during the build process.  
+The only dependency that must be pre-installed is the [.NET runtime](https://github.com/dotnet/runtime) >7.0. The other dependencies are either (for pre-built binaries) included or (if building locally) acquired during the build process.  
 
 ## Configuration
 In appsettings.json, a few options can be configured:

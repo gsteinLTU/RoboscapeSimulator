@@ -81,11 +81,7 @@ namespace RoboScapeSimulator.Entities.RobotScape
         {
             get
             {
-                if (_id == null)
-                {
-                    _id = BytesToHexstring(MacAddress, "");
-                }
-
+                _id ??= BytesToHexstring(MacAddress, "");
                 return _id;
             }
         }
@@ -246,7 +242,7 @@ namespace RoboScapeSimulator.Entities.RobotScape
             if ((lastHeartbeat + HeartbeatPeriod) < time.ElapsedSeconds || lastHeartbeat < 0)
             {
                 // Send heartbeat if due
-                SendRoboScapeMessage(new[] { (byte)'I' });
+                SendRoboScapeMessage("I"u8.ToArray());
                 lastHeartbeat = (float)time.ElapsedSeconds;
             }
 
@@ -305,7 +301,7 @@ namespace RoboScapeSimulator.Entities.RobotScape
 
             time.Restart();
             lastMessageTime = 0;
-            SendRoboScapeMessage(new byte[] { (byte)'I' });
+            SendRoboScapeMessage("I"u8.ToArray());
 
             OnReset?.Invoke(this, EventArgs.Empty);
 

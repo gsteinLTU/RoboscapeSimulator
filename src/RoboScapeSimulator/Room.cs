@@ -176,10 +176,7 @@ namespace RoboScapeSimulator
             // Create instance of requested environment
             environmentConfiguration = (EnvironmentConfiguration?)env.Clone();
 
-            if (environmentConfiguration == null)
-            {
-                environmentConfiguration = new DefaultEnvironment();
-            }
+            environmentConfiguration ??= new DefaultEnvironment();
 
             SimInstance = (simulationInstance ?? Activator.CreateInstance(environmentConfiguration.PreferredSimulationInstanceType) as SimulationInstance) ?? new BepuSimulationInstance();
             environmentConfiguration.Setup(this);

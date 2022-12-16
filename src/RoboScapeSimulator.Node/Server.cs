@@ -101,7 +101,7 @@ public class Server : ServerBase, IDisposable
                         string messageData = message[(messageDataStart + 1)..];
                         Debug.WriteLine(string.Concat(string.Concat("Message from ", socketID, " Received: Type: "), string.Concat(messageType, " Data: ", messageData)));
 
-                        if (sockets.ContainsKey(socketID) && sockets[socketID].callbacks.ContainsKey(messageType))
+                        if (sockets.TryGetValue(socketID, out var socket) && socket.callbacks.ContainsKey(messageType))
                         {
                             JsonNode? jData = JsonNode.Parse(messageData);
 
@@ -128,9 +128,9 @@ public class Server : ServerBase, IDisposable
                         Trace.WriteLine(string.Concat("New Socket Connected: ", message.AsSpan(1)));
                         connectionCallbacks.ForEach(callback =>
                         {
-                            var socket = new Socket(this, message[1..]);
+                            Socket socket = new(this, message[1..]);
 
-                            if (!sockets.ContainsKey(socket.ID))
+                            if (socket.ID != null && !sockets.ContainsKey(socket.ID))
                             {
                                 sockets.TryAdd(socket.ID, socket);
                             }
@@ -142,9 +142,9 @@ public class Server : ServerBase, IDisposable
                     {
                         Trace.WriteLine(string.Concat("Socket Disconnected: ", message.AsSpan(1)));
 
-                        if (sockets.ContainsKey(message[1..]))
+                        if (sockets.TryGetValue(message[1..], out var socket))
                         {
-                            sockets[message[1..]].onDisconnect.ForEach(callback => callback());
+                            socket.onDisconnect.ForEach(callback => callback());
                         }
                     }
 
@@ -165,7 +165,7 @@ public class Server : ServerBase, IDisposable
         while (!cancellationToken.IsCancellationRequested)
         {
             string? line;
-            while ((line = await sr.ReadLineAsync()) != null)
+            while ((line = await sr.ReadLineAsync(cancellationToken)) != null)
             {
                 yield return line;
             }
@@ -178,13 +178,7 @@ public class Server : ServerBase, IDisposable
     {
         if (pipeWriter != null)
         {
-            if (sw == null)
-            {
-                sw = new(pipeWriter)
-                {
-                    AutoFlush = true
-                };
-            }
+            sw ??= new(pipeWriter) { AutoFlush = true };
 
             lock (sw)
             {
