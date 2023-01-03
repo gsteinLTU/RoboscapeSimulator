@@ -2,6 +2,7 @@ const readline = require('readline');
 const fs = require('fs');
 const process = require('process');
 const isRunning = require('is-running');
+const eiows = require('eiows');
 
 const reader = fs.createReadStream(null, { fd: Number.parseInt(process.argv[2]) });
 const writer = fs.createWriteStream(null, { fd: Number.parseInt(process.argv[3]) });
@@ -51,6 +52,7 @@ const io = new Server({
         origin: '*',
         credentials: false
     },
+    wsEngine: eiows.Server
 });
 
 io.on('connection', (socket) => {

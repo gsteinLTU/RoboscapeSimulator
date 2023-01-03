@@ -1,16 +1,20 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine
 
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    &&  apt-get update \
-    &&  apt-get install -y nodejs libc6 gcc g++ make
+RUN apk update && apk add gcc build-base gcompat make
+RUN apk add --no-cache python3
+RUN apk add nodejs npm
 
-COPY src/RoboScapeSimulator/bin/Release/net7.0/publish/ App/
-COPY src/node/index.js App/src/node/
 COPY src/node/package.json App/src/node/
+COPY src/node/package-lock.json App/src/node/
+COPY src/node/index.js App/src/node/
+COPY src/RoboScapeSimulator/bin/Release/net7.0/publish/ App/
 
-RUN cd /App/src/node && npm install
+WORKDIR /App/src/node
+
+RUN npm ci
 
 WORKDIR /App
+
 ENV DOTNET_EnableDiagnostics=0
 ENTRYPOINT ["dotnet", "RoboScapeSimulator.dll"]
 EXPOSE 9001
